@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doroi - Coming Soon</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#020617,#0f172a,#0b2f6b);
+overflow:hidden;
+color:white;
+}
+
+body::before{
+content:"";
+position:absolute;
+width:350px;
+height:350px;
+background:#2563eb;
+filter:blur(150px);
+top:-100px;
+left:-100px;
+opacity:.35;
+}
+
+body::after{
+content:"";
+position:absolute;
+width:350px;
+height:350px;
+background:#3b82f6;
+filter:blur(140px);
+bottom:-120px;
+right:-120px;
+opacity:.35;
+}
+
+.container{
+position:relative;
+z-index:2;
+width:90%;
+max-width:500px;
+text-align:center;
+padding:40px 30px;
+background:rgba(255,255,255,.06);
+border:1px solid rgba(255,255,255,.08);
+backdrop-filter:blur(20px);
+border-radius:25px;
+box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+
+.logo{
+width:130px;
+margin-bottom:20px;
+}
+
+h1{
+font-size:42px;
+font-weight:700;
+margin-bottom:8px;
+}
+
+h1 span{
+color:#3b82f6;
+}
+
+p{
+font-size:17px;
+color:#cbd5e1;
+line-height:1.7;
+margin-bottom:30px;
+}
+
+.coming{
+display:inline-block;
+padding:12px 28px;
+border-radius:50px;
+background:#2563eb;
+font-weight:600;
+letter-spacing:1px;
+box-shadow:0 10px 30px rgba(37,99,235,.4);
+margin-bottom:35px;
+}
+
+.socials{
+display:flex;
+justify-content:center;
+gap:20px;
+}
+
+.socials a{
+width:55px;
+height:55px;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:50%;
+background:rgba(255,255,255,.08);
+color:white;
+font-size:22px;
+transition:.3s;
+text-decoration:none;
+}
+
+.socials a:hover{
+background:#2563eb;
+transform:translateY(-6px);
+box-shadow:0 10px 25px rgba(37,99,235,.5);
+}
+
+.footer{
+margin-top:30px;
+font-size:13px;
+color:#94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<img src="logo.png" class="logo" alt="Doroi Logo">
+
+<h1><span>Doroi</span></h1>
+
+<p>
+We are building something amazing.<br>
+Our website will launch soon.
+</p>
+
+<div class="coming">
+🚀 COMING SOON
+</div>
+
+<div class="socials">
+
+<a href="https://www.facebook.com/profile.php?id=61585378283181" target="_blank">
+<i class="fab fa-facebook-f"></i>
+</a>
+
+<a href="https://www.tiktok.com/@dorpi.ltd" target="_blank">
+<i class="fab fa-tiktok"></i>
+</a>
+
+<a href="https://wa.me/9779806393423" target="_blank">
+<i class="fab fa-whatsapp"></i>
+</a>
+
+</div>
+
+<div class="footer">
+© 2026 Doroi Software & Development. All Rights Reserved.
+</div>
+
+</div>
+
+</body>
+</html>
