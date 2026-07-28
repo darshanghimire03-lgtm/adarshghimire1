@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+<title>Doroi Software & Development Company</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+html, body{
+height:100%;
+}
+
+body{
+min-height:100vh;
+background:#020617;
+color:white;
+position:relative;
+overflow-x:hidden;
+}
+
+.header{
+width:100%;
+position:sticky;
+top:0;
+left:0;
+z-index:50;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:14px 24px;
+background:rgba(2,6,23,.75);
+backdrop-filter:blur(16px);
+border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.header-inner{
+width:100%;
+max-width:1200px;
+margin:0 auto;
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+
+.header-left{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.header-logo{
+width:36px;
+height:36px;
+border-radius:8px;
+object-fit:cover;
+}
+
+.header-title{
+font-size:18px;
+font-weight:700;
+letter-spacing:.5px;
+}
+
+.header-sub{
+font-size:10px;
+letter-spacing:1px;
+color:#94a3b8;
+font-weight:600;
+text-transform:uppercase;
+}
+
+.header-title span{
+color:#3b82f6;
+}
+
+.header-nav{
+display:flex;
+align-items:center;
+gap:30px;
+}
+
+.header-nav a{
+color:#cbd5e1;
+text-decoration:none;
+font-size:14.5px;
+font-weight:500;
+transition:.2s;
+}
+
+.header-nav a:hover{
+color:#3b82f6;
+}
+
+.header-right{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.header-signup-btn{
+padding:10px 22px;
+border-radius:10px;
+background:#2563eb;
+color:white;
+border:none;
+font-weight:600;
+font-size:14px;
+cursor:pointer;
+font-family:inherit;
+transition:.25s;
+white-space:nowrap;
+}
+
+.header-signup-btn:hover{
+background:#1d4ed8;
+}
+
+.header-signup-btn.hidden{
+display:none;
+}
+
+.header-user{
+display:none;
+align-items:center;
+gap:10px;
+padding:6px 14px 6px 6px;
+border-radius:50px;
+background:rgba(255,255,255,.06);
+border:1px solid rgba(255,255,255,.12);
+text-decoration:none;
+color:white;
+transition:.25s;
+cursor:pointer;
+}
+
+.header-user.show{
+display:flex;
+}
+
+.header-user:hover{
+background:rgba(255,255,255,.12);
+border-color:rgba(59,130,246,.4);
+}
+
+.header-user-avatar{
+width:32px;
+height:32px;
+border-radius:50%;
+object-fit:cover;
+background:linear-gradient(135deg,#2563eb,#3b82f6);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:13px;
+font-weight:700;
+color:white;
+flex-shrink:0;
+}
+
+.header-user-name{
+font-size:13.5px;
+font-weight:600;
+max-width:120px;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+.menu-btn{
+width:44px;
+height:44px;
+border-radius:50%;
+background:rgba(255,255,255,.08);
+border:1px solid rgba(255,255,255,.1);
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+font-size:19px;
+color:white;
+transition:.25s;
+flex-shrink:0;
+}
+
+.menu-btn:hover{
+background:#2563eb;
+}
+
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.55);
+backdrop-filter:blur(2px);
+opacity:0;
+visibility:hidden;
+transition:.3s ease;
+z-index:90;
+}
+
+.overlay.active{
+opacity:1;
+visibility:visible;
+}
+
+.drawer{
+position:fixed;
+top:0;
+right:0;
+height:100%;
+width:320px;
+max-width:85vw;
+background:linear-gradient(160deg,#0b1220,#0f172a 60%,#0b2f6b);
+border-left:1px solid rgba(255,255,255,.1);
+box-shadow:-10px 0 40px rgba(0,0,0,.5);
+transform:translateX(100%);
+transition:transform .35s cubic-bezier(.22,1,.36,1);
+z-index:100;
+display:flex;
+flex-direction:column;
+padding:24px 22px;
+overflow-y:auto;
+}
+
+.drawer.active{
+transform:translateX(0);
+}
+
+.drawer-close{
+align-self:flex-end;
+width:38px;
+height:38px;
+border-radius:50%;
+background:rgba(255,255,255,.08);
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+font-size:18px;
+margin-bottom:20px;
+transition:.25s;
+flex-shrink:0;
+}
+
+.drawer-close:hover{
+background:#ef4444;
+}
+
+.drawer-user{
+display:flex;
+align-items:center;
+gap:12px;
+padding:14px;
+border-radius:16px;
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.1);
+margin-bottom:22px;
+cursor:pointer;
+transition:.25s;
+text-decoration:none;
+color:white;
+}
+
+.drawer-user:hover{
+background:rgba(255,255,255,.09);
+border-color:rgba(59,130,246,.4);
+}
+
+.drawer-user-avatar{
+width:46px;
+height:46px;
+border-radius:50%;
+object-fit:cover;
+background:linear-gradient(135deg,#2563eb,#3b82f6);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:17px;
+font-weight:700;
+color:white;
+flex-shrink:0;
+border:2px solid rgba(59,130,246,.5);
+}
+
+.drawer-user-info{
+display:flex;
+flex-direction:column;
+gap:2px;
+overflow:hidden;
+}
+
+.drawer-user-name{
+font-size:14.5px;
+font-weight:700;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+.drawer-user-sub{
+font-size:11.5px;
+color:#94a3b8;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+.drawer-user-arrow{
+margin-left:auto;
+color:#64748b;
+font-size:13px;
+flex-shrink:0;
+}
+
+.drawer-section-label{
+font-size:11px;
+text-transform:uppercase;
+letter-spacing:1px;
+color:#64748b;
+font-weight:600;
+margin:18px 0 8px 6px;
+}
+
+.drawer-section-label:first-of-type{
+margin-top:0;
+}
+
+.drawer-links{
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.drawer-links a,
+.drawer-links button{
+display:flex;
+align-items:center;
+gap:12px;
+padding:12px 14px;
+border-radius:12px;
+color:#e2e8f0;
+text-decoration:none;
+font-size:14px;
+font-weight:500;
+transition:.25s;
+background:none;
+border:none;
+width:100%;
+text-align:left;
+cursor:pointer;
+font-family:inherit;
+}
+
+.drawer-links a i,
+.drawer-links button i{
+width:20px;
+text-align:center;
+color:#3b82f6;
+}
+
+.drawer-links a:hover,
+.drawer-links button:hover{
+background:rgba(255,255,255,.08);
+}
+
+.drawer-footer{
+margin-top:auto;
+font-size:11px;
+color:#64748b;
+text-align:center;
+padding-top:20px;
+}
+
+.hero{
+position:relative;
+width:100%;
+padding:90px 24px 100px;
+text-align:center;
+overflow:hidden;
+background:radial-gradient(ellipse at top,#0b2f6b 0%,#0f172a 45%,#020617 100%);
+}
+
+.hero::before{
+content:"";
+position:absolute;
+width:400px;
+height:400px;
+background:#2563eb;
+filter:blur(160px);
+top:-120px;
+left:-100px;
+opacity:.4;
+pointer-events:none;
+}
+
+.hero::after{
+content:"";
+position:absolute;
+width:400px;
+height:400px;
+background:#3b82f6;
+filter:blur(150px);
+bottom:-140px;
+right:-120px;
+opacity:.35;
+pointer-events:none;
+}
+
+.hero-inner{
+position:relative;
+z-index:2;
+max-width:900px;
+margin:0 auto;
+}
+
+.hero-badge{
+display:inline-flex;
+align-items:center;
+gap:8px;
+padding:8px 18px;
+border-radius:50px;
+background:rgba(59,130,246,.12);
+border:1px solid rgba(59,130,246,.3);
+color:#93c5fd;
+font-size:13px;
+font-weight:600;
+margin-bottom:26px;
+}
+
+.hero-badge i{
+font-size:8px;
+color:#3b82f6;
+}
+
+.hero h1{
+font-size:52px;
+font-weight:700;
+line-height:1.2;
+margin-bottom:22px;
+}
+
+.hero h1 .highlight{
+color:#3b82f6;
+}
+
+.hero-description{
+font-size:17px;
+color:#cbd5e1;
+line-height:1.75;
+max-width:640px;
+margin:0 auto 36px;
+}
+
+.hero-buttons{
+display:flex;
+justify-content:center;
+gap:16px;
+flex-wrap:wrap;
+}
+
+.btn{
+display:inline-flex;
+align-items:center;
+gap:8px;
+padding:14px 28px;
+border-radius:12px;
+font-weight:600;
+font-size:15px;
+cursor:pointer;
+transition:.25s;
+font-family:inherit;
+text-decoration:none;
+border:none;
+white-space:nowrap;
+}
+
+.btn-outline{
+background:rgba(255,255,255,.06);
+color:white;
+border:1px solid rgba(255,255,255,.18);
+}
+
+.btn-outline:hover{
+background:rgba(255,255,255,.12);
+transform:translateY(-3px);
+}
+
+.section{
+width:100%;
+padding:90px 24px;
+}
+
+.section-inner{
+max-width:1200px;
+margin:0 auto;
+}
+
+.section-head{
+text-align:center;
+max-width:640px;
+margin:0 auto 56px;
+}
+
+.section-badge{
+display:inline-flex;
+align-items:center;
+gap:8px;
+padding:7px 16px;
+border-radius:50px;
+background:rgba(59,130,246,.12);
+border:1px solid rgba(59,130,246,.3);
+color:#93c5fd;
+font-size:12.5px;
+font-weight:600;
+margin-bottom:18px;
+}
+
+.section-badge i{
+font-size:7px;
+color:#3b82f6;
+}
+
+.section-head h2{
+font-size:36px;
+font-weight:700;
+margin-bottom:14px;
+}
+
+.section-head p{
+font-size:15.5px;
+color:#94a3b8;
+line-height:1.7;
+}
+
+.specialties-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:24px;
+}
+
+.specialty-card{
+background:rgba(255,255,255,.04);
+border:1px solid rgba(255,255,255,.08);
+border-radius:20px;
+padding:36px 30px;
+transition:.3s;
+}
+
+.specialty-card:hover{
+background:rgba(255,255,255,.07);
+border-color:rgba(59,130,246,.4);
+transform:translateY(-6px);
+box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+
+.specialty-icon{
+width:54px;
+height:54px;
+border-radius:14px;
+background:linear-gradient(135deg,#2563eb,#3b82f6);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:22px;
+color:white;
+margin-bottom:22px;
+box-shadow:0 8px 20px rgba(37,99,235,.35);
+}
+
+.specialty-card h3{
+font-size:19px;
+font-weight:700;
+margin-bottom:12px;
+}
+
+.specialty-card p{
+font-size:14.5px;
+color:#94a3b8;
+line-height:1.7;
+}
+
+.team-section{
+background:rgba(255,255,255,.02);
+border-top:1px solid rgba(255,255,255,.06);
+border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.team-grid{
+display:flex;
+justify-content:center;
+}
+
+.team-card{
+background:rgba(255,255,255,.04);
+border:1px solid rgba(255,255,255,.08);
+border-radius:22px;
+padding:40px 36px;
+text-align:center;
+max-width:320px;
+width:100%;
+transition:.3s;
+}
+
+.team-card:hover{
+transform:translateY(-6px);
+box-shadow:0 16px 40px rgba(0,0,0,.35);
+border-color:rgba(59,130,246,.4);
+}
+
+.team-photo{
+width:110px;
+height:110px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid #2563eb;
+box-shadow:0 8px 25px rgba(37,99,235,.5);
+margin:0 auto 20px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#1e293b;
+font-size:34px;
+font-weight:700;
+color:#3b82f6;
+}
+
+.team-name{
+font-size:19px;
+font-weight:700;
+margin-bottom:6px;
+}
+
+.team-role{
+display:inline-block;
+padding:5px 14px;
+border-radius:50px;
+background:rgba(59,130,246,.15);
+color:#93c5fd;
+font-size:11.5px;
+font-weight:700;
+letter-spacing:.5px;
+text-transform:uppercase;
+margin-bottom:6px;
+}
+
+.team-sub{
+font-size:13px;
+color:#94a3b8;
+margin-bottom:20px;
+}
+
+.team-socials{
+display:flex;
+justify-content:center;
+gap:14px;
+}
+
+.team-socials a{
+width:42px;
+height:42px;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:50%;
+background:rgba(255,255,255,.08);
+color:white;
+font-size:16px;
+transition:.3s;
+text-decoration:none;
+flex-shrink:0;
+}
+
+.team-socials a:hover{
+background:#2563eb;
+transform:translateY(-4px);
+box-shadow:0 10px 22px rgba(37,99,235,.5);
+}
+
+.contact-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+max-width:1000px;
+margin:0 auto;
+}
+
+.contact-card{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:12px;
+padding:28px 20px;
+background:rgba(255,255,255,.04);
+border:1px solid rgba(255,255,255,.08);
+border-radius:18px;
+text-decoration:none;
+color:white;
+transition:.3s;
+text-align:center;
+}
+
+.contact-card:hover{
+background:rgba(37,99,235,.15);
+border-color:#2563eb;
+transform:translateY(-5px);
+}
+
+.contact-card i{
+width:48px;
+height:48px;
+border-radius:50%;
+background:rgba(59,130,246,.15);
+color:#3b82f6;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:19px;
+}
+
+.contact-card .contact-label{
+font-size:11px;
+color:#94a3b8;
+text-transform:uppercase;
+letter-spacing:.5px;
+}
+
+.contact-card .contact-value{
+font-size:13.5px;
+font-weight:600;
+word-break:break-word;
+}
+
+.footer{
+padding:40px 24px;
+text-align:center;
+border-top:1px solid rgba(255,255,255,.08);
+color:#64748b;
+font-size:13px;
+}
+
+.modal-overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.65);
+backdrop-filter:blur(4px);
+display:flex;
+align-items:center;
+justify-content:center;
+opacity:0;
+visibility:hidden;
+transition:.3s ease;
+z-index:200;
+padding:20px;
+}
+
+.modal-overlay.active{
+opacity:1;
+visibility:visible;
+}
+
+.modal-box{
+width:100%;
+max-width:420px;
+background:linear-gradient(160deg,#0b1220,#0f172a 60%,#0b2f6b);
+border:1px solid rgba(255,255,255,.1);
+border-radius:22px;
+padding:34px 30px;
+box-shadow:0 20px 60px rgba(0,0,0,.5);
+position:relative;
+text-align:center;
+transform:scale(.92);
+transition:.3s ease;
+max-height:85vh;
+overflow-y:auto;
+}
+
+.modal-overlay.active .modal-box{
+transform:scale(1);
+}
+
+.modal-close{
+position:absolute;
+top:14px;
+right:14px;
+width:34px;
+height:34px;
+border-radius:50%;
+background:rgba(255,255,255,.08);
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+font-size:16px;
+transition:.25s;
+}
+
+.modal-close:hover{
+background:#ef4444;
+}
+
+.modal-icon{
+width:60px;
+height:60px;
+border-radius:50%;
+background:rgba(37,99,235,.15);
+color:#3b82f6;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:26px;
+margin:0 auto 16px;
+}
+
+.modal-box h2{
+font-size:22px;
+font-weight:700;
+margin-bottom:12px;
+}
+
+.modal-box h2 span{
+color:#3b82f6;
+}
+
+.modal-box p{
+font-size:14.5px;
+color:#cbd5e1;
+line-height:1.7;
+margin-bottom:14px;
+text-align:center;
+}
+
+.modal-badge{
+display:inline-block;
+padding:10px 22px;
+border-radius:50px;
+background:#2563eb;
+font-weight:600;
+font-size:13px;
+letter-spacing:1px;
+margin-top:8px;
+box-shadow:0 10px 25px rgba(37,99,235,.4);
+}
+
+@media (max-width:900px){
+.header-nav{display:none;}
+.specialties-grid{grid-template-columns:1fr;}
+.contact-grid{grid-template-columns:repeat(2,1fr);}
+.hero h1{font-size:38px;}
+}
+
+@media (max-width:600px){
+.header{padding:12px 16px;}
+.header-title{font-size:16px;}
+.header-signup-btn{padding:9px 16px;font-size:13px;}
+.header-user-name{max-width:80px;}
+.hero{padding:60px 18px 70px;}
+.hero h1{font-size:29px;}
+.hero-description{font-size:15px;}
+.btn{padding:12px 20px;font-size:14px;}
+.section{padding:60px 18px;}
+.section-head h2{font-size:27px;}
+.contact-grid{grid-template-columns:1fr;}
+}
+
+@media (max-width:380px){
+.hero h1{font-size:24px;}
+.header-signup-btn{padding:8px 12px;font-size:12px;}
+.header-user-name{display:none;}
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <img src="logo.png" class="header-logo" alt="Doroi Logo" onerror="this.style.display='none'">
+      <div>
+        <div class="header-title"><span>Doroi</span></div>
+        <div class="header-sub">Software & Development</div>
+      </div>
+    </div>
+
+    <nav class="header-nav">
+      <a href="#specialties">Specialties</a>
+      <a href="#" id="appsNavLink">Our Apps</a>
+      <a href="#team">Team</a>
+      <a href="#" id="contactNavLink">Contact</a>
+    </nav>
+
+    <div class="header-right">
+      <button class="header-signup-btn" id="signupBtnMain">Sign Up</button>
+      <a href="account.html" class="header-user" id="headerUser">
+        <div class="header-user-avatar" id="headerUserAvatar">?</div>
+        <span class="header-user-name" id="headerUserName">Account</span>
+      </a>
+      <div class="menu-btn" id="menuBtn" aria-label="Open menu">
+        <i class="fas fa-bars"></i>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="drawer" id="drawer">
+  <div class="drawer-close" id="closeBtn"><i class="fas fa-times"></i></div>
+
+  <a href="account.html" class="drawer-user" id="drawerUser">
+    <div class="drawer-user-avatar" id="drawerUserAvatar">?</div>
+    <div class="drawer-user-info">
+      <div class="drawer-user-name" id="drawerUserName">Guest</div>
+      <div class="drawer-user-sub" id="drawerUserSub">Tap to sign in</div>
+    </div>
+    <i class="fas fa-chevron-right drawer-user-arrow"></i>
+  </a>
+
+  <div class="drawer-section-label">Menu</div>
+  <nav class="drawer-links">
+    <a href="#specialties"><i class="fas fa-layer-group"></i> Specialties</a>
+    <button type="button" id="appsBtn"><i class="fas fa-mobile-screen-button"></i> Our Apps</button>
+    <a href="#team"><i class="fas fa-users"></i> Team</a>
+    <button type="button" id="contactBtn"><i class="fas fa-envelope"></i> Contact Us</button>
+  </nav>
+
+  <div class="drawer-section-label">Follow Us</div>
+  <nav class="drawer-links">
+    <a href="https://www.facebook.com/share/1JPTPDnqpo/" target="_blank"><i class="fab fa-facebook-f"></i> Facebook</a>
+    <a href="https://www.tiktok.com/@doroi.ltd" target="_blank"><i class="fab fa-tiktok"></i> TikTok</a>
+    <a href="https://wa.me/9779806393423" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+  </nav>
+
+  <div class="drawer-footer">© 2026 Doroi Software & Development</div>
+</aside>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><i class="fas fa-circle"></i> Doroi Software and Development</div>
+    <h1>Building <span class="highlight">Modern</span> Digital<br>Solutions.</h1>
+    <p class="hero-description">
+      We design and build clean, reliable software and mobile apps. From concept to launch, Doroi focuses on simple, useful products that make everyday tasks easier.
+    </p>
+    <div class="hero-buttons">
+      <a href="#specialties" class="btn btn-outline"><i class="fas fa-layer-group"></i> Our Specialties</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="specialties">
+  <div class="section-inner">
+    <div class="section-head">
+      <div class="section-badge"><i class="fas fa-circle"></i> What We Do</div>
+      <h2>Our Specialties</h2>
+    </div>
+
+    <div class="specialties-grid">
+      <div class="specialty-card">
+        <div class="specialty-icon"><i class="fas fa-globe"></i></div>
+        <h3>Website Development</h3>
+        <p>Creating modern, fast, responsive, and secure websites for businesses and organizations.</p>
+      </div>
+
+      <div class="specialty-card">
+        <div class="specialty-icon"><i class="fas fa-mobile-screen-button"></i></div>
+        <h3>Android App Development</h3>
+        <p>Native Android applications built with clean architecture and high performance.</p>
+      </div>
+
+      <div class="specialty-card">
+        <div class="specialty-icon"><i class="fas fa-palette"></i></div>
+        <h3>UI/UX Design</h3>
+        <p>Beautiful, user-friendly, and intuitive interfaces designed to provide the best user experience.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section team-section" id="team">
+  <div class="section-inner">
+    <div class="section-head">
+      <div class="section-badge"><i class="fas fa-circle"></i> Who We Are</div>
+      <h2>Our Team</h2>
+      <p>Crafting innovative software solutions with passion, creativity, and cutting-edge technology.</p>
+    </div>
+
+    <div class="team-grid">
+      <div class="team-card">
+        <img src="owner.png" class="team-photo" alt="Darshan Ghimire" onerror="this.style.display='flex'; this.removeAttribute('src'); this.textContent='DG';">
+        <div class="team-name">Darshan Ghimire</div>
+        <div class="team-role">Owner</div>
+        <div class="team-sub">Android App Developer</div>
+        <div class="team-socials">
+          <a href="https://www.facebook.com/share/1JPTPDnqpo/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.tiktok.com/@doroi.ltd" target="_blank"><i class="fab fa-tiktok"></i></a>
+          <a href="https://wa.me/9779806393423" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contact">
+  <div class="section-inner">
+    <div class="section-head">
+      <div class="section-badge"><i class="fas fa-circle"></i> Get In Touch</div>
+      <h2>Contact Us</h2>
+      <p>We'd love to hear from you. Reach out through any of the channels below.</p>
+    </div>
+
+    <div class="contact-grid">
+      <a href="mailto:contact@doroi.com" class="contact-card">
+        <i class="fas fa-envelope"></i>
+        <span class="contact-label">Email</span>
+        <span class="contact-value">contact@doroi.com</span>
+      </a>
+
+      <a href="https://wa.me/9779806393423" target="_blank" class="contact-card">
+        <i class="fab fa-whatsapp"></i>
+        <span class="contact-label">WhatsApp</span>
+        <span class="contact-value">+977 980 639 3423</span>
+      </a>
+
+      <a href="https://www.facebook.com/share/1JPTPDnqpo/" target="_blank" class="contact-card">
+        <i class="fab fa-facebook-f"></i>
+        <span class="contact-label">Facebook</span>
+        <span class="contact-value">Doroi</span>
+      </a>
+
+      <a href="https://www.tiktok.com/@doroi.ltd" target="_blank" class="contact-card">
+        <i class="fab fa-tiktok"></i>
+        <span class="contact-label">TikTok</span>
+        <span class="contact-value">@doroi.ltd</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  © 2026 Doroi Software & Development. All Rights Reserved.
+</footer>
+
+<div class="modal-overlay" id="appsModal">
+  <div class="modal-box">
+    <div class="modal-close" data-close="appsModal"><i class="fas fa-times"></i></div>
+    <div class="modal-icon"><i class="fas fa-mobile-screen-button"></i></div>
+    <h2><span>Our</span> Apps</h2>
+    <p>We're working hard on our first apps. Nothing is published yet, but you'll be the first to know when they launch!</p>
+    <div class="modal-badge">🚀 COMING SOON</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="contactModal">
+  <div class="modal-box">
+    <div class="modal-close" data-close="contactModal"><i class="fas fa-times"></i></div>
+    <div class="modal-icon"><i class="fas fa-envelope"></i></div>
+    <h2><span>Contact</span> Us</h2>
+    <p>Scroll to the Contact section on the page, or reach us directly:</p>
+    <p style="margin-top:-6px;"><strong>Email:</strong> contact@doroi.com<br><strong>WhatsApp:</strong> +977 980 639 3423</p>
+  </div>
+</div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
