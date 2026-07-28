@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+<title>My Account - Doroi</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+html, body{
+height:100%;
+}
+
+body{
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#020617,#0f172a,#0b2f6b);
+color:white;
+position:relative;
+overflow-x:hidden;
+padding:24px;
+}
+
+body::before{
+content:"";
+position:fixed;
+width:400px;
+height:400px;
+background:#2563eb;
+filter:blur(160px);
+top:-120px;
+left:-100px;
+opacity:.4;
+pointer-events:none;
+z-index:0;
+}
+
+body::after{
+content:"";
+position:fixed;
+width:400px;
+height:400px;
+background:#3b82f6;
+filter:blur(150px);
+bottom:-140px;
+right:-120px;
+opacity:.35;
+pointer-events:none;
+z-index:0;
+}
+
+.back-home{
+position:fixed;
+top:22px;
+left:22px;
+display:inline-flex;
+align-items:center;
+gap:8px;
+color:#cbd5e1;
+text-decoration:none;
+font-size:14px;
+font-weight:500;
+background:rgba(255,255,255,.06);
+border:1px solid rgba(255,255,255,.1);
+padding:9px 16px;
+border-radius:50px;
+transition:.25s;
+z-index:5;
+}
+
+.back-home:hover{
+background:rgba(255,255,255,.12);
+color:white;
+}
+
+.account-wrap{
+position:relative;
+z-index:2;
+width:100%;
+max-width:460px;
+}
+
+.account-card{
+background:rgba(255,255,255,.06);
+border:1px solid rgba(255,255,255,.08);
+backdrop-filter:blur(20px);
+border-radius:25px;
+box-shadow:0 20px 50px rgba(0,0,0,.4);
+padding:44px 36px;
+text-align:center;
+}
+
+.account-avatar{
+width:110px;
+height:110px;
+border-radius:50%;
+object-fit:cover;
+margin:0 auto 22px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg,#2563eb,#3b82f6);
+font-size:38px;
+font-weight:700;
+color:white;
+border:3px solid rgba(59,130,246,.5);
+box-shadow:0 10px 30px rgba(37,99,235,.4);
+}
+
+.account-name{
+font-size:24px;
+font-weight:700;
+margin-bottom:6px;
+}
+
+.account-email{
+font-size:14px;
+color:#94a3b8;
+margin-bottom:20px;
+word-break:break-word;
+}
+
+.edit-profile-btn{
+display:inline-flex;
+align-items:center;
+gap:8px;
+padding:10px 22px;
+border-radius:50px;
+background:rgba(59,130,246,.15);
+border:1px solid rgba(59,130,246,.35);
+color:#93c5fd;
+font-weight:600;
+font-size:13.5px;
+cursor:pointer;
+font-family:inherit;
+transition:.25s;
+margin-bottom:28px;
+}
+
+.edit-profile-btn:hover{
+background:rgba(59,130,246,.25);
+transform:translateY(-2px);
+}
+
+.account-details{
+display:flex;
+flex-direction:column;
+gap:12px;
+margin-bottom:28px;
+text-align:left;
+}
+
+.account-row{
+display:flex;
+align-items:center;
+gap:14px;
+padding:14px 16px;
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.1);
+border-radius:14px;
+}
+
+.account-row i{
+width:38px;
+height:38px;
+border-radius:50%;
+background:rgba(59,130,246,.15);
+color:#3b82f6;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:15px;
+flex-shrink:0;
+}
+
+.account-row-label{
+font-size:11px;
+color:#94a3b8;
+text-transform:uppercase;
+letter-spacing:.5px;
+display:block;
+margin-bottom:2px;
+}
+
+.account-row-value{
+font-size:14px;
+font-weight:600;
+word-break:break-word;
+}
+
+.logout-btn{
+width:100%;
+padding:14px;
+border-radius:12px;
+background:rgba(239,68,68,.12);
+border:1px solid rgba(239,68,68,.3);
+color:#fca5a5;
+font-weight:600;
+font-size:14.5px;
+cursor:pointer;
+font-family:inherit;
+transition:.25s;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+}
+
+.logout-btn:hover{
+background:rgba(239,68,68,.2);
+transform:translateY(-2px);
+}
+
+.not-logged-in{
+display:none;
+flex-direction:column;
+align-items:center;
+gap:16px;
+}
+
+.not-logged-in.show{
+display:flex;
+}
+
+.account-card.hidden{
+display:none;
+}
+
+.not-logged-icon{
+width:70px;
+height:70px;
+border-radius:50%;
+background:rgba(59,130,246,.15);
+color:#3b82f6;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+margin-bottom:6px;
+}
+
+.not-logged-in h2{
+font-size:20px;
+font-weight:700;
+}
+
+.not-logged-in p{
+font-size:14px;
+color:#94a3b8;
+line-height:1.6;
+}
+
+.signin-link-btn{
+padding:13px 30px;
+border-radius:12px;
+background:#2563eb;
+color:white;
+text-decoration:none;
+font-weight:600;
+font-size:14.5px;
+display:inline-flex;
+align-items:center;
+gap:8px;
+transition:.25s;
+margin-top:6px;
+}
+
+.signin-link-btn:hover{
+background:#1d4ed8;
+transform:translateY(-2px);
+box-shadow:0 10px 25px rgba(37,99,235,.4);
+}
+
+.modal-overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.65);
+backdrop-filter:blur(4px);
+display:flex;
+align-items:center;
+justify-content:center;
+opacity:0;
+visibility:hidden;
+transition:.3s ease;
+z-index:200;
+padding:20px;
+}
+
+.modal-overlay.active{
+opacity:1;
+visibility:visible;
+}
+
+.modal-box{
+width:100%;
+max-width:420px;
+background:linear-gradient(160deg,#0b1220,#0f172a 60%,#0b2f6b);
+border:1px solid rgba(255,255,255,.1);
+border-radius:22px;
+padding:34px 30px;
+box-shadow:0 20px 60px rgba(0,0,0,.5);
+position:relative;
+text-align:center;
+transform:scale(.92);
+transition:.3s ease;
+max-height:85vh;
+overflow-y:auto;
+}
+
+.modal-overlay.active .modal-box{
+transform:scale(1);
+}
+
+.modal-close{
+position:absolute;
+top:14px;
+right:14px;
+width:34px;
+height:34px;
+border-radius:50%;
+background:rgba(255,255,255,.08);
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+font-size:16px;
+transition:.25s;
+}
+
+.modal-close:hover{
+background:#ef4444;
+}
+
+.modal-box h2{
+font-size:20px;
+font-weight:700;
+margin-bottom:22px;
+text-align:center;
+}
+
+.modal-box h2 span{
+color:#3b82f6;
+}
+
+.edit-avatar-wrap{
+position:relative;
+width:100px;
+height:100px;
+margin:0 auto 24px;
+}
+
+.edit-avatar-preview{
+width:100px;
+height:100px;
+border-radius:50%;
+object-fit:cover;
+background:linear-gradient(135deg,#2563eb,#3b82f6);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:34px;
+font-weight:700;
+color:white;
+border:3px solid rgba(59,130,246,.5);
+}
+
+.edit-avatar-upload{
+position:absolute;
+bottom:0;
+right:0;
+width:34px;
+height:34px;
+border-radius:50%;
+background:#2563eb;
+border:3px solid #0f172a;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:13px;
+cursor:pointer;
+transition:.25s;
+}
+
+.edit-avatar-upload:hover{
+background:#1d4ed8;
+}
+
+.edit-avatar-upload input{
+display:none;
+}
+
+.edit-form-group{
+display:flex;
+flex-direction:column;
+gap:7px;
+text-align:left;
+margin-bottom:18px;
+}
+
+.edit-form-group label{
+font-size:12.5px;
+font-weight:600;
+color:#cbd5e1;
+letter-spacing:.3px;
+}
+
+.edit-input-wrap{
+position:relative;
+display:flex;
+align-items:center;
+}
+
+.edit-input-wrap i{
+position:absolute;
+left:16px;
+color:#64748b;
+font-size:14px;
+}
+
+.edit-input-wrap input{
+width:100%;
+padding:13px 16px 13px 42px;
+border-radius:12px;
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.12);
+color:white;
+font-size:14.5px;
+font-family:inherit;
+outline:none;
+transition:.25s;
+}
+
+.edit-input-wrap input:focus{
+border-color:#3b82f6;
+background:rgba(255,255,255,.08);
+box-shadow:0 0 0 3px rgba(59,130,246,.15);
+}
+
+.edit-alert-box{
+padding:12px 14px;
+border-radius:12px;
+font-size:13px;
+font-weight:500;
+line-height:1.5;
+display:none;
+align-items:flex-start;
+gap:10px;
+margin-bottom:16px;
+}
+
+.edit-alert-box.show{
+display:flex;
+}
+
+.edit-alert-box.error{
+background:rgba(239,68,68,.12);
+border:1px solid rgba(239,68,68,.3);
+color:#fca5a5;
+}
+
+.edit-alert-box.success{
+background:rgba(34,197,94,.12);
+border:1px solid rgba(34,197,94,.3);
+color:#86efac;
+}
+
+.edit-alert-box i{
+margin-top:2px;
+flex-shrink:0;
+}
+
+.save-profile-btn{
+width:100%;
+padding:14px;
+border-radius:12px;
+background:#2563eb;
+color:white;
+border:none;
+font-weight:600;
+font-size:15px;
+cursor:pointer;
+font-family:inherit;
+transition:.25s;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+}
+
+.save-profile-btn:hover{
+background:#1d4ed8;
+transform:translateY(-2px);
+box-shadow:0 10px 25px rgba(37,99,235,.4);
+}
+
+.save-profile-btn:disabled{
+opacity:.6;
+cursor:not-allowed;
+transform:none;
+}
+
+@media (max-width:480px){
+.account-card{padding:34px 24px;border-radius:20px;}
+.account-avatar{width:90px;height:90px;font-size:32px;}
+.account-name{font-size:20px;}
+.modal-box{padding:28px 22px;}
+}
+</style>
+</head>
+
+<body>
+
+<a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Back to Home</a>
+
+<div class="account-wrap">
+  <div class="account-card" id="accountCard">
+
+    <img class="account-avatar" id="accountAvatar" alt="Profile">
+
+    <div class="account-name" id="accountName">Loading...</div>
+    <div class="account-email" id="accountEmail"></div>
+
+    <button class="edit-profile-btn" id="editProfileBtn">
+      <i class="fas fa-pen"></i> Edit Profile
+    </button>
+
+    <div class="account-details">
+      <div class="account-row">
+        <i class="fas fa-id-badge"></i>
+        <div>
+          <span class="account-row-label">Full Name</span>
+          <span class="account-row-value" id="detailName">-</span>
+        </div>
+      </div>
+
+      <div class="account-row">
+        <i class="fas fa-envelope"></i>
+        <div>
+          <span class="account-row-label">Email Address</span>
+          <span class="account-row-value" id="detailEmail">-</span>
+        </div>
+      </div>
+
+      <div class="account-row">
+        <i class="fas fa-calendar-check"></i>
+        <div>
+          <span class="account-row-label">Member Since</span>
+          <span class="account-row-value" id="detailJoined">-</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="logout-btn" id="logoutBtn">
+      <i class="fas fa-right-from-bracket"></i> Sign Out
+    </button>
+
+  </div>
+
+  <div class="account-card not-logged-in" id="notLoggedIn">
+    <div class="not-logged-icon"><i class="fas fa-user-lock"></i></div>
+    <h2>You're Not Signed In</h2>
+    <p>Sign in to your Doroi account to view your profile details.</p>
+    <a href="auth.html" class="signin-link-btn"><i class="fas fa-right-to-bracket"></i> Sign In</a>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editProfileModal">
+  <div class="modal-box">
+    <div class="modal-close" data-close="editProfileModal"><i class="fas fa-times"></i></div>
+    <h2><span>Edit</span> Profile</h2>
+
+    <div class="edit-alert-box" id="editAlertBox">
+      <i class="fas fa-circle-exclamation"></i>
+      <span id="editAlertText"></span>
+    </div>
+
+    <div class="edit-avatar-wrap">
+      <img class="edit-avatar-preview" id="editAvatarPreview" alt="Profile preview">
+      <label class="edit-avatar-upload" for="avatarFileInput">
+        <i class="fas fa-camera"></i>
+        <input type="file" id="avatarFileInput" accept="image/*">
+      </label>
+    </div>
+
+    <div class="edit-form-group">
+      <label>Full Name</label>
+      <div class="edit-input-wrap">
+        <i class="fas fa-user"></i>
+        <input type="text" id="editNameInput" placeholder="Your full name">
+      </div>
+    </div>
+
+    <button class="save-profile-btn" id="saveProfileBtn">
+      <i class="fas fa-check"></i> Save Changes
+    </button>
+  </div>
+</div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
