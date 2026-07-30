@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Apps — Doroi</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="container nav__inner">
+    <a href="index.html" class="nav__logo">
+      <img src="logo.png" alt="Doroi" class="nav__logo-img"> DOROI
+    </a>
+    <div class="nav__spacer"></div>
+    <div class="nav__auth" id="navAuth">
+      <a href="auth.html" class="btn btn--nav" id="navAuthCta">SIGN UP FREE</a>
+    </div>
+  </div>
+</header>
+
+<section class="apps-hero">
+  <div class="container apps-hero__inner">
+    <p class="eyebrow"><span class="eyebrow__dot"></span> BUILT &amp; MAINTAINED BY DOROI</p>
+    <h1 class="apps-hero__title">
+      Our Apps, <span class="text-dim">live and shipping.</span>
+    </h1>
+    <p class="section-sub">
+      Native Android apps we've designed, built and kept running.
+      Every entry below is a real release, not a mockup.
+    </p>
+  </div>
+</section>
+
+<section class="apps-grid-section">
+  <div class="container">
+    <div class="apps-grid" id="appsGrid">
+
+      <article class="app-card" data-category="android">
+        <div class="app-card__icon">◧</div>
+        <div class="app-card__body">
+          <span class="app-card__badge">ANDROID</span>
+          <h3>FieldTrack</h3>
+          <p>Offline-first field operations app for teams working without reliable connectivity.</p>
+          <div class="app-card__meta">
+            <span>★ 4.7</span>
+            <span>10K+ installs</span>
+          </div>
+        </div>
+        <div class="app-card__actions">
+          <a href="#" class="btn btn--small btn--primary">VIEW ON PLAY STORE →</a>
+        </div>
+      </article>
+
+      <article class="app-card" data-category="android">
+        <div class="app-card__icon">◪</div>
+        <div class="app-card__body">
+          <span class="app-card__badge">ANDROID</span>
+          <h3>ReportLite</h3>
+          <p>A visual, sharp tool that narrows a weekly manual report from hours to minutes.</p>
+          <div class="app-card__meta">
+            <span>★ 4.5</span>
+            <span>Beta · 50 testers</span>
+          </div>
+        </div>
+        <div class="app-card__actions">
+          <a href="#" class="btn btn--small btn--primary">JOIN BETA →</a>
+        </div>
+      </article>
+
+      <article class="app-card" data-category="android">
+        <div class="app-card__icon">◧</div>
+        <div class="app-card__body">
+          <span class="app-card__badge">ANDROID</span>
+          <h3>DailyUtility</h3>
+          <p>A focused Android utility built around one clear, everyday job.</p>
+          <div class="app-card__meta">
+            <span>★ 4.8</span>
+            <span>Beta · 50 testers live</span>
+          </div>
+        </div>
+        <div class="app-card__actions">
+          <a href="#" class="btn btn--small btn--primary">VIEW ON PLAY STORE →</a>
+        </div>
+      </article>
+
+    </div>
+
+    <p class="apps-empty" id="appsEmpty" hidden>No apps match this filter yet.</p>
+  </div>
+</section>
+
+<section class="apps-cta">
+  <div class="container apps-cta__inner">
+    <div>
+      <h2 class="section-title">Want early access<br><span class="text-dim">to what we build?</span></h2>
+      <p class="section-sub">Create a free account and get notified the moment a new app or beta goes live.</p>
+    </div>
+    <a href="auth.html" class="btn btn--primary">SIGN UP FREE →</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <a href="index.html" class="nav__logo"><img src="logo.png" alt="Doroi" class="nav__logo-img"> DOROI</a>
+      <p>Software &amp; Android studio. We design, build and
+        maintain software people can actually rely on.</p>
+    </div>
+    <div class="footer__col">
+      <h4>DISCIPLINES</h4>
+      <span class="footer__static">Android Apps</span>
+    </div>
+    <div class="footer__col">
+      <h4>ACCOUNT</h4>
+      <a href="auth.html">Sign Up</a>
+      <a href="auth.html">Log In</a>
+    </div>
+    <div class="footer__col">
+      <h4>CONTACT</h4>
+      <a href="mailto:hello@doroi.dev">hello@doroi.dev</a>
+      <a href="tel:+9779800000000">+977 980-000-0000</a>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div class="container footer__bottom-inner">
+      <span>© 2026 DOROI — ALL RIGHTS RESERVED</span>
+      <span>DESIGNED &amp; ENGINEERED IN-HOUSE</span>
+    </div>
+  </div>
+  <div class="footer__wordmark">DOROI</div>
+</footer>
+
+<button class="scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
