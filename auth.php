@@ -6,13 +6,12 @@
 <title>Sign Up — Doroi</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="app.css">
 </head>
 <body class="auth-body">
 
 <header class="nav" id="nav">
   <div class="container nav__inner">
-    <a href="index.html" class="nav__logo">
+    <a href="index.php" class="nav__logo">
       <img src="logo.png" alt="Doroi" class="nav__logo-img" width="26" height="26"> DOROI
     </a>
   </div>
@@ -48,6 +47,52 @@
           </button>
         </div>
       </label>
+
+      <label class="auth__check">
+        <input type="checkbox" id="isDoroiMember" name="isDoroiMember">
+        <span>I'M A DEVELOPER</span>
+      </label>
+
+      <div class="auth__member-panel" id="memberPanel" hidden>
+
+        <label>
+          <span>ACCESS TOKEN</span>
+          <div class="auth__token-wrap">
+            <input type="text" id="accessToken" placeholder="Enter access token" autocomplete="off">
+            <button type="button" class="btn btn--primary btn--small" id="verifyTokenBtn">VERIFY</button>
+          </div>
+        </label>
+        <p class="auth__note" id="tokenNote"></p>
+
+        <div class="auth__role-section" id="roleSection" hidden>
+          <div class="auth__detected-role">
+            <span class="auth__spec-label">DETECTED ROLE</span>
+            <span class="auth__role-badge" id="detectedRoleBadge">—</span>
+          </div>
+
+          <div class="auth__specialization">
+            <span class="auth__spec-label">CHOOSE SPECIALIST (SELECT ALL THAT APPLY)</span>
+            <div class="auth__chip-group" id="specialistChips">
+              <label class="auth__chip">
+                <input type="checkbox" name="specialist" value="android"><span>Android App Developer</span>
+              </label>
+              <label class="auth__chip">
+                <input type="checkbox" name="specialist" value="ios"><span>iOS Developer</span>
+              </label>
+              <label class="auth__chip">
+                <input type="checkbox" name="specialist" value="web"><span>Web Developer</span>
+              </label>
+              <label class="auth__chip">
+                <input type="checkbox" name="specialist" value="uiux"><span>UI/UX Developer</span>
+              </label>
+              <label class="auth__chip">
+                <input type="checkbox" name="specialist" value="vibecoder"><span>Vibe Coder</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
 
       <button type="submit" class="btn btn--primary btn--block" id="signupSubmit">SIGN UP FREE →</button>
 
@@ -89,7 +134,8 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="firebase.js"></script>
-<script src="app.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

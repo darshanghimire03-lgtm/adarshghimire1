@@ -6,18 +6,17 @@
 <title>Our Apps — Doroi</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="app.css">
 </head>
 <body>
 
 <header class="nav" id="nav">
   <div class="container nav__inner">
-    <a href="index.html" class="nav__logo">
+    <a href="index.php" class="nav__logo">
       <img src="logo.png" alt="Doroi" class="nav__logo-img" width="26" height="26"> DOROI
     </a>
     <div class="nav__spacer"></div>
     <div class="nav__auth" id="navAuth">
-      <a href="auth.html" class="btn btn--nav" id="navAuthCta">SIGN UP FREE</a>
+      <a href="auth.php" class="btn btn--nav" id="navAuthCta">SIGN UP FREE</a>
     </div>
   </div>
 </header>
@@ -99,14 +98,14 @@
       <h2 class="section-title">Want early access<br><span class="text-dim">to what we build?</span></h2>
       <p class="section-sub">Create a free account and get notified the moment a new app or beta goes live.</p>
     </div>
-    <a href="auth.html" class="btn btn--primary">SIGN UP FREE →</a>
+    <a href="auth.php" class="btn btn--primary">SIGN UP FREE →</a>
   </div>
 </section>
 
 <footer class="footer">
   <div class="container footer__inner">
     <div class="footer__brand">
-      <a href="index.html" class="nav__logo"><img src="logo.png" alt="Doroi" class="nav__logo-img" width="26" height="26"> DOROI</a>
+      <a href="index.php" class="nav__logo"><img src="logo.png" alt="Doroi" class="nav__logo-img" width="26" height="26"> DOROI</a>
       <p>Software &amp; Android studio. We design, build and
         maintain software people can actually rely on.</p>
     </div>
@@ -116,8 +115,8 @@
     </div>
     <div class="footer__col">
       <h4>ACCOUNT</h4>
-      <a href="auth.html">Sign Up</a>
-      <a href="auth.html">Log In</a>
+      <a href="auth.php">Sign Up</a>
+      <a href="auth.php">Log In</a>
     </div>
     <div class="footer__col">
       <h4>CONTACT</h4>
@@ -138,7 +137,8 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="firebase.js"></script>
-<script src="app.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

@@ -1,11 +1,10 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyBv7MKmb2aevcaFOajr02DmBF7JNxNxIDw",
-  authDomain: "dozo-3ad6f.firebaseapp.com",
-  databaseURL: "https://dozo-3ad6f-default-rtdb.firebaseio.com",
-  projectId: "dozo-3ad6f",
-  storageBucket: "dozo-3ad6f.firebasestorage.app",
-  messagingSenderId: "843093561816",
-  appId: "1:843093561816:web:6ab6a609c0c393a50b62ad"
+  apiKey: "AIzaSyAeoQSz4wpif0vnFABhUBB3nHb4uPo6X58",
+  authDomain: "doroi-9d248.firebaseapp.com",
+  projectId: "doroi-9d248",
+  storageBucket: "doroi-9d248.firebasestorage.app",
+  messagingSenderId: "713787321576",
+  appId: "1:713787321576:web:b580da0e7db5d271616d5d"
 };
 
 firebase.initializeApp(firebaseConfig);

@@ -18,7 +18,7 @@
     <nav class="nav__links">
       <a href="#work">WORK &amp; PROCESS</a>
       <a href="#studio">THE STUDIO</a>
-      <a href="apps.html">OUR APPS</a>
+      <a href="app.php">OUR APPS</a>
       <a href="#contact">CONTACT</a>
     </nav>
     <a href="#contact" class="btn btn--nav">PLAN UP</a>
@@ -29,7 +29,7 @@
   <div class="nav__mobile" id="navMobile">
     <a href="#work">WORK &amp; PROCESS</a>
     <a href="#studio">THE STUDIO</a>
-    <a href="apps.html">OUR APPS</a>
+    <a href="app.php">OUR APPS</a>
     <a href="#contact">CONTACT</a>
     <a href="#contact" class="btn btn--nav btn--block">PLAN UP</a>
   </div>
@@ -487,7 +487,7 @@
     <div class="footer__col">
       <h4>STUDIO</h4>
       <a href="#work">Work</a>
-      <a href="apps.html">Our Apps</a>
+      <a href="app.php">Our Apps</a>
       <a href="#studio">About</a>
     </div>
     <div class="footer__col">
