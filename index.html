@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Durbar — Home</title>
+<meta name="description" content="Temporary web access to Durbar — For your Higher education." />
+
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="apple-touch-icon" href="favicon.png" />
+<meta name="theme-color" content="#0F1B33" />
+
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="bridge-banner">
+  This is a <strong>temporary website</strong> for Durbar students while the app is being fixed — read-only.
+  <div class="stitch"></div>
+</div>
+
+<!-- ===================== HOME VIEW ===================== -->
+<div id="view-home" class="app-view">
+
+  <div class="feed-header">
+    <div class="brandblock">
+      <div class="brandname">Durbar</div>
+      <div class="brandsub">For your Higher education</div>
+    </div>
+    <img src="favicon.png" alt="" class="avatar" id="headerAvatar" style="display:none;" />
+  </div>
+
+  <section class="list-section" style="margin-top:6px;">
+    <div id="stateBox" class="state-box">
+      <div class="spinner" id="stateSpinner"></div>
+      <div class="glyph" id="stateGlyph" style="display:none;">—</div>
+      <h2 id="stateTitle">Loading feed…</h2>
+      <p id="stateBody">Fetching the latest posts.</p>
+    </div>
+
+    <div class="feed-list" id="feedList" style="padding:0; margin-top:0;"></div>
+  </section>
+
+</div>
+
+<!-- ===================== SUBJECTS VIEW ===================== -->
+<div id="view-subjects" class="app-view" style="display:none;">
+
+  <header class="site-header">
+    <img src="favicon.png" alt="Durbar app icon" class="app-icon" />
+    <div class="brandblock">
+      <div class="brandname">Durbar Notes</div>
+      <div class="brandsub">A bridge, not a replacement</div>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="eyebrow">Step 1 of 3</div>
+    <h1>Pick a subject</h1>
+    <p class="lede">Choose a subject to see its units, then open a unit to read its notes. Nothing here can be edited or uploaded — it's view-only until the app is back.</p>
+  </section>
+
+  <section class="list-section">
+    <div class="card-grid" id="subjectGrid"></div>
+  </section>
+
+  <footer class="site-footer">
+    Durbar Notes · temporary web bridge · notes are read-only here
+  </footer>
+
+</div>
+
+<!-- ===================== PROFILE VIEW ===================== -->
+<div id="view-profile" class="app-view" style="display:none;">
+
+  <header class="site-header">
+    <img src="favicon.png" alt="Durbar app icon" class="app-icon" />
+    <div class="brandblock">
+      <div class="brandname">Durbar</div>
+      <div class="brandsub">For your Higher education</div>
+    </div>
+  </header>
+
+  <!-- Signed-in state -->
+  <div class="profile-hero" id="signedInHero" style="display:none;">
+    <img src="favicon.png" alt="" class="avatar-lg" id="heroAvatar" />
+    <div>
+      <h1 id="heroName">—</h1>
+      <p id="heroEmail">—</p>
+    </div>
+  </div>
+
+  <div class="profile-section" id="signedInSection" style="display:none;">
+    <h2>Account</h2>
+    <div class="signed-in-card">
+      <img src="favicon.png" alt="" class="avatar-md" id="cardAvatar" />
+      <div class="who">
+        <div class="name" id="cardName">—</div>
+        <div class="email" id="cardEmail">—</div>
+      </div>
+      <button class="signout-btn" id="signOutBtn" type="button">Sign out</button>
+    </div>
+  </div>
+
+  <!-- Signed-out state: guest hero + auth card -->
+  <div class="profile-hero" id="guestHero">
+    <img src="favicon.png" alt="" class="avatar-lg" />
+    <div>
+      <h1>Guest visitor</h1>
+      <p>Sign in to see your profile</p>
+    </div>
+  </div>
+
+  <div class="profile-section" id="authSection">
+    <h2 id="authHeading">Sign in or create an account</h2>
+
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="tabLogin">Log in</button>
+        <button type="button" class="auth-tab" id="tabSignup">Sign up</button>
+      </div>
+
+      <div class="auth-message" id="authMessage"></div>
+
+      <!-- Log in -->
+      <form class="auth-form" id="loginForm" autocomplete="on">
+        <div class="field">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" name="email" placeholder="you@example.com" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" name="password" placeholder="••••••••" required autocomplete="current-password" minlength="6" />
+        </div>
+        <button type="submit" class="auth-submit" id="loginSubmit">Log in</button>
+        <div class="auth-switch">Don't have an account? <button type="button" id="switchToSignup">Sign up</button></div>
+      </form>
+
+      <!-- Sign up -->
+      <form class="auth-form hidden" id="signupForm" autocomplete="on">
+        <div class="field">
+          <label for="signupName">Full name</label>
+          <input type="text" id="signupName" name="name" placeholder="Your name" required autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" name="email" placeholder="you@example.com" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="signupPassword">Password</label>
+          <input type="password" id="signupPassword" name="password" placeholder="••••••••" required autocomplete="new-password" minlength="6" />
+          <span class="field-hint">At least 6 characters.</span>
+        </div>
+        <button type="submit" class="auth-submit" id="signupSubmit">Create account</button>
+        <div class="auth-switch">Already have an account? <button type="button" id="switchToLogin">Log in</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="profile-section">
+    <h2>About this site</h2>
+    <div class="info-card">
+      <div class="info-row"><span class="label">Site</span><span class="value">Durbar Notes (web bridge)</span></div>
+      <div class="info-row"><span class="label">Mode</span><span class="value">Read-only notes, live sign-in</span></div>
+      <div class="info-row"><span class="label">Data source</span><span class="value">Durbar Firebase database</span></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    Durbar Notes · temporary web bridge · notes are read-only here
+  </footer>
+
+</div>
+
+<!-- ===================== BOTTOM NAV ===================== -->
+<nav class="bottom-nav" aria-label="Primary">
+  <div class="nav-row">
+    <a href="#home" class="nav-link active" data-view="home">
+      <svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"/></svg>
+      Home
+    </a>
+    <a href="#subjects" class="nav-link" data-view="subjects">
+      <svg viewBox="0 0 24 24"><path d="M4 5.5C4 4.67 4.67 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5v-13Z"/><path d="M20 5.5c0-.83-.67-1.5-1.5-1.5H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5v-13Z"/></svg>
+      Subject
+    </a>
+    <a href="#profile" class="nav-link" data-view="profile">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.3-3.5 4.2-5.5 7.5-5.5s6.2 2 7.5 5.5"/></svg>
+      Profile
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+  import {
+    getAuth,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    updateProfile,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCumgad3NpIBi94q4MwHpq9kHq4cuuSkoQ",
+    authDomain: "darbarhigh-4c642.firebaseapp.com",
+    databaseURL: "https://darbarhigh-4c642-default-rtdb.firebaseio.com",
+    projectId: "darbarhigh-4c642",
+    storageBucket: "darbarhigh-4c642.firebasestorage.app",
+    messagingSenderId: "451147040929",
+    appId: "1:451147040929:web:c105a00233209c5c05c8e0"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const auth = getAuth(app);
+
+  /* =========================================================
+     VIEW ROUTER — switches between Home / Subjects / Profile
+     without navigating away from index.html
+  ========================================================= */
+  const views = {
+    home: document.getElementById("view-home"),
+    subjects: document.getElementById("view-subjects"),
+    profile: document.getElementById("view-profile")
+  };
+  const navLinks = document.querySelectorAll(".bottom-nav .nav-link");
+
+  const titles = {
+    home: "Durbar — Home",
+    subjects: "Durbar — Subjects",
+    profile: "Durbar — Profile"
+  };
+
+  let subjectsLoaded = false;
+  let feedLoaded = false;
+
+  function showView(name) {
+    if (!views[name]) name = "home";
+
+    Object.keys(views).forEach((key) => {
+      views[key].style.display = key === name ? "" : "none";
+    });
+
+    navLinks.forEach((link) => {
+      link.classList.toggle("active", link.dataset.view === name);
+    });
+
+    document.title = titles[name] || titles.home;
+
+    // Lazy-load each view's data the first time it's opened.
+    if (name === "home" && !feedLoaded) {
+      feedLoaded = true;
+      loadFeed();
+    }
+    if (name === "subjects" && !subjectsLoaded) {
+      subjectsLoaded = true;
+      renderSubjects(SUBJECTS);
+    }
+  }
+
+  function routeFromHash() {
+    const hash = (window.location.hash || "#home").replace("#", "");
+    showView(hash);
+  }
+
+  navLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const name = link.dataset.view;
+      if (window.location.hash !== `#${name}`) {
+        window.location.hash = name;
+      } else {
+        showView(name);
+      }
+    });
+  });
+
+  window.addEventListener("hashchange", routeFromHash);
+
+  /* =========================================================
+     HOME — feed
+  ========================================================= */
+  const headerAvatar = document.getElementById("headerAvatar");
+  onAuthStateChanged(auth, (user) => {
+    if (user && user.photoURL) {
+      headerAvatar.src = user.photoURL;
+      headerAvatar.onerror = () => { headerAvatar.style.display = "none"; };
+      headerAvatar.style.display = "";
+    } else {
+      // Not signed in (or signed in with no photo yet) — hide the
+      // header avatar entirely instead of showing the favicon.
+      headerAvatar.style.display = "none";
+    }
+  });
+
+  const feedList = document.getElementById("feedList");
+  const stateBox = document.getElementById("stateBox");
+  const stateSpinner = document.getElementById("stateSpinner");
+  const stateGlyph = document.getElementById("stateGlyph");
+  const stateTitle = document.getElementById("stateTitle");
+  const stateBody = document.getElementById("stateBody");
+
+  function showState(kind, title, body) {
+    stateBox.style.display = "block";
+    feedList.innerHTML = "";
+    if (kind === "loading") {
+      stateSpinner.style.display = "block";
+      stateGlyph.style.display = "none";
+    } else {
+      stateSpinner.style.display = "none";
+      stateGlyph.style.display = "block";
+      stateGlyph.textContent = kind === "empty" ? "—" : "!";
+    }
+    stateTitle.textContent = title;
+    stateBody.textContent = body;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str || "";
+    return div.innerHTML;
+  }
+
+  function timeAgo(ts) {
+    if (!ts) return "";
+    const diff = Date.now() - ts;
+    const day = 86400000;
+    if (diff < 0) return new Date(ts).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    const days = Math.floor(diff / day);
+    if (days < 1) {
+      const hrs = Math.floor(diff / 3600000);
+      if (hrs < 1) {
+        const mins = Math.max(1, Math.floor(diff / 60000));
+        return `${mins} min${mins === 1 ? "" : "s"} ago`;
+      }
+      return `${hrs} hour${hrs === 1 ? "" : "s"} ago`;
+    }
+    if (days < 7) return `${days} day${days === 1 ? "" : "s"} ago`;
+    return new Date(ts).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  }
+
+  const badgeSvg = `<span class="post-badge"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>`;
+
+  const userCache = new Map();
+
+  async function getUserProfile(uid) {
+    if (!uid) return null;
+    if (userCache.has(uid)) return userCache.get(uid);
+    try {
+      const snap = await get(ref(db, `users/${uid}`));
+      const val = snap.val() || null;
+      userCache.set(uid, val);
+      return val;
+    } catch {
+      userCache.set(uid, null);
+      return null;
+    }
+  }
+
+  function postCardHtml(post) {
+    const role = (post.role || "student").toLowerCase();
+    const isVerified = role === "professor" || role === "teacher" || role === "admin";
+    const name = post.name || "Anonymous";
+    const avatar = post.avatarUrl || "favicon.png";
+    const text = post.text || "";
+    const createdAt = post.createdAt || 0;
+    const subject = post.subject || "";
+
+    return `
+      <div class="post-head">
+        <img class="post-avatar" src="${escapeHtml(avatar)}" alt="" onerror="this.src='favicon.png'" />
+        <div class="post-who">
+          <div class="post-name-row">
+            <span class="post-name">${escapeHtml(name)}</span>
+            ${isVerified ? badgeSvg : ""}
+          </div>
+          <div class="post-role role-${role === "professor" || role === "teacher" ? "professor" : "student"}">${escapeHtml(role)}</div>
+        </div>
+        <div class="post-time">${timeAgo(createdAt)}</div>
+      </div>
+      ${text ? `<div class="post-body">${escapeHtml(text)}</div>` : ""}
+      ${subject ? `<span class="post-subject-tag">${escapeHtml(subject)}</span>` : ""}
+    `;
+  }
+
+  async function render(posts) {
+    feedList.innerHTML = "";
+    if (posts.length === 0) {
+      showState("empty", "No posts yet", "Nothing has been shared yet. Check back soon.");
+      return;
+    }
+    stateBox.style.display = "none";
+
+    for (const post of posts) {
+      // Widen the set of fields we'll accept as the author's UID —
+      // different write paths in the app have used different key names.
+      const authorId =
+        post.userId || post.authorId || post.uid || post.ownerId ||
+        post.postedBy || post.createdBy || post.senderId || "";
+
+      let name = post.name || post.authorName || post.author || post.userName || "";
+      let avatar = post.avatarUrl || post.photoUrl || post.userPhoto || post.photoURL || post.userAvatar || "";
+      let role = post.role || post.userRole || "";
+
+      // Fall back to the author's stored profile when the post itself
+      // doesn't carry a name/photo/role inline.
+      if (authorId && (!name || !avatar || !role)) {
+        const profile = await getUserProfile(authorId);
+        if (profile) {
+          name = name || profile.name || profile.displayName || "";
+          avatar = avatar || profile.photoUrl || profile.avatarUrl || profile.photoURL || profile.photoUrl2 || profile.imageUrl || "";
+          role = role || profile.role || "";
+        }
+      }
+
+      const card = document.createElement("div");
+      card.className = "post-card";
+      card.innerHTML = postCardHtml({
+        name: name || "Anonymous",
+        avatarUrl: avatar || "favicon.png",
+        role: (role || "student").toLowerCase(),
+        text: post.text || post.content || post.message || post.body || "",
+        createdAt: post.createdAt || post.timestamp || post.postedAt || 0,
+        subject: post.subject || post.subjectName || ""
+      });
+      feedList.appendChild(card);
+    }
+  }
+
+  async function loadFeed() {
+    showState("loading", "Loading feed…", "Fetching the latest posts.");
+    try {
+      const snap = await get(ref(db, "posts"));
+      const val = snap.val();
+      if (!val) {
+        await render([]);
+        return;
+      }
+      const posts = Object.keys(val).map(id => ({ id, ...val[id] }));
+      posts.sort((a, b) => (b.createdAt || b.timestamp || 0) - (a.createdAt || a.timestamp || 0));
+      await render(posts);
+    } catch (err) {
+      showState("error", "Couldn't load feed", err && err.message ? err.message : "Something went wrong while reading from the database.");
+    }
+  }
+
+  /* =========================================================
+     SUBJECTS
+  ========================================================= */
+  const SUBJECTS = ["Economic", "Account", "Computer Science", "English", "Nepali"];
+
+  function sanitizeKey(raw) {
+    return raw.replace(/[.#$\[\]]/g, "_");
+  }
+
+  const subjectGrid = document.getElementById("subjectGrid");
+
+  function renderSubjects(list) {
+    subjectGrid.innerHTML = "";
+    if (list.length === 0) {
+      subjectGrid.innerHTML = `
+        <div class="state-box" style="grid-column:1/-1;">
+          <div class="glyph">—</div>
+          <h2>No subjects yet</h2>
+          <p>Check back soon.</p>
+        </div>`;
+      return;
+    }
+    list.forEach((name, i) => {
+      const a = document.createElement("a");
+      a.className = "item-card";
+      a.href = `unit.html?subject=${encodeURIComponent(name)}&key=${encodeURIComponent(sanitizeKey(name))}`;
+      a.innerHTML = `
+        <span class="idx">${String(i + 1).padStart(2, "0")}</span>
+        <span class="arrow">→</span>
+        <h3>${name}</h3>
+        <div class="meta">View units</div>
+      `;
+      subjectGrid.appendChild(a);
+    });
+  }
+
+  /* =========================================================
+     PROFILE — auth
+  ========================================================= */
+  const signedInHero = document.getElementById("signedInHero");
+  const signedInSection = document.getElementById("signedInSection");
+  const guestHero = document.getElementById("guestHero");
+  const authSection = document.getElementById("authSection");
+
+  const heroAvatar = document.getElementById("heroAvatar");
+  const heroName = document.getElementById("heroName");
+  const heroEmail = document.getElementById("heroEmail");
+  const cardAvatar = document.getElementById("cardAvatar");
+  const cardName = document.getElementById("cardName");
+  const cardEmail = document.getElementById("cardEmail");
+  const signOutBtn = document.getElementById("signOutBtn");
+
+  const tabLogin = document.getElementById("tabLogin");
+  const tabSignup = document.getElementById("tabSignup");
+  const loginForm = document.getElementById("loginForm");
+  const signupForm = document.getElementById("signupForm");
+  const switchToSignup = document.getElementById("switchToSignup");
+  const switchToLogin = document.getElementById("switchToLogin");
+  const authMessage = document.getElementById("authMessage");
+  const loginSubmit = document.getElementById("loginSubmit");
+  const signupSubmit = document.getElementById("signupSubmit");
+
+  function showLogin() {
+    tabLogin.classList.add("active");
+    tabSignup.classList.remove("active");
+    loginForm.classList.remove("hidden");
+    signupForm.classList.add("hidden");
+    hideMessage();
+  }
+
+  function showSignup() {
+    tabSignup.classList.add("active");
+    tabLogin.classList.remove("active");
+    signupForm.classList.remove("hidden");
+    loginForm.classList.add("hidden");
+    hideMessage();
+  }
+
+  tabLogin.addEventListener("click", showLogin);
+  tabSignup.addEventListener("click", showSignup);
+  switchToSignup.addEventListener("click", showSignup);
+  switchToLogin.addEventListener("click", showLogin);
+
+  function showMessage(text, kind) {
+    authMessage.textContent = text;
+    authMessage.className = `auth-message show ${kind}`;
+  }
+
+  function hideMessage() {
+    authMessage.className = "auth-message";
+    authMessage.textContent = "";
+  }
+
+  function friendlyAuthError(err) {
+    const code = err && err.code ? err.code : "";
+    switch (code) {
+      case "auth/invalid-email": return "That email address doesn't look right.";
+      case "auth/user-not-found": return "No account found with that email.";
+      case "auth/wrong-password": return "Incorrect password. Try again.";
+      case "auth/invalid-credential": return "Email or password is incorrect.";
+      case "auth/email-already-in-use": return "An account with that email already exists — try logging in instead.";
+      case "auth/weak-password": return "Password should be at least 6 characters.";
+      case "auth/too-many-requests": return "Too many attempts. Please wait a moment and try again.";
+      case "auth/network-request-failed": return "Network error — check your connection and try again.";
+      default: return (err && err.message) ? err.message : "Something went wrong. Please try again.";
+    }
+  }
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideMessage();
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    loginSubmit.disabled = true;
+    loginSubmit.textContent = "Logging in…";
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      showMessage("Logged in successfully.", "success");
+      loginForm.reset();
+    } catch (err) {
+      showMessage(friendlyAuthError(err), "error");
+    } finally {
+      loginSubmit.disabled = false;
+      loginSubmit.textContent = "Log in";
+    }
+  });
+
+  signupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideMessage();
+    const name = document.getElementById("signupName").value.trim();
+    const email = document.getElementById("signupEmail").value.trim();
+    const password = document.getElementById("signupPassword").value;
+
+    signupSubmit.disabled = true;
+    signupSubmit.textContent = "Creating account…";
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(cred.user, { displayName: name });
+
+      // Mirror a basic profile into the database so posts/avatars can
+      // resolve name + role consistently with the rest of the app.
+      try {
+        await set(ref(db, `users/${cred.user.uid}`), {
+          name,
+          email,
+          role: "student",
+          createdAt: Date.now()
+        });
+      } catch { /* non-fatal if database rules block writes here */ }
+
+      showMessage("Account created — you're now signed in.", "success");
+      signupForm.reset();
+    } catch (err) {
+      showMessage(friendlyAuthError(err), "error");
+    } finally {
+      signupSubmit.disabled = false;
+      signupSubmit.textContent = "Create account";
+    }
+  });
+
+  signOutBtn.addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  async function applySignedIn(user) {
+    let role = "";
+    try {
+      const snap = await get(ref(db, `users/${user.uid}/role`));
+      role = snap.val() || "";
+    } catch { /* ignore */ }
+
+    const name = user.displayName || (user.email ? user.email.split("@")[0] : "Member");
+    const avatar = user.photoURL || "favicon.png";
+
+    heroAvatar.src = avatar;
+    heroAvatar.onerror = () => { heroAvatar.src = "favicon.png"; };
+    heroName.textContent = name;
+    heroEmail.textContent = role ? `${user.email} · ${role}` : (user.email || "");
+
+    cardAvatar.src = avatar;
+    cardAvatar.onerror = () => { cardAvatar.src = "favicon.png"; };
+    cardName.textContent = name;
+    cardEmail.textContent = user.email || "";
+
+    signedInHero.style.display = "flex";
+    signedInSection.style.display = "block";
+    guestHero.style.display = "none";
+    authSection.style.display = "none";
+  }
+
+  function applySignedOut() {
+    signedInHero.style.display = "none";
+    signedInSection.style.display = "none";
+    guestHero.style.display = "flex";
+    authSection.style.display = "block";
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      applySignedIn(user);
+    } else {
+      applySignedOut();
+    }
+  });
+
+  /* =========================================================
+     BOOT
+  ========================================================= */
+  routeFromHash();
+</script>
+
+</body>
+</html>

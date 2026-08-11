@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Durbar Notes</title>
+<meta name="description" content="Temporary web access to Durbar student notes while the app is being fixed." />
+
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="apple-touch-icon" href="favicon.png" />
+<meta name="theme-color" content="#0F1B33" />
+
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="bridge-banner">
+  This is a <strong>temporary website</strong> for Durbar students while the app is being fixed — notes only, read-only.
+  <div class="stitch"></div>
+</div>
+
+<header class="site-header">
+  <img src="favicon.png" alt="Durbar app icon" class="app-icon" />
+  <div class="brandblock">
+    <div class="brandname">Durbar Notes</div>
+    <div class="brandsub">A bridge, not a replacement</div>
+  </div>
+</header>
+
+<nav class="crumbs" aria-label="Breadcrumb">
+  <a href="index.html">Home</a>
+  <span class="sep">/</span>
+  <a href="subjects.html">Subjects</a>
+  <span class="sep">/</span>
+  <a href="#" id="crumbUnitBack">Loading…</a>
+  <span class="sep">/</span>
+  <span class="current" id="crumbUnit">Loading…</span>
+</nav>
+
+<section class="page-hero">
+  <div class="eyebrow">Step 3 of 3</div>
+  <h1 id="unitTitle">Loading…</h1>
+  <p class="lede">Notes, PDFs, photos, and video links for this unit. Tap an attachment to open it in a new tab.</p>
+</section>
+
+<div class="search-row">
+  <input
+    type="text"
+    class="search-input"
+    id="noteSearch"
+    placeholder="Search notes…"
+    autocomplete="off"
+    disabled
+  />
+</div>
+
+<section class="list-section">
+  <div id="stateBox" class="state-box">
+    <div class="spinner" id="stateSpinner"></div>
+    <div class="glyph" id="stateGlyph" style="display:none;">—</div>
+    <h2 id="stateTitle">Loading notes…</h2>
+    <p id="stateBody">Fetching notes for this unit.</p>
+  </div>
+
+  <div id="noteList"></div>
+</section>
+
+<footer class="site-footer">
+  Durbar Notes · temporary web bridge · notes are read-only here
+</footer>
+
+<nav class="bottom-nav" aria-label="Primary">
+  <div class="nav-row">
+    <a href="index.html">
+      <svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"/></svg>
+      Home
+    </a>
+    <a href="subjects.html" class="active">
+      <svg viewBox="0 0 24 24"><path d="M4 5.5C4 4.67 4.67 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5v-13Z"/><path d="M20 5.5c0-.83-.67-1.5-1.5-1.5H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5v-13Z"/></svg>
+      Subject
+    </a>
+    <a href="profile.html">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.3-3.5 4.2-5.5 7.5-5.5s6.2 2 7.5 5.5"/></svg>
+      Profile
+    </a>
+  </div>
+</nav>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCumgad3NpIBi94q4MwHpq9kHq4cuuSkoQ",
+    authDomain: "darbarhigh-4c642.firebaseapp.com",
+    databaseURL: "https://darbarhigh-4c642-default-rtdb.firebaseio.com",
+    projectId: "darbarhigh-4c642",
+    storageBucket: "darbarhigh-4c642.firebasestorage.app",
+    messagingSenderId: "451147040929",
+    appId: "1:451147040929:web:c105a00233209c5c05c8e0"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const params = new URLSearchParams(window.location.search);
+  const subjectName = params.get("subject") || "Subject";
+  const subjectKey = params.get("key") || subjectName.replace(/[.#$\[\]]/g, "_");
+  const unitId = params.get("unitId") || "";
+  const unitName = params.get("unitName") || "Unit";
+
+  document.title = `Durbar Notes — ${unitName}`;
+  document.getElementById("unitTitle").textContent = unitName;
+  document.getElementById("crumbUnit").textContent = unitName;
+
+  const backLink = document.getElementById("crumbUnitBack");
+  backLink.textContent = subjectName;
+  backLink.href = `unit.html?subject=${encodeURIComponent(subjectName)}&key=${encodeURIComponent(subjectKey)}`;
+
+  const noteList = document.getElementById("noteList");
+  const searchInput = document.getElementById("noteSearch");
+  const stateBox = document.getElementById("stateBox");
+  const stateSpinner = document.getElementById("stateSpinner");
+  const stateGlyph = document.getElementById("stateGlyph");
+  const stateTitle = document.getElementById("stateTitle");
+  const stateBody = document.getElementById("stateBody");
+
+  function showState(kind, title, body) {
+    stateBox.style.display = "block";
+    noteList.innerHTML = "";
+    if (kind === "loading") {
+      stateSpinner.style.display = "block";
+      stateGlyph.style.display = "none";
+    } else {
+      stateSpinner.style.display = "none";
+      stateGlyph.style.display = "block";
+      stateGlyph.textContent = kind === "empty" ? "—" : "!";
+    }
+    stateTitle.textContent = title;
+    stateBody.textContent = body;
+  }
+
+  function formatDate(ts) {
+    if (!ts) return "";
+    const d = new Date(ts);
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str || "";
+    return div.innerHTML;
+  }
+
+  function youtubeWatchUrl(link) {
+    if (link.videoId) return `https://www.youtube.com/watch?v=${link.videoId}`;
+    return link.url || "#";
+  }
+
+  let allNotes = [];
+
+  function render(list) {
+    noteList.innerHTML = "";
+    if (list.length === 0) {
+      showState("empty", "No notes yet", `Nothing has been posted under "${unitName}" yet. Check back soon.`);
+      return;
+    }
+    stateBox.style.display = "none";
+
+    list.forEach(note => {
+      const card = document.createElement("div");
+      card.className = "note-card";
+
+      let attachHtml = "";
+      const chips = [];
+
+      (note.pdfs || []).forEach(pdf => {
+        chips.push(`<a class="attach-chip" href="${pdf.url}" target="_blank" rel="noopener"><span class="dot dot-pdf"></span>${escapeHtml(pdf.name || "PDF")}</a>`);
+      });
+
+      (note.photos || []).forEach((photo, i) => {
+        chips.push(`<a class="attach-chip" href="${photo.url}" target="_blank" rel="noopener"><span class="dot dot-photo"></span>Photo ${i + 1}</a>`);
+      });
+
+      (note.youtubeLinks || []).forEach(link => {
+        const label = link.videoNumber ? `Video ${link.videoNumber}` : "Video";
+        chips.push(`<a class="attach-chip" href="${youtubeWatchUrl(link)}" target="_blank" rel="noopener"><span class="dot dot-video"></span>${label}</a>`);
+      });
+
+      if (chips.length > 0) {
+        attachHtml = `<div class="attach-row">${chips.join("")}</div>`;
+      }
+
+      card.innerHTML = `
+        <h3>${escapeHtml(note.title || "Untitled note")}</h3>
+        ${note.createdAt ? `<div class="note-date">${formatDate(note.createdAt)}</div>` : ""}
+        ${note.description ? `<p class="note-desc">${escapeHtml(note.description)}</p>` : ""}
+        ${attachHtml}
+      `;
+      noteList.appendChild(card);
+    });
+  }
+
+  async function loadNotes() {
+    if (!unitId) {
+      showState("error", "Missing unit", "No unit was specified in the link.");
+      return;
+    }
+    showState("loading", "Loading notes…", "Fetching notes for this unit.");
+    try {
+      const snap = await get(ref(db, `units/${subjectKey}/${unitId}/notes`));
+      const val = snap.val();
+      if (!val) {
+        allNotes = [];
+        render(allNotes);
+        return;
+      }
+      allNotes = Object.keys(val).map(id => ({ id, ...val[id] }));
+      allNotes.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      searchInput.disabled = false;
+      render(allNotes);
+    } catch (err) {
+      showState("error", "Couldn't load notes", err && err.message ? err.message : "Something went wrong while reading from the database.");
+    }
+  }
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    render(allNotes.filter(n =>
+      (n.title || "").toLowerCase().includes(q) ||
+      (n.description || "").toLowerCase().includes(q)
+    ));
+  });
+
+  loadNotes();
+</script>
+
+</body>
+</html>
