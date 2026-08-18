@@ -2,417 +2,195 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Doroi Apps — Your Own App Store</title>
-<style>
-  :root{
-    --navy:#0B1D3A;
-    --navy-deep:#071429;
-    --yellow:#FFC72C;
-    --yellow-dim:#E6AF1E;
-    --white:#F7F7F5;
-    --black:#0A0A0A;
-    --gray:#6B7280;
-    --line:rgba(255,255,255,0.10);
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{
-    font-family:'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    background:var(--white);
-    color:var(--black);
-    -webkit-font-smoothing:antialiased;
-  }
-  a{text-decoration:none;color:inherit;}
-  img{max-width:100%;display:block;}
-
-  /* ---------- TOP BAR ---------- */
-  .topbar{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:18px 24px;
-    background:var(--white);
-    border-bottom:1px solid #E9E9E6;
-    position:sticky;top:0;z-index:50;
-  }
-  .brand{display:flex;align-items:center;gap:10px;}
-  .brand-mark{
-    width:36px;height:36px;border-radius:9px;
-    background:var(--navy);
-    display:flex;align-items:center;justify-content:center;
-    font-weight:800;color:var(--yellow);font-size:18px;
-    flex-shrink:0;
-  }
-  .brand-name{font-weight:800;font-size:20px;letter-spacing:-0.02em;color:var(--black);}
-  .lang-pill{
-    border:1.5px solid var(--navy);
-    border-radius:999px;
-    padding:8px 18px;
-    font-weight:600;font-size:14px;
-    color:var(--navy);
-    background:transparent;
-  }
-
-  /* ---------- HERO ---------- */
-  .hero{
-    background:linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
-    color:var(--white);
-    padding:56px 24px 40px;
-    text-align:center;
-    position:relative;
-    overflow:hidden;
-  }
-  .hero::before{
-    content:"";
-    position:absolute;
-    top:-120px;right:-100px;
-    width:300px;height:300px;
-    background:radial-gradient(circle, rgba(255,199,44,0.18) 0%, transparent 70%);
-  }
-  .eyebrow{
-    display:inline-block;
-    font-size:12px;font-weight:700;letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:var(--yellow);
-    border:1px solid rgba(255,199,44,0.4);
-    border-radius:999px;
-    padding:6px 14px;
-    margin-bottom:22px;
-  }
-  .hero h1{
-    font-size:2.5rem;
-    line-height:1.15;
-    font-weight:800;
-    letter-spacing:-0.02em;
-    margin-bottom:16px;
-  }
-  .hero h1 .hl{color:var(--yellow);}
-  .hero p.sub{
-    font-size:1.05rem;
-    color:rgba(247,247,245,0.75);
-    max-width:520px;
-    margin:0 auto 34px;
-    line-height:1.6;
-  }
-
-  /* icon tile grid — signature element: apps spilling from a shelf */
-  .tile-row{
-    display:flex;
-    justify-content:center;
-    gap:16px;
-    margin-bottom:38px;
-    flex-wrap:wrap;
-  }
-  .tile{
-    background:rgba(255,255,255,0.06);
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:16px 20px;
-    display:flex;flex-direction:column;align-items:center;gap:10px;
-    min-width:96px;
-    backdrop-filter:blur(4px);
-    transition:transform .2s ease, border-color .2s ease;
-  }
-  .tile:hover{transform:translateY(-4px);border-color:var(--yellow);}
-  .tile-icon{
-    width:44px;height:44px;border-radius:12px;
-    background:var(--yellow);
-    display:flex;align-items:center;justify-content:center;
-    font-size:20px;
-  }
-  .tile-label{font-size:13px;font-weight:600;color:rgba(247,247,245,0.9);}
-
-  .cta-btn{
-    display:inline-block;
-    background:var(--yellow);
-    color:var(--navy-deep);
-    font-weight:800;
-    font-size:16px;
-    padding:17px 38px;
-    border-radius:14px;
-    letter-spacing:0.01em;
-    box-shadow:0 10px 30px rgba(255,199,44,0.25);
-    border:none;
-    cursor:pointer;
-    transition:transform .15s ease, box-shadow .15s ease;
-  }
-  .cta-btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(255,199,44,0.35);}
-  .cta-sub{
-    margin-top:12px;
-    font-size:12.5px;
-    color:rgba(247,247,245,0.55);
-  }
-
-  /* ---------- TRUST STRIP ---------- */
-  .trust{
-    max-width:560px;
-    margin:-26px auto 0;
-    background:var(--white);
-    border:1px solid #E9E9E6;
-    border-radius:18px;
-    padding:26px 24px;
-    box-shadow:0 20px 40px rgba(11,29,58,0.08);
-    position:relative;
-    z-index:5;
-  }
-  .trust-head{
-    display:flex;align-items:center;gap:10px;
-    font-weight:700;font-size:16px;
-    margin-bottom:18px;
-    color:var(--navy);
-  }
-  .trust-head .dot{
-    width:22px;height:22px;border-radius:50%;
-    background:var(--navy);
-    color:var(--yellow);
-    display:flex;align-items:center;justify-content:center;
-    font-size:13px;font-weight:800;
-    flex-shrink:0;
-  }
-  .trust-badges{
-    display:flex;gap:22px;flex-wrap:wrap;
-  }
-  .badge{
-    display:flex;align-items:center;gap:8px;
-    font-size:13.5px;font-weight:600;
-    color:var(--gray);
-  }
-  .badge .sq{
-    width:26px;height:26px;border-radius:7px;
-    background:var(--navy);
-    color:var(--white);
-    display:flex;align-items:center;justify-content:center;
-    font-size:12px;font-weight:800;
-    flex-shrink:0;
-  }
-
-  /* ---------- SECTION: WHY ---------- */
-  .section{
-    padding:64px 24px;
-    max-width:720px;
-    margin:0 auto;
-  }
-  .section-eyebrow{
-    font-size:12px;font-weight:700;letter-spacing:0.12em;
-    text-transform:uppercase;color:var(--yellow-dim);
-    margin-bottom:10px;
-  }
-  .section h2{
-    font-size:1.7rem;
-    font-weight:800;
-    letter-spacing:-0.01em;
-    margin-bottom:14px;
-    color:var(--navy);
-  }
-  .section p.lead{
-    color:var(--gray);
-    line-height:1.65;
-    font-size:15.5px;
-    margin-bottom:34px;
-    max-width:520px;
-  }
-
-  .feature-grid{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:16px;
-  }
-  @media(min-width:640px){
-    .feature-grid{grid-template-columns:1fr 1fr 1fr;}
-  }
-  .feature-card{
-    background:var(--white);
-    border:1px solid #E9E9E6;
-    border-radius:16px;
-    padding:24px 20px;
-  }
-  .feature-card .ficon{
-    width:46px;height:46px;border-radius:12px;
-    background:var(--navy);
-    color:var(--yellow);
-    display:flex;align-items:center;justify-content:center;
-    font-size:20px;font-weight:800;
-    margin-bottom:14px;
-  }
-  .feature-card h3{
-    font-size:15.5px;font-weight:700;margin-bottom:6px;color:var(--black);
-  }
-  .feature-card p{
-    font-size:13.5px;color:var(--gray);line-height:1.55;
-  }
-
-  /* ---------- STEPS ---------- */
-  .steps-wrap{background:var(--navy);}
-  .steps-wrap .section h2, .steps-wrap .section-eyebrow{color:var(--yellow);}
-  .steps-wrap .section p.lead{color:rgba(247,247,245,0.65);}
-  .step{
-    display:flex;gap:16px;
-    padding:18px 0;
-    border-top:1px solid var(--line);
-  }
-  .step:last-child{border-bottom:1px solid var(--line);}
-  .step-num{
-    font-weight:800;font-size:14px;
-    color:var(--yellow);
-    min-width:28px;
-  }
-  .step-body h4{
-    font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;
-  }
-  .step-body p{
-    font-size:13.5px;color:rgba(247,247,245,0.6);line-height:1.5;
-  }
-
-  /* ---------- FINAL CTA ---------- */
-  .final-cta{
-    text-align:center;
-    padding:64px 24px 72px;
-    background:var(--white);
-  }
-  .final-cta h2{
-    font-size:1.6rem;font-weight:800;color:var(--navy);margin-bottom:10px;
-    letter-spacing:-0.01em;
-  }
-  .final-cta p{color:var(--gray);margin-bottom:28px;font-size:14.5px;}
-
-  /* ---------- FOOTER ---------- */
-  footer{
-    background:var(--black);
-    color:rgba(247,247,245,0.5);
-    text-align:center;
-    padding:32px 24px;
-    font-size:12.5px;
-    line-height:1.7;
-  }
-  footer .fbrand{
-    color:var(--yellow);
-    font-weight:800;
-    font-size:15px;
-    margin-bottom:8px;
-  }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Doroi Apps — Your App Store Alternative</title>
+<meta name="theme-color" content="#0d1b4c">
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="topbar">
+<!-- ============ TOP BAR (desktop) ============ -->
+<header class="topbar">
+  <div class="topbar-inner">
     <div class="brand">
-      <div class="brand-mark">D</div>
-      <div class="brand-name">Doroi Apps</div>
+      <img src="assets/logo.png" alt="Doroi Apps" class="brand-logo">
+      <div class="brand-text">
+        <span class="brand-name">Doroi<span class="brand-accent"> Apps</span></span>
+        <span class="brand-tagline">Your App Store Alternative</span>
+      </div>
     </div>
-    <div class="lang-pill">English</div>
+
+    <div class="topbar-search">
+      <svg viewBox="0 0 24 24" class="icon-svg"><path d="M21 21l-4.35-4.35M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="text" id="topSearchInput" placeholder="Search apps, games, tools…" autocomplete="off">
+    </div>
+
+    <button class="profile-chip" id="topProfileBtn" aria-label="Profile">
+      <span class="avatar-circle">D</span>
+      <span class="profile-chip-label">Profile</span>
+    </button>
   </div>
+</header>
 
-  <section class="hero">
-    <span class="eyebrow">Your App Store Alternative</span>
-    <h1>Discover, download,<br>and <span class="hl">own your apps.</span></h1>
-    <p class="sub">Doroi Apps is a lightweight app store for Android — browse a curated catalog and install what you need, without the clutter.</p>
+<!-- ============ MAIN CONTENT ============ -->
+<main class="app-shell">
 
-    <div class="tile-row">
-      <div class="tile">
-        <div class="tile-icon">🎮</div>
-        <div class="tile-label">Games</div>
-      </div>
-      <div class="tile">
-        <div class="tile-icon">🛠️</div>
-        <div class="tile-label">Tools</div>
-      </div>
-      <div class="tile">
-        <div class="tile-icon">🎨</div>
-        <div class="tile-label">Creative</div>
-      </div>
-    </div>
+  <!-- ---------- HOME PAGE ---------- -->
+  <section class="page active" id="page-home">
 
-    <a href="#" class="cta-btn" id="downloadBtn">DOWNLOAD DOROI APPS</a>
-    <div class="cta-sub">Free · No account required · v1.0</div>
-  </section>
-
-  <div class="trust">
-    <div class="trust-head">
-      <span class="dot">✓</span>
-      Built for trust
-    </div>
-    <div class="trust-badges">
-      <div class="badge"><span class="sq">SC</span> Scanned Files</div>
-      <div class="badge"><span class="sq">OS</span> Open Catalog</div>
-      <div class="badge"><span class="sq">PR</span> Privacy First</div>
-    </div>
-  </div>
-
-  <section class="section">
-    <div class="section-eyebrow">Why Doroi</div>
-    <h2>One store, no noise.</h2>
-    <p class="lead">Every listing on Doroi Apps is organized around what you're actually trying to do — play, build, or create — not what an algorithm wants to sell you.</p>
-
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="ficon">🎮</div>
-        <h3>Games</h3>
-        <p>Casual and competitive titles, sorted by size and rating so you know what you're installing.</p>
-      </div>
-      <div class="feature-card">
-        <div class="ficon">🛠️</div>
-        <h3>Tools</h3>
-        <p>Utilities that do one job well — file managers, scanners, converters, and more.</p>
-      </div>
-      <div class="feature-card">
-        <div class="ficon">🎨</div>
-        <h3>Creative</h3>
-        <p>Editing, design, and media apps for making things on the go.</p>
-      </div>
-    </div>
-  </section>
-
-  <div class="steps-wrap">
-    <section class="section">
-      <div class="section-eyebrow">Getting started</div>
-      <h2>Three steps in.</h2>
-      <p class="lead">Doroi Apps installs like any Android app. No sign-up walls, no forced permissions.</p>
-
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-body">
-          <h4>Download the app</h4>
-          <p>Tap the button above to get the latest Doroi Apps package.</p>
+    <div class="hero">
+      <div class="hero-copy">
+        <h1>Discover apps <span class="accent">without limits.</span></h1>
+        <p>Games, tools &amp; creative apps — curated, verified, and ready to install. No store gatekeeping.</p>
+        <div class="hero-search-wrap">
+          <svg viewBox="0 0 24 24" class="icon-svg"><path d="M21 21l-4.35-4.35M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input type="text" id="heroSearchInput" placeholder="What are you looking for today?">
         </div>
       </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-body">
-          <h4>Allow the install</h4>
-          <p>Your phone may ask you to confirm installing from outside the default store — that's expected.</p>
-        </div>
+      <div class="hero-badge">
+        <img src="assets/logo.png" alt="">
       </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-body">
-          <h4>Open and browse</h4>
-          <p>Explore Games, Tools, and Creative — install anything with one tap.</p>
-        </div>
-      </div>
-    </section>
-  </div>
+    </div>
 
-  <section class="final-cta">
-    <h2>Ready when you are.</h2>
-    <p>Get Doroi Apps and start browsing in under a minute.</p>
-    <a href="#" class="cta-btn" id="downloadBtn2">DOWNLOAD DOROI APPS</a>
+    <div class="section-row">
+      <h2 class="section-title">Categories</h2>
+    </div>
+    <div class="category-scroller" id="categoryScroller"></div>
+
+    <div class="section-row">
+      <h2 class="section-title">Featured</h2>
+      <span class="section-link" data-goto="search">See all</span>
+    </div>
+    <div class="app-grid" id="featuredGrid"></div>
+
+    <div class="section-row">
+      <h2 class="section-title">Recently Added</h2>
+      <span class="section-link" data-goto="search">See all</span>
+    </div>
+    <div class="app-list" id="recentList"></div>
+
   </section>
 
-  <footer>
-    <div class="fbrand">Doroi Apps</div>
-    &copy; 2026 Doroi Apps. This is an independent app catalog and is not affiliated with Google Play.<br>
-    Always review app permissions before installing.
-  </footer>
+  <!-- ---------- SEARCH PAGE ---------- -->
+  <section class="page" id="page-search">
+    <div class="page-header">
+      <h1>Search</h1>
+    </div>
 
-  <script>
-    // Replace this with your real download URL
-    const DOWNLOAD_URL = "https://example.com/doroi-apps.apk";
-    document.querySelectorAll('#downloadBtn, #downloadBtn2').forEach(btn=>{
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        window.location.href = DOWNLOAD_URL;
-      });
-    });
-  </script>
+    <div class="search-bar-wrap">
+      <svg viewBox="0 0 24 24" class="icon-svg"><path d="M21 21l-4.35-4.35M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="text" id="searchPageInput" placeholder="Search Doroi Apps…" autocomplete="off">
+      <button class="clear-btn" id="clearSearchBtn" aria-label="Clear">✕</button>
+    </div>
 
+    <div class="filter-pills" id="filterPills"></div>
+
+    <p class="results-count" id="resultsCount"></p>
+    <div class="app-list" id="searchResults"></div>
+
+    <div class="empty-state" id="searchEmptyState" style="display:none;">
+      <div class="empty-icon">🔍</div>
+      <p>No apps match your search</p>
+      <span>Try a different keyword or category</span>
+    </div>
+  </section>
+
+  <!-- ---------- PROFILE PAGE ---------- -->
+  <section class="page" id="page-profile">
+    <div class="page-header">
+      <h1>Profile</h1>
+    </div>
+
+    <div class="profile-card">
+      <div class="avatar-large">D</div>
+      <h2 id="profileName">Doroi Developer</h2>
+      <p id="profileEmail" class="muted">dev@doroiapps.com</p>
+      <span class="verified-badge">✓ Verified Developer</span>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <span class="stat-num" id="statApps">0</span>
+        <span class="stat-label">Apps</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="statDownloads">0</span>
+        <span class="stat-label">Downloads</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="statInstalled">0</span>
+        <span class="stat-label">Installed</span>
+      </div>
+    </div>
+
+    <div class="section-row">
+      <h2 class="section-title">My Uploads</h2>
+    </div>
+    <div class="app-list" id="myUploadsList"></div>
+
+    <div class="section-row">
+      <h2 class="section-title">Settings</h2>
+    </div>
+    <div class="settings-list">
+      <button class="settings-item">
+        <span>Github Repository</span>
+        <span class="chev">›</span>
+      </button>
+      <button class="settings-item">
+        <span>Notification Preferences</span>
+        <span class="chev">›</span>
+      </button>
+      <button class="settings-item">
+        <span>Privacy &amp; Security</span>
+        <span class="chev">›</span>
+      </button>
+      <button class="settings-item settings-item-danger" id="logoutBtn">
+        <span>Log Out</span>
+        <span class="chev">›</span>
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ APP DETAIL MODAL ============ -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-sheet">
+    <button class="modal-close" id="modalCloseBtn">✕</button>
+    <div class="modal-header">
+      <img id="modalIcon" class="modal-icon" src="" alt="">
+      <div>
+        <h2 id="modalTitle">App name</h2>
+        <p id="modalDev" class="muted">Developer</p>
+        <div class="modal-meta">
+          <span id="modalCategory" class="tag"></span>
+          <span id="modalSize" class="tag"></span>
+        </div>
+      </div>
+    </div>
+    <button class="install-btn" id="modalInstallBtn">Install</button>
+    <p id="modalDesc" class="modal-desc"></p>
+  </div>
+</div>
+
+<!-- ============ BOTTOM NAVIGATION (mobile) ============ -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-page="home">
+    <svg viewBox="0 0 24 24" class="nav-icon"><path d="M3 11.5L12 4l9 7.5M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Home</span>
+  </button>
+  <button class="nav-btn" data-page="search">
+    <svg viewBox="0 0 24 24" class="nav-icon"><path d="M21 21l-4.35-4.35M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <span>Search</span>
+  </button>
+  <button class="nav-btn" data-page="profile">
+    <svg viewBox="0 0 24 24" class="nav-icon"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM4.5 20.5a7.5 7.5 0 0 1 15 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Profile</span>
+  </button>
+  <span class="nav-bubble" id="navBubble"></span>
+</nav>
+
+<script src="script.js"></script>
 </body>
 </html>

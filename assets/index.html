@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Doroi Software</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --background: #f5f6f8;
+            --card: #ffffff;
+            --text: #111827;
+            --secondary: #6b7280;
+            --border: #e5e7eb;
+            --blue: #2563eb;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family:
+                Arial,
+                "Noto Sans Devanagari",
+                sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .gallery-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: auto;
+            padding: 22px 20px 25px;
+        }
+
+        .gallery-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .gallery-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .gallery-subtitle {
+            margin: 4px 0 0;
+            color: var(--secondary);
+            font-size: 12px;
+        }
+
+        .image-count {
+            padding: 7px 11px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--secondary);
+            font-size: 11px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .image-card {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 12px 28px rgba(0, 0, 0, 0.10);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.35s ease;
+        }
+
+        .image-card:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Founder */
+
+        .profile-section {
+            max-width: 1400px;
+            margin: 25px auto 0;
+            padding: 35px 20px 30px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .profile-photo {
+            width: 110px;
+            height: 110px;
+            display: block;
+            margin: 0 auto 15px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .profile-name {
+            margin: 0;
+            font-size: 21px;
+            font-weight: 750;
+        }
+
+        .profile-company {
+            margin: 5px 0 0;
+            color: var(--blue);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .profile-role {
+            margin: 6px 0 0;
+            color: var(--secondary);
+            font-size: 13px;
+        }
+
+        .profile-contact {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px 18px;
+            margin-top: 14px;
+            color: var(--secondary);
+            font-size: 13px;
+        }
+
+        /* Footer */
+
+        .footer {
+            padding: 18px 20px 25px;
+            text-align: center;
+            color: var(--secondary);
+            font-size: 11px;
+        }
+
+        .footer strong {
+            color: var(--text);
+        }
+
+        /* Modal */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            padding: 18px;
+
+            background: rgba(0, 0, 0, 0.68);
+            backdrop-filter: blur(6px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-box {
+            width: min(450px, 100%);
+            overflow: hidden;
+
+            background: white;
+            border-radius: 20px;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.28);
+
+            animation: modalIn 0.25s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95)
+                    translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1)
+                    translateY(0);
+            }
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 270px;
+            display: block;
+            object-fit: cover;
+        }
+
+        .modal-content {
+            padding: 22px;
+        }
+
+        .modal-type {
+            display: inline-block;
+
+            margin-bottom: 9px;
+            padding: 6px 10px;
+
+            background: #eff6ff;
+            color: var(--blue);
+
+            border-radius: 999px;
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .modal-title {
+            margin: 0 0 10px;
+            font-size: 21px;
+        }
+
+        .modal-description {
+            margin: 0;
+
+            color: var(--secondary);
+
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .close-button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: #111827;
+            color: white;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+        .close-button:active {
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 600px) {
+
+            .gallery-container {
+                padding: 18px 16px 25px;
+            }
+
+            .gallery {
+                grid-template-columns:
+                    repeat(4, minmax(0, 1fr));
+                gap: 9px;
+            }
+
+            .image-card {
+                border-radius: 11px;
+            }
+
+            .profile-section {
+                margin-top: 20px;
+                padding: 30px 16px 25px;
+            }
+
+            .profile-photo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .modal-image {
+                height: 240px;
+            }
+        }
+
+        @media (max-width: 400px) {
+
+            .gallery {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .profile-contact {
+                flex-direction: column;
+                gap: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- GALLERY -->
+
+    <main class="gallery-container">
+
+        <div class="gallery-header">
+
+            <div>
+                <h2 class="gallery-title">
+                    मेरो ग्यालरी
+                </h2>
+
+                <p class="gallery-subtitle">
+                    पानी सम्बन्धी सामग्रीहरू
+                </p>
+            </div>
+
+            <div class="image-count">
+                <span id="imageCount">4</span> तस्बिर
+            </div>
+
+        </div>
+
+
+        <div class="gallery">
+
+
+            <!-- IMAGE 1 -->
+
+            <div
+                class="image-card"
+                data-image="img1.jpg"
+                data-title="Water Hand Dispenser"
+                data-type="हातले चलाउने पानी डिस्पेन्सर"
+                data-description="यो हातले चलाएर पानी निकाल्न प्रयोग गरिने पानी डिस्पेन्सर हो। ठूलो पानीको बोतलमा जडान गरेर सजिलै पानी निकाल्न सकिन्छ। यसलाई बिजुलीको आवश्यकता पर्दैन।"
+            >
+
+                <img
+                    src="img1.jpg"
+                    alt="Water Hand Dispenser"
+                >
+
+            </div>
+
+
+            <!-- IMAGE 2 -->
+
+            <div
+                class="image-card"
+                data-image="img2.webp"
+                data-title="Water Tap Container"
+                data-type="पानीको ट्याप भएको कन्टेनर"
+                data-description="यो पानी भण्डारण गर्न प्रयोग गरिने कन्टेनर हो। यसमा ट्याप जडान गरिएको हुन्छ, जसले कन्टेनर नउठाई सजिलै पानी निकाल्न र प्रयोग गर्न सकिन्छ।"
+            >
+
+                <img
+                    src="img2.webp"
+                    alt="Water Tap Container"
+                >
+
+            </div>
+
+
+            <!-- IMAGE 3 -->
+
+            <div
+                class="image-card"
+                data-image="img3.jpg"
+                data-title="Water Tap Container"
+                data-type="पानीको ट्याप भएको कन्टेनर"
+                data-description="यो पानी भण्डारण गर्न प्रयोग गरिने कन्टेनर हो। यसमा ट्याप जडान गरिएको हुन्छ, जसले कन्टेनर नउठाई सजिलै पानी निकाल्न र प्रयोग गर्न सकिन्छ।"
+            >
+
+                <img
+                    src="img3.jpg"
+                    alt="Water Tap Container"
+                >
+
+            </div>
+
+
+            <!-- IMAGE 4 -->
+
+            <div
+                class="image-card"
+                data-image="img4.jpg"
+                data-title="Water Tap Container"
+                data-type="पानीको ट्याप भएको कन्टेनर"
+                data-description="यो पानी भण्डारण गर्न प्रयोग गरिने कन्टेनर हो। यसमा ट्याप जडान गरिएको हुन्छ, जसले कन्टेनर नउठाई सजिलै पानी निकाल्न र प्रयोग गर्न सकिन्छ।"
+            >
+
+                <img
+                    src="img4.jpg"
+                    alt="Water Tap Container"
+                >
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- FOUNDER -->
+
+    <section class="profile-section">
+
+        <img
+            src="img5.jpg"
+            alt="Darshan Ghimire"
+            class="profile-photo"
+        >
+
+        <h2 class="profile-name">
+            Darshan Ghimire
+        </h2>
+
+        <div class="profile-company">
+            Founder of Doroi Software Company
+        </div>
+
+        <div class="profile-role">
+            Android App Developer
+        </div>
+
+        <div class="profile-contact">
+
+            <span>
+                📞 9744444812
+            </span>
+
+            <span>
+                ✉️ doroi.prvt.ltd@gmail.com
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+
+        © 2026
+        <strong>Doroi Software Company</strong>.
+        All Rights Reserved.
+
+    </footer>
+
+
+    <!-- INFORMATION MODAL -->
+
+    <div
+        class="modal"
+        id="infoModal"
+    >
+
+        <div class="modal-box">
+
+            <img
+                id="modalImage"
+                class="modal-image"
+                src=""
+                alt=""
+            >
+
+            <div class="modal-content">
+
+                <span
+                    id="modalType"
+                    class="modal-type"
+                ></span>
+
+                <h2
+                    id="modalTitle"
+                    class="modal-title"
+                ></h2>
+
+                <p
+                    id="modalDescription"
+                    class="modal-description"
+                ></p>
+
+                <button
+                    class="close-button"
+                    id="closeButton"
+                >
+                    बन्द गर्नुहोस्
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const cards =
+            document.querySelectorAll(
+                ".image-card"
+            );
+
+        const modal =
+            document.getElementById(
+                "infoModal"
+            );
+
+        const modalImage =
+            document.getElementById(
+                "modalImage"
+            );
+
+        const modalTitle =
+            document.getElementById(
+                "modalTitle"
+            );
+
+        const modalType =
+            document.getElementById(
+                "modalType"
+            );
+
+        const modalDescription =
+            document.getElementById(
+                "modalDescription"
+            );
+
+        const closeButton =
+            document.getElementById(
+                "closeButton"
+            );
+
+
+        document.getElementById(
+            "imageCount"
+        ).textContent = cards.length;
+
+
+        cards.forEach(card => {
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    modalImage.src =
+                        card.dataset.image;
+
+                    modalImage.alt =
+                        card.dataset.title;
+
+                    modalTitle.textContent =
+                        card.dataset.title;
+
+                    modalType.textContent =
+                        card.dataset.type;
+
+                    modalDescription.textContent =
+                        card.dataset.description;
+
+                    modal.classList.add(
+                        "active"
+                    );
+
+                    document.body.style.overflow =
+                        "hidden";
+                }
+            );
+
+        });
+
+
+        function closeModal() {
+
+            modal.classList.remove(
+                "active"
+            );
+
+            document.body.style.overflow =
+                "";
+        }
+
+
+        closeButton.addEventListener(
+            "click",
+            closeModal
+        );
+
+
+        modal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target === modal
+                ) {
+                    closeModal();
+                }
+
+            }
+        );
+
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Escape" &&
+                    modal.classList.contains(
+                        "active"
+                    )
+                ) {
+                    closeModal();
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
