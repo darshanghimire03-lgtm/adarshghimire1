@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#123B93">
+
+  <meta name="description"
+        content="Durbar — For your Higher Education. Download the Durbar Android app.">
+
+  <title>Durbar — For your Higher Education</title>
+
+  <link rel="icon" type="image/png" href="icon.png">
+
+  <style>
+    :root {
+      --blue: #123b93;
+      --blue-light: #2563eb;
+      --red: #ef2029;
+
+      --text: #101828;
+      --muted: #667085;
+
+      --white: #ffffff;
+      --background: #f7faff;
+
+      --border: rgba(16, 24, 40, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      color: var(--text);
+
+      background:
+        radial-gradient(
+          circle at 10% 5%,
+          rgba(37, 99, 235, 0.14),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 90% 15%,
+          rgba(239, 32, 41, 0.09),
+          transparent 28%
+        ),
+        linear-gradient(
+          180deg,
+          #f9fbff 0%,
+          #eef4ff 100%
+        );
+
+      overflow-x: hidden;
+    }
+
+    /* =========================
+       NAVIGATION
+    ========================= */
+
+    .navbar {
+      width: min(1120px, calc(100% - 32px));
+
+      margin: auto;
+
+      padding: 22px 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand img {
+      width: 44px;
+      height: 44px;
+
+      object-fit: cover;
+
+      border-radius: 13px;
+
+      box-shadow:
+        0 8px 24px rgba(18, 59, 147, 0.18);
+    }
+
+    .brand-name {
+      font-size: 20px;
+      font-weight: 850;
+      letter-spacing: -0.5px;
+    }
+
+    .github-link {
+      text-decoration: none;
+
+      color: var(--blue);
+
+      font-size: 14px;
+      font-weight: 750;
+
+      transition: 0.2s ease;
+    }
+
+    .github-link:hover {
+      opacity: 0.7;
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+      width: min(1120px, calc(100% - 32px));
+
+      margin: 30px auto 0;
+
+      min-height: 650px;
+
+      display: grid;
+
+      grid-template-columns:
+        1.08fr
+        0.92fr;
+
+      align-items: center;
+
+      gap: 70px;
+    }
+
+    .badge {
+      display: inline-flex;
+
+      align-items: center;
+      gap: 9px;
+
+      padding: 8px 13px;
+
+      border-radius: 999px;
+
+      background: rgba(255, 255, 255, 0.7);
+
+      border: 1px solid rgba(18, 59, 147, 0.1);
+
+      color: var(--blue);
+
+      font-size: 13px;
+
+      font-weight: 800;
+
+      backdrop-filter: blur(12px);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+
+      border-radius: 50%;
+
+      background: #22c55e;
+
+      box-shadow:
+        0 0 0 5px rgba(34, 197, 94, 0.12);
+    }
+
+    .hero h1 {
+      margin-top: 20px;
+
+      font-size:
+        clamp(58px, 8vw, 96px);
+
+      line-height: 0.9;
+
+      letter-spacing: -6px;
+
+      font-weight: 950;
+    }
+
+    .hero h1 span {
+      color: var(--blue);
+    }
+
+    .tagline {
+      margin-top: 18px;
+
+      font-size:
+        clamp(23px, 3vw, 35px);
+
+      line-height: 1.15;
+
+      font-weight: 780;
+
+      letter-spacing: -1.2px;
+    }
+
+    .description {
+      max-width: 590px;
+
+      margin-top: 20px;
+
+      color: var(--muted);
+
+      font-size: 17px;
+
+      line-height: 1.7;
+    }
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .actions {
+      margin-top: 30px;
+
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 12px;
+    }
+
+    .button {
+      min-height: 54px;
+
+      padding: 0 23px;
+
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      gap: 10px;
+
+      border-radius: 16px;
+
+      text-decoration: none;
+
+      font-size: 15px;
+
+      font-weight: 800;
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-3px);
+    }
+
+    .download-button {
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--blue),
+          var(--blue-light)
+        );
+
+      box-shadow:
+        0 16px 35px
+        rgba(37, 99, 235, 0.25);
+    }
+
+    .download-button:hover {
+      box-shadow:
+        0 20px 40px
+        rgba(37, 99, 235, 0.32);
+    }
+
+    .github-button {
+      color: var(--blue);
+
+      background:
+        rgba(255, 255, 255, 0.78);
+
+      border:
+        1px solid var(--border);
+    }
+
+    .download-icon {
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    /* =========================
+       APP ICON
+    ========================= */
+
+    .visual {
+      position: relative;
+
+      display: flex;
+
+      justify-content: center;
+
+      align-items: center;
+    }
+
+    .glow {
+      position: absolute;
+
+      width: 390px;
+      height: 390px;
+
+      border-radius: 50%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(37, 99, 235, 0.25),
+          transparent 68%
+        );
+
+      filter: blur(5px);
+    }
+
+    .icon-card {
+      position: relative;
+
+      width: min(430px, 82vw);
+
+      aspect-ratio: 1;
+
+      padding: 26px;
+
+      display: grid;
+
+      place-items: center;
+
+      border-radius: 46px;
+
+      background:
+        rgba(255, 255, 255, 0.76);
+
+      border:
+        1px solid rgba(255, 255, 255, 0.9);
+
+      box-shadow:
+        0 35px 90px
+        rgba(18, 59, 147, 0.17);
+
+      backdrop-filter: blur(20px);
+
+      transform: rotate(2deg);
+
+      animation:
+        floating 5s ease-in-out infinite;
+    }
+
+    .icon-card img {
+      width: 100%;
+      height: 100%;
+
+      object-fit: contain;
+
+      border-radius: 34px;
+
+      transform: rotate(-2deg);
+    }
+
+    @keyframes floating {
+
+      0%,
+      100% {
+        transform:
+          translateY(0)
+          rotate(2deg);
+      }
+
+      50% {
+        transform:
+          translateY(-10px)
+          rotate(2deg);
+      }
+    }
+
+    /* =========================
+       FEATURES
+    ========================= */
+
+    .features {
+      width: min(1120px, calc(100% - 32px));
+
+      margin:
+        10px
+        auto
+        70px;
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 16px;
+    }
+
+    .feature {
+      padding: 25px;
+
+      border-radius: 24px;
+
+      background:
+        rgba(255, 255, 255, 0.75);
+
+      border:
+        1px solid var(--border);
+
+      box-shadow:
+        0 12px 35px
+        rgba(16, 24, 40, 0.05);
+
+      backdrop-filter: blur(12px);
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .feature:hover {
+      transform: translateY(-5px);
+
+      box-shadow:
+        0 20px 45px
+        rgba(16, 24, 40, 0.08);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+
+      display: grid;
+
+      place-items: center;
+
+      margin-bottom: 15px;
+
+      border-radius: 13px;
+
+      background: #edf4ff;
+
+      color: var(--blue);
+
+      font-size: 21px;
+    }
+
+    .feature h3 {
+      margin-bottom: 7px;
+
+      font-size: 17px;
+
+      font-weight: 800;
+    }
+
+    .feature p {
+      color: var(--muted);
+
+      font-size: 14px;
+
+      line-height: 1.6;
+    }
+
+    /* =========================
+       DOWNLOAD SECTION
+    ========================= */
+
+    .download-section {
+      width: min(900px, calc(100% - 32px));
+
+      margin:
+        0 auto
+        70px;
+
+      padding: 45px 30px;
+
+      text-align: center;
+
+      border-radius: 30px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(18, 59, 147, 0.96),
+          rgba(37, 99, 235, 0.95)
+        );
+
+      color: white;
+
+      box-shadow:
+        0 25px 60px
+        rgba(18, 59, 147, 0.2);
+    }
+
+    .download-section h2 {
+      font-size:
+        clamp(27px, 5vw, 40px);
+
+      letter-spacing: -1.5px;
+    }
+
+    .download-section p {
+      margin:
+        12px
+        auto
+        25px;
+
+      max-width: 580px;
+
+      color:
+        rgba(255, 255, 255, 0.78);
+
+      line-height: 1.6;
+    }
+
+    .download-section .button {
+      background: white;
+
+      color: var(--blue);
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      width: min(1120px, calc(100% - 32px));
+
+      margin: auto;
+
+      padding:
+        25px
+        0
+        40px;
+
+      border-top:
+        1px solid var(--border);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 20px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 850px) {
+
+      .hero {
+        grid-template-columns: 1fr;
+
+        gap: 50px;
+
+        min-height: auto;
+
+        padding-top: 25px;
+      }
+
+      .visual {
+        order: -1;
+      }
+
+      .icon-card {
+        width: min(360px, 76vw);
+      }
+
+      .features {
+        grid-template-columns: 1fr;
+
+        margin-top: 60px;
+      }
+    }
+
+    @media (max-width: 550px) {
+
+      .navbar {
+        padding-top: 16px;
+      }
+
+      .github-link {
+        display: none;
+      }
+
+      .hero {
+        margin-top: 15px;
+      }
+
+      .hero h1 {
+        font-size: 65px;
+
+        letter-spacing: -4px;
+      }
+
+      .tagline {
+        font-size: 25px;
+      }
+
+      .description {
+        font-size: 15px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .icon-card {
+        padding: 20px;
+
+        border-radius: 32px;
+      }
+
+      .icon-card img {
+        border-radius: 24px;
+      }
+
+      .download-section {
+        padding: 38px 22px;
+      }
+
+      footer {
+        flex-direction: column;
+
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       NAVIGATION
+  ========================= -->
+
+  <header class="navbar">
+
+    <a href="#" class="brand">
+
+      <img
+        src="icon.png"
+        alt="Durbar">
+
+      <span class="brand-name">
+        Durbar
+      </span>
+
+    </a>
+
+    <a
+      class="github-link"
+      href="https://github.com/darshanghimire03-lgtm/DOROI-STORE"
+      target="_blank"
+      rel="noopener">
+
+      View on GitHub ↗
+
+    </a>
+
+  </header>
+
+
+  <!-- =========================
+       HERO
+  ========================= -->
+
+  <main>
+
+    <section class="hero">
+
+      <div class="hero-content">
+
+        <div class="badge">
+
+          <span class="status-dot"></span>
+
+          Android Application
+
+        </div>
+
+
+        <h1>
+          <span>Durbar</span>
+        </h1>
+
+
+        <p class="tagline">
+          For your Higher Education.
+        </p>
+
+
+        <p class="description">
+
+          A modern and simple companion for
+          higher education. Download Durbar
+          and keep your educational experience
+          close at hand.
+
+        </p>
+
+
+        <div class="actions">
+
+          <!-- DIRECT APK DOWNLOAD -->
+
+          <a
+            class="button download-button"
+            href="https://github.com/darshanghimire03-lgtm/DOROI-STORE/releases/download/Doroi/Durbar.apk">
+
+            <span class="download-icon">
+              ↓
+            </span>
+
+            Download Durbar
+
+          </a>
+
+
+          <!-- GITHUB -->
+
+          <a
+            class="button github-button"
+            href="https://github.com/darshanghimire03-lgtm/DOROI-STORE"
+            target="_blank"
+            rel="noopener">
+
+            GitHub Source
+
+          </a>
+
+        </div>
+
+      </div>
+
+
+      <!-- APP ICON -->
+
+      <div class="visual">
+
+        <div class="glow"></div>
+
+        <div class="icon-card">
+
+          <img
+            src="icon.png"
+            alt="Durbar App Icon">
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         FEATURES
+    ========================= -->
+
+    <section class="features">
+
+      <article class="feature">
+
+        <div class="feature-icon">
+          🎓
+        </div>
+
+        <h3>
+          Higher Education
+        </h3>
+
+        <p>
+          Designed to support students
+          throughout their higher education
+          experience.
+        </p>
+
+      </article>
+
+
+      <article class="feature">
+
+        <div class="feature-icon">
+          ⚡
+        </div>
+
+        <h3>
+          Simple Experience
+        </h3>
+
+        <p>
+          A clean and modern interface
+          focused on making everyday use
+          simple.
+        </p>
+
+      </article>
+
+
+      <article class="feature">
+
+        <div class="feature-icon">
+          📱
+        </div>
+
+        <h3>
+          Android App
+        </h3>
+
+        <p>
+          Download the APK directly and
+          install Durbar on your Android
+          device.
+        </p>
+
+      </article>
+
+    </section>
+
+
+    <!-- =========================
+         DOWNLOAD CTA
+    ========================= -->
+
+    <section class="download-section">
+
+      <h2>
+        Ready to use Durbar?
+      </h2>
+
+      <p>
+        Download the latest Android version
+        and start your higher education
+        experience with Durbar.
+      </p>
+
+      <a
+        class="button"
+        href="https://github.com/darshanghimire03-lgtm/DOROI-STORE/releases/download/Doroi/Durbar.apk">
+
+        ↓ &nbsp; Download APK
+
+      </a>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================= -->
+
+  <footer>
+
+    <span>
+      © 2026 Durbar
+    </span>
+
+    <span>
+      For your Higher Education.
+    </span>
+
+  </footer>
+
+
+</body>
+</html>
