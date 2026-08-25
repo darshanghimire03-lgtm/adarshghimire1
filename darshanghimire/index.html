@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Darshan Ghimire</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0906;
+    --bg-soft: #14110c;
+    --amber: #e8a24a;
+    --amber-deep: #c9762b;
+    --teal: #4a7a6e;
+    --teal-glow: #7fb8a8;
+    --text: #f0e4d3;
+    --text-dim: #9a8f7e;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(232, 162, 74, 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(74, 122, 110, 0.10), transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 6%;
+    background: rgba(10,9,6,0.85);
+    z-index: 100;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(232, 162, 74, 0.08);
+  }
+
+  .nav-name {
+    font-size: 1rem;
+    letter-spacing: 3px;
+    color: var(--amber);
+    font-weight: bold;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+    white-space: nowrap;
+  }
+
+  nav a:hover { color: var(--teal-glow); }
+
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 140px 8% 100px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 110px;
+  }
+
+  .profile-pic-wrap {
+    width: 180px;
+    height: 180px;
+    min-width: 180px;
+    min-height: 180px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    padding: 4px;
+    background: linear-gradient(135deg, var(--amber-deep), var(--teal));
+    margin-bottom: 36px;
+    box-shadow: 0 0 60px rgba(232, 162, 74, 0.18);
+  }
+
+  .profile-pic-wrap img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    border: 3px solid var(--bg);
+    background: var(--bg-soft);
+  }
+
+  .profile-pic-wrap .pic-fallback {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-soft);
+    border: 3px solid var(--bg);
+    font-family: Arial, sans-serif;
+    font-size: 2.6rem;
+    font-weight: bold;
+    color: var(--amber);
+    letter-spacing: 1px;
+  }
+
+  .hero-eyebrow {
+    color: var(--teal-glow);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+    font-family: Arial, sans-serif;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.6rem, 8vw, 5.5rem);
+    color: var(--amber);
+    text-shadow: 0 0 40px rgba(232, 162, 74, 0.25);
+    line-height: 1.05;
+    letter-spacing: 1px;
+  }
+
+  .hero h1 span {
+    display: block;
+    color: var(--text);
+    font-size: 0.45em;
+    margin-top: 12px;
+    font-family: Arial, sans-serif;
+    font-weight: 300;
+    letter-spacing: 2px;
+  }
+
+  .hero-tagline {
+    margin-top: 30px;
+    max-width: 560px;
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    font-family: Arial, sans-serif;
+    font-weight: 300;
+  }
+
+  .hero-line {
+    width: 90px;
+    height: 2px;
+    background: linear-gradient(to right, var(--amber-deep), var(--teal));
+    margin: 40px auto 0;
+  }
+
+  .social-row {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+  }
+
+  .social-row a {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid rgba(232, 162, 74, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    font-size: 0.75rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    background: rgba(20,17,12,0.4);
+  }
+
+  .social-row a svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--text);
+    transition: fill 0.3s ease;
+  }
+
+  .social-row a:hover {
+    background: var(--teal);
+    border-color: var(--teal);
+    transform: translateY(-4px);
+    color: var(--bg);
+  }
+
+  .social-row a:hover svg {
+    fill: var(--bg);
+  }
+
+  .section-title {
+    font-size: 0.85rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--teal-glow);
+    font-family: Arial, sans-serif;
+    margin-bottom: 12px;
+  }
+
+  .section-heading {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    color: var(--amber);
+    margin-bottom: 40px;
+  }
+
+  .about-text {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    max-width: 680px;
+    word-wrap: break-word;
+  }
+
+  .about-text p { margin-bottom: 20px; }
+
+  .about-text strong { color: var(--text); font-weight: normal; border-bottom: 1px solid var(--amber-deep); }
+
+  .bio-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+    margin-top: 34px;
+    max-width: 680px;
+  }
+
+  .bio-item {
+    background: linear-gradient(145deg, var(--bg-soft), rgba(20,17,12,0.4));
+    border: 1px solid rgba(232, 162, 74, 0.12);
+    border-radius: 4px;
+    padding: 18px 20px;
+  }
+
+  .bio-item .bio-label {
+    color: var(--teal-glow);
+    font-family: Arial, sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .bio-item .bio-value {
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    font-size: 0.98rem;
+  }
+
+  @media (max-width: 500px) {
+    .bio-details { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .bio-item { padding: 14px 16px; }
+  }
+
+  .card {
+    background: linear-gradient(145deg, var(--bg-soft), rgba(20,17,12,0.4));
+    border: 1px solid rgba(232, 162, 74, 0.12);
+    border-radius: 4px;
+    padding: 28px 24px;
+    transition: transform 0.35s ease, border-color 0.35s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: var(--teal);
+  }
+
+  .card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 14px;
+    color: var(--teal-glow);
+  }
+
+  .card h3 {
+    color: var(--amber);
+    font-size: 1.05rem;
+    margin-bottom: 10px;
+    font-family: Arial, sans-serif;
+  }
+
+  .card p {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+  }
+
+  .stack-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+  }
+
+  .tag {
+    padding: 8px 18px;
+    border: 1px solid rgba(127, 184, 168, 0.35);
+    color: var(--teal-glow);
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-family: Arial, sans-serif;
+    background: rgba(74, 122, 110, 0.06);
+  }
+
+  .contact {
+    text-align: center;
+  }
+
+  .contact .section-heading { margin-bottom: 20px; }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .contact-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    text-decoration: none;
+    padding: 14px 30px;
+    border: 1px solid var(--amber-deep);
+    border-radius: 2px;
+    font-family: Arial, sans-serif;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    transition: all 0.35s ease;
+  }
+
+  .contact-links a svg {
+    width: 18px;
+    height: 18px;
+    fill: var(--text);
+    transition: fill 0.35s ease;
+  }
+
+  .contact-links a:hover {
+    background: var(--amber-deep);
+    color: var(--bg);
+  }
+
+  .contact-links a:hover svg {
+    fill: var(--bg);
+  }
+
+  .contact-links a.whatsapp:hover {
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    font-family: Arial, sans-serif;
+    letter-spacing: 1px;
+    border-top: 1px solid rgba(232, 162, 74, 0.08);
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 700px) {
+    nav { padding: 16px 5%; flex-wrap: wrap; row-gap: 10px; }
+    nav ul { gap: 14px; width: 100%; justify-content: center; }
+    nav a { font-size: 0.68rem; letter-spacing: 1px; }
+    section { padding: 100px 6% 70px; }
+    .hero { padding-top: 130px; }
+    .profile-pic-wrap {
+      width: 130px;
+      height: 130px;
+      min-width: 130px;
+      min-height: 130px;
+      margin-bottom: 28px;
+    }
+    .pic-fallback { font-size: 2rem; }
+    .hero-tagline { font-size: 1rem; }
+    .social-row a { width: 42px; height: 42px; }
+    .contact-links a { padding: 12px 22px; font-size: 0.85rem; }
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 420px) {
+    .nav-name { font-size: 0.85rem; letter-spacing: 2px; }
+    nav ul { gap: 10px; }
+    nav a { font-size: 0.62rem; }
+    .hero h1 span { font-size: 0.4em; }
+    .stack-tags { justify-content: center; }
+    .contact-links { flex-direction: column; align-items: center; }
+    .contact-links a { width: 100%; max-width: 280px; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-name">D. Ghimire</div>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#focus">Focus</a></li>
+    <li><a href="#stack">Stack</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="profile-pic-wrap" id="picWrap">
+    <img src="darshanghimire.png" alt="Darshan Ghimire" id="profileImg" onerror="this.style.display='none'; document.getElementById('picFallback').style.display='flex';">
+    <div class="pic-fallback" id="picFallback" style="display:none;">DG</div>
+  </div>
+  <div class="hero-eyebrow">Independent Android Developer</div>
+  <h1>Darshan Ghimire<span>Building apps from Nepal</span></h1>
+  <p class="hero-tagline">
+    I design and build Android applications end-to-end perfect. Young and Humble Developer from nepal.
+  </p>
+  <div class="hero-line"></div>
+  <div class="social-row">
+    <a href="https://wa.me/9779806393423" target="_blank" title="WhatsApp">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.001 2C6.478 2 2 6.477 2 12c0 1.876.52 3.632 1.42 5.13L2 22l4.99-1.31A9.958 9.958 0 0 0 12.001 22C17.524 22 22 17.523 22 12S17.524 2 12.001 2zm0 18.11a8.09 8.09 0 0 1-4.126-1.132l-.296-.176-3.093.812.826-3.017-.192-.31A8.106 8.106 0 0 1 3.9 12c0-4.472 3.63-8.102 8.102-8.102 4.47 0 8.1 3.63 8.1 8.102 0 4.471-3.63 8.11-8.101 8.11z"/></svg>
+    </a>
+    <a href="https://www.facebook.com/darshang404" target="_blank" title="Facebook">
+      <svg viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+    </a>
+    <a href="https://www.instagram.com/darshang404?igsi=MWZ6enV5cGRqMHFiNA==" target="_blank" title="Instagram">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 9.837a3.837 3.837 0 1 1 0-7.674 3.837 3.837 0 0 1 0 7.674zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+    </a>
+    <a href="https://www.tiktok.com/@darshang404?_r=1&_t=ZS-99BN6AdzmOu" target="_blank" title="TikTok">
+      <svg viewBox="0 0 24 24"><path d="M16.6 5.82s.51.5 0 0A4.278 4.278 0 0 1 15.54 3h-3.09v12.4a2.592 2.592 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48z"/></svg>
+    </a>
+    <a href="https://www.youtube.com/@darshang404" target="_blank" title="YouTube">
+      <svg viewBox="0 0 24 24"><path d="M21.582 7.186a2.51 2.51 0 0 0-1.768-1.775C18.254 5 12 5 12 5s-6.254 0-7.814.411A2.51 2.51 0 0 0 2.418 7.186 26.18 26.18 0 0 0 2 12a26.18 26.18 0 0 0 .418 4.814 2.51 2.51 0 0 0 1.768 1.775C5.746 19 12 19 12 19s6.254 0 7.814-.411a2.51 2.51 0 0 0 1.768-1.775A26.18 26.18 0 0 0 22 12a26.18 26.18 0 0 0-.418-4.814zM10 15.5v-7l6 3.5-6 3.5z"/></svg>
+    </a>
+  </div>
+</section>
+
+<section id="about">
+  <div class="section-title">Who I Am</div>
+  <h2 class="section-heading">About Me</h2>
+  <div class="about-text">
+    <p>
+      I'm <strong>Darshan</strong>, an independent Android developer based in <strong>Nepal</strong>. I build apps entirely on-device — no PC required — using <strong>AndroidIDE</strong> as my primary development environment.
+    </p>
+    <p>
+      My work spans social platforms, school and college companion apps, games, and utility tools, most of them built with <strong>Kotlin</strong> and backed by <strong>Firebase</strong>. I care about clean architecture, polished UI, and shipping things that actually work in the hands of real users.
+    </p>
+    <p>
+      I have a strong pull toward building for Nepal specifically — Nepali-language tools, Bikram Sambat calendar systems, and community platforms that serve people here first.
+    </p>
+  </div>
+</section>
+
+<section id="focus">
+  <div class="section-title">What I Do</div>
+  <h2 class="section-heading">Areas of Focus</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon">◆</div>
+      <h3>Social & Chat Apps</h3>
+      <p>Facebook-style and real-time chat platforms with Firebase Realtime Database backing.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">◆</div>
+      <h3>School & College Tools</h3>
+      <p>Companion apps for students — notices, chat, and academic organization.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">◆</div>
+      <h3>Nepal-Focused Utilities</h3>
+      <p>Bikram Sambat calendars, room rental platforms, and community-first tools.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">◆</div>
+      <h3>Games & Media</h3>
+      <p>Lightweight game apps and media players built for smooth, native feel.</p>
+    </div>
+  </div>
+</section>
+
+<section id="stack">
+  <div class="section-title">How I Build</div>
+  <h2 class="section-heading">My Stack</h2>
+  <div class="stack-tags">
+    <span class="tag">Android Dev</span>
+    <span class="tag">Web Dev</span>
+    <span class="tag">Kotlin</span>
+    <span class="tag">Firebase Realtime Database</span>
+    <span class="tag">Material Components</span>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="section-title">Get In Touch</div>
+  <h2 class="section-heading">Let's Connect</h2>
+  <p class="about-text" style="margin: 0 auto;">Open to conversations about apps, ideas, or collaboration.</p>
+  <div class="contact-links">
+    <a href="mailto:darshanghimire03@gmail.com">
+      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      Email
+    </a>
+    <a class="whatsapp" href="https://wa.me/9779806393423" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.001 2C6.478 2 2 6.477 2 12c0 1.876.52 3.632 1.42 5.13L2 22l4.99-1.31A9.958 9.958 0 0 0 12.001 22C17.524 22 22 17.523 22 12S17.524 2 12.001 2zm0 18.11a8.09 8.09 0 0 1-4.126-1.132l-.296-.176-3.093.812.826-3.017-.192-.31A8.106 8.106 0 0 1 3.9 12c0-4.472 3.63-8.102 8.102-8.102 4.47 0 8.1 3.63 8.1 8.102 0 4.471-3.63 8.11-8.101 8.11z"/></svg>
+      WhatsApp
+    </a>
+    <a href="https://www.facebook.com/darshang404" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+      Facebook
+    </a>
+    <a href="https://www.instagram.com/darshang404?igsi=MWZ6enV5cGRqMHFiNA==" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 9.837a3.837 3.837 0 1 1 0-7.674 3.837 3.837 0 0 1 0 7.674zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+      Instagram
+    </a>
+    <a href="https://www.tiktok.com/@darshang404?_r=1&_t=ZS-99BN6AdzmOu" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M16.6 5.82s.51.5 0 0A4.278 4.278 0 0 1 15.54 3h-3.09v12.4a2.592 2.592 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48z"/></svg>
+      TikTok
+    </a>
+    <a href="https://www.youtube.com/@darshang404" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M21.582 7.186a2.51 2.51 0 0 0-1.768-1.775C18.254 5 12 5 12 5s-6.254 0-7.814.411A2.51 2.51 0 0 0 2.418 7.186 26.18 26.18 0 0 0 2 12a26.18 26.18 0 0 0 .418 4.814 2.51 2.51 0 0 0 1.768 1.775C5.746 19 12 19 12 19s6.254 0 7.814-.411a2.51 2.51 0 0 0 1.768-1.775A26.18 26.18 0 0 0 22 12a26.18 26.18 0 0 0-.418-4.814zM10 15.5v-7l6 3.5-6 3.5z"/></svg>
+      YouTube
+    </a>
+  </div>
+</section>
+
+<footer>
+  © 2026 Darshan Ghimire — Built entirely on Android
+</footer>
+
+</body>
+</html>
