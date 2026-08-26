@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Durbar — Admin</title>
+
+<script>
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCumgad3NpIBi94q4MwHpq9kHq4cuuSkoQ",
+    authDomain: "darbarhigh-4c642.firebaseapp.com",
+    databaseURL: "https://darbarhigh-4c642-default-rtdb.firebaseio.com",
+    projectId: "darbarhigh-4c642",
+    storageBucket: "darbarhigh-4c642.firebasestorage.app",
+    messagingSenderId: "451147040929",
+    appId: "1:451147040929:web:c105a00233209c5c05c8e0"
+  };
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root{
+    --paper:#F6F1E4;
+    --paper-2:#EFE8D4;
+    --ink:#1F2A24;
+    --ink-soft:#4B5750;
+    --rule:#C9BFA3;
+    --board:#23342B;
+    --board-2:#2C4034;
+    --chalk:#E7E2C9;
+    --marker:#B24C2F;
+    --marker-dark:#8F3A22;
+    --tab:#D8CFA9;
+    --card:#FFFDF6;
+    --shadow:0 1px 0 rgba(31,42,36,0.06);
+    --radius:3px;
+  }
+
+  *{
+    box-sizing:border-box;
+  }
+
+  html{
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        var(--paper) 0px,
+        var(--paper) 27px,
+        rgba(201,191,163,0.55) 28px
+      );
+    background-color:var(--paper);
+    color:var(--ink);
+    font-family:"Source Serif 4",Georgia,serif;
+    min-height:100vh;
+    padding-bottom:48px;
+  }
+
+  h1,h2,h3{
+    font-family:"Space Grotesk",sans-serif;
+    letter-spacing:-0.01em;
+  }
+
+  .mono{
+    font-family:"IBM Plex Mono",monospace;
+  }
+
+  a{
+    color:inherit;
+  }
+
+  button{
+    font:inherit;
+  }
+
+  .wrap{
+    max-width:900px;
+    margin:0 auto;
+    padding:0 20px;
+  }
+
+  header.board{
+    background:var(--board);
+    color:var(--chalk);
+    padding:24px 20px 20px;
+    margin-bottom:20px;
+  }
+
+  .board-inner{
+    max-width:900px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:rgba(231,226,201,0.62);
+    margin:0 0 6px;
+  }
+
+  header.board h1{
+    margin:0;
+    font-size:clamp(22px,5vw,30px);
+    color:var(--chalk);
+  }
+
+  header.board h1 em{
+    font-style:normal;
+    color:#E3A98E;
+  }
+
+  .admin-tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:18px;
+    border-bottom:1px solid var(--rule);
+    overflow-x:auto;
+  }
+
+  .admin-tab{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600;
+    font-size:14px;
+    color:var(--ink-soft);
+    background:none;
+    border:none;
+    padding:10px 16px;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    white-space:nowrap;
+  }
+
+  .admin-tab.active{
+    color:var(--marker);
+    border-bottom-color:var(--marker);
+  }
+
+  .panel{
+    display:none;
+  }
+
+  .panel.active{
+    display:block;
+  }
+
+  .search-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:16px;
+  }
+
+  .search-row input{
+    flex:1;
+    font-family:"Source Serif 4",serif;
+    font-size:15px;
+    padding:10px 12px;
+    border:1px solid var(--rule);
+    border-radius:var(--radius);
+    background:var(--card);
+  }
+
+  .search-row input:focus{
+    outline:2px solid var(--marker);
+    outline-offset:1px;
+  }
+
+  .count-line{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-bottom:12px;
+  }
+
+  .user-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .user-row{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:4px solid var(--marker);
+    border-radius:var(--radius);
+    padding:12px 16px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    box-shadow:var(--shadow);
+  }
+
+  .user-avatar{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    object-fit:cover;
+    flex:0 0 auto;
+    background:var(--tab);
+    border:1px solid var(--rule);
+  }
+
+  .user-info{
+    flex:1;
+    min-width:0;
+  }
+
+  .user-name{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600;
+    font-size:15px;
+  }
+
+  .user-meta{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:2px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .role-pill{
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:10px;
+    font-size:10.5px;
+    font-family:"IBM Plex Mono",monospace;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    background:var(--paper-2);
+    border:1px solid var(--rule);
+    color:var(--ink-soft);
+  }
+
+  .role-pill.professor{
+    background:#E3F0E6;
+    border-color:#8FBF9B;
+    color:#2C6B3E;
+  }
+
+  .role-pill.moderator{
+    background:#FBEFE6;
+    border-color:#E3A98E;
+    color:var(--marker-dark);
+  }
+
+  .role-pill.captain{
+    background:#EAE6F8;
+    border-color:#B7A9E8;
+    color:#5B3FA0;
+  }
+
+  .user-actions{
+    display:flex;
+    gap:6px;
+    flex:0 0 auto;
+  }
+
+  .btn{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600;
+    font-size:13px;
+    border:none;
+    border-radius:var(--radius);
+    padding:8px 13px;
+    cursor:pointer;
+  }
+
+  .btn-marker{
+    background:var(--marker);
+    color:#FFF8EF;
+  }
+
+  .btn-marker:hover{
+    background:var(--marker-dark);
+  }
+
+  .btn-ghost{
+    background:transparent;
+    color:var(--ink-soft);
+    border:1px solid var(--rule);
+  }
+
+  .btn-ghost:hover{
+    background:var(--paper-2);
+  }
+
+  .btn-danger{
+    background:transparent;
+    color:var(--marker);
+    border:1px solid rgba(178,76,47,0.4);
+  }
+
+  .btn-danger:hover{
+    background:#FBEFE6;
+  }
+
+  .btn-sm{
+    padding:6px 10px;
+    font-size:12px;
+  }
+
+  .btn:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+  }
+
+  .empty{
+    text-align:center;
+    padding:40px 20px;
+    color:var(--ink-soft);
+  }
+
+  .sheet-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(31,42,36,0.45);
+    z-index:50;
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+  }
+
+  .sheet-backdrop.open{
+    display:flex;
+  }
+
+  @media (min-width:640px){
+    .sheet-backdrop{
+      align-items:center;
+    }
+  }
+
+  .sheet{
+    background:var(--paper);
+    width:100%;
+    max-width:520px;
+    max-height:92vh;
+    overflow-y:auto;
+    border-radius:14px 14px 0 0;
+    border:1px solid var(--rule);
+    padding:20px 20px 24px;
+    position:relative;
+  }
+
+  @media (min-width:640px){
+    .sheet{
+      border-radius:10px;
+    }
+  }
+
+  .sheet-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:16px;
+  }
+
+  .sheet-head h3{
+    margin:0;
+    font-size:19px;
+  }
+
+  .sheet-close{
+    background:none;
+    border:none;
+    font-size:22px;
+    cursor:pointer;
+    color:var(--ink-soft);
+  }
+
+  label.field-label{
+    display:block;
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:16px 0 6px;
+  }
+
+  label.field-label:first-of-type{
+    margin-top:0;
+  }
+
+  input[type=text],
+  input[type=email],
+  input[type=tel],
+  select{
+    width:100%;
+    font-family:"Source Serif 4",serif;
+    font-size:15px;
+    color:var(--ink);
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:var(--radius);
+    padding:10px 12px;
+  }
+
+  input:focus,
+  select:focus{
+    outline:2px solid var(--marker);
+    outline-offset:1px;
+  }
+
+  .sheet-actions{
+    margin-top:20px;
+    display:flex;
+    gap:10px;
+  }
+
+  .sheet-actions .btn{
+    flex:1;
+  }
+
+  .status-line{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:10px;
+    min-height:16px;
+  }
+
+  .status-line.error{
+    color:var(--marker);
+  }
+
+  .status-line.ok{
+    color:#2C6B3E;
+  }
+
+  .hidden{
+    display:none !important;
+  }
+
+  .migrate-grid{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    gap:14px;
+    align-items:start;
+  }
+
+  @media (max-width:600px){
+    .migrate-grid{
+      grid-template-columns:1fr;
+    }
+  }
+
+  .migrate-col h4{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+
+  .migrate-arrow{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    color:var(--marker);
+    padding-top:30px;
+  }
+
+  @media (max-width:600px){
+    .migrate-arrow{
+      transform:rotate(90deg);
+      padding:4px 0;
+    }
+  }
+
+  .found-card{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-top:3px solid var(--marker);
+    border-radius:var(--radius);
+    padding:14px;
+    margin-top:10px;
+  }
+
+  .found-card .name{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:600;
+    font-size:15px;
+  }
+
+  .found-card .meta{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-top:4px;
+    line-height:1.6;
+  }
+
+  .diff-row{
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    padding:4px 0;
+    font-size:13px;
+  }
+
+  .diff-row .field{
+    color:var(--ink-soft);
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11.5px;
+  }
+
+  .diff-row .old-val{
+    text-decoration:line-through;
+    color:#9A9184;
+  }
+
+  .diff-row .new-val{
+    color:#2C6B3E;
+    font-weight:600;
+  }
+
+  .migrate-summary{
+    background:#FBEFE6;
+    border:1px solid #E3A98E;
+    border-left:4px solid var(--marker);
+    border-radius:var(--radius);
+    padding:14px;
+    margin-top:18px;
+    font-size:13.5px;
+    line-height:1.6;
+  }
+
+  @media (max-width:600px){
+    .user-row{
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+
+    .user-info{
+      min-width:calc(100% - 60px);
+    }
+
+    .user-actions{
+      width:100%;
+      margin-left:54px;
+    }
+
+    .user-actions .btn{
+      flex:1;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div id="adminApp">
+
+  <header class="board">
+    <div class="board-inner">
+      <div>
+        <p class="eyebrow">Durbar &middot; Admin</p>
+        <h1>User <em>Management</em></h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-panel="usersPanel">
+        Users
+      </button>
+
+      <button class="admin-tab" data-panel="migratePanel">
+        Migrate account data
+      </button>
+    </div>
+
+    <!-- USERS PANEL -->
+    <section class="panel active" id="usersPanel">
+
+      <div class="search-row">
+        <input
+          type="text"
+          id="userSearch"
+          placeholder="Search by name, email, or role..."
+        />
+      </div>
+
+      <div class="count-line" id="userCount">
+        0 users
+      </div>
+
+      <div class="user-list" id="userList"></div>
+
+      <div class="empty hidden" id="usersEmpty">
+        <h3>No users found</h3>
+        <p>Try a different search term.</p>
+      </div>
+
+    </section>
+
+
+    <!-- MIGRATION PANEL -->
+    <section class="panel" id="migratePanel">
+
+      <p style="color:var(--ink-soft); font-size:14px; margin-top:0;">
+        Use this when a student lost access to their old account
+        and made a new one. This copies profile information from the
+        old account onto the new one. It never overwrites a field
+        the new account already has filled in.
+      </p>
+
+      <div class="migrate-grid">
+
+        <div class="migrate-col">
+
+          <h4>Old account (source)</h4>
+
+          <input
+            type="text"
+            id="oldUserSearch"
+            placeholder="Search old account by email or name"
+          />
+
+          <div
+            class="found-card hidden"
+            id="oldUserCard"
+          ></div>
+
+        </div>
+
+        <div class="migrate-arrow">
+          &rarr;
+        </div>
+
+        <div class="migrate-col">
+
+          <h4>New account (destination)</h4>
+
+          <input
+            type="text"
+            id="newUserSearch"
+            placeholder="Search new account by email or name"
+          />
+
+          <div
+            class="found-card hidden"
+            id="newUserCard"
+          ></div>
+
+        </div>
+
+      </div>
+
+      <div
+        class="migrate-summary hidden"
+        id="migrateSummary"
+      ></div>
+
+      <div
+        class="status-line"
+        id="migrateStatus"
+      ></div>
+
+      <div
+        class="sheet-actions"
+        style="margin-top:16px; max-width:320px;"
+      >
+        <button
+          class="btn btn-marker"
+          id="runMigrateBtn"
+          disabled
+        >
+          Migrate data
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- EDIT USER SHEET -->
+
+<div
+  class="sheet-backdrop"
+  id="editBackdrop"
+>
+
+  <div
+    class="sheet"
+    role="dialog"
+    aria-modal="true"
+  >
+
+    <div class="sheet-head">
+
+      <h3>Edit user</h3>
+
+      <button
+        class="sheet-close"
+        data-close="editBackdrop"
+        aria-label="Close"
+      >
+        &times;
+      </button>
+
+    </div>
+
+
+    <label
+      class="field-label"
+      for="editFullName"
+    >
+      Full name
+    </label>
+
+    <input
+      type="text"
+      id="editFullName"
+    />
+
+
+    <label
+      class="field-label"
+      for="editEmail"
+    >
+      Email
+    </label>
+
+    <input
+      type="email"
+      id="editEmail"
+    />
+
+
+    <label
+      class="field-label"
+      for="editPhone"
+    >
+      Phone
+    </label>
+
+    <input
+      type="tel"
+      id="editPhone"
+    />
+
+
+    <label
+      class="field-label"
+      for="editDob"
+    >
+      Date of birth
+    </label>
+
+    <input
+      type="text"
+      id="editDob"
+      placeholder="YYYY-MM-DD"
+    />
+
+
+    <label
+      class="field-label"
+      for="editGender"
+    >
+      Gender
+    </label>
+
+    <input
+      type="text"
+      id="editGender"
+    />
+
+
+    <label
+      class="field-label"
+      for="editRole"
+    >
+      Role
+    </label>
+
+    <select id="editRole">
+
+      <option value="student">
+        student
+      </option>
+
+      <option value="captain">
+        captain
+      </option>
+
+      <option value="moderator">
+        moderator
+      </option>
+
+      <option value="professor">
+        professor
+      </option>
+
+    </select>
+
+
+    <label
+      class="field-label"
+      for="editSubject"
+    >
+      Assigned subject
+    </label>
+
+    <input
+      type="text"
+      id="editSubject"
+      placeholder="e.g. English"
+    />
+
+
+    <div
+      class="status-line"
+      id="editStatus"
+    ></div>
+
+
+    <div class="sheet-actions">
+
+      <button
+        class="btn btn-ghost"
+        data-close="editBackdrop"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="btn btn-marker"
+        id="saveEditBtn"
+      >
+        Save changes
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+(function () {
+
+  "use strict";
+
+
+  /* ================================
+     FIREBASE
+  ================================= */
+
+  let adminInitialized = false;
+  let db = null;
+  let allUsers = {};
+
+
+  /* ================================
+     INITIALIZE ADMIN
+  ================================= */
+
+  function initAdmin() {
+
+    if (adminInitialized) return;
+
+    adminInitialized = true;
+
+    firebase.initializeApp(FIREBASE_CONFIG);
+
+    db = firebase.database();
+
+
+    /* ================================
+       TABS
+    ================================= */
+
+    document
+      .querySelectorAll(".admin-tab")
+      .forEach(tab => {
+
+        tab.addEventListener("click", () => {
+
+          document
+            .querySelectorAll(".admin-tab")
+            .forEach(t => {
+              t.classList.remove("active");
+            });
+
+          document
+            .querySelectorAll(".panel")
+            .forEach(p => {
+              p.classList.remove("active");
+            });
+
+          tab.classList.add("active");
+
+          document
+            .getElementById(tab.dataset.panel)
+            .classList.add("active");
+
+        });
+
+      });
+
+
+    /* ================================
+       CLOSE EDIT SHEET
+    ================================= */
+
+    document
+      .querySelectorAll("[data-close]")
+      .forEach(btn => {
+
+        btn.addEventListener("click", () => {
+
+          closeSheet(btn.dataset.close);
+
+        });
+
+      });
+
+
+    /* ================================
+       CLICK OUTSIDE SHEET
+    ================================= */
+
+    document
+      .querySelectorAll(".sheet-backdrop")
+      .forEach(backdrop => {
+
+        backdrop.addEventListener("click", e => {
+
+          if (e.target === backdrop) {
+
+            closeSheet(backdrop.id);
+
+          }
+
+        });
+
+      });
+
+
+    /* ================================
+       LOAD USERS
+    ================================= */
+
+    db.ref("users").on(
+      "value",
+
+      snap => {
+
+        allUsers = snap.val() || {};
+
+        renderUserList();
+
+        refreshMigrateCards();
+
+      },
+
+      err => {
+
+        console.error(
+          "Failed to read users:",
+          err
+        );
+
+        document
+          .getElementById("usersEmpty")
+          .classList.remove("hidden");
+
+        document
+          .getElementById("usersEmpty")
+          .querySelector("h3")
+          .textContent = "Could not load users";
+
+        document
+          .getElementById("usersEmpty")
+          .querySelector("p")
+          .textContent = err.message;
+
+      }
+    );
+
+
+    /* ================================
+       SEARCH
+    ================================= */
+
+    document
+      .getElementById("userSearch")
+      .addEventListener(
+        "input",
+        renderUserList
+      );
+
+
+    /* ================================
+       EDIT
+    ================================= */
+
+    document
+      .getElementById("saveEditBtn")
+      .addEventListener(
+        "click",
+        saveEditedUser
+      );
+
+
+    /* ================================
+       MIGRATION SEARCH
+    ================================= */
+
+    document
+      .getElementById("oldUserSearch")
+      .addEventListener(
+        "input",
+        () => selectSourceUser("old")
+      );
+
+
+    document
+      .getElementById("newUserSearch")
+      .addEventListener(
+        "input",
+        () => selectSourceUser("new")
+      );
+
+
+    document
+      .getElementById("runMigrateBtn")
+      .addEventListener(
+        "click",
+        runMigration
+      );
+
+  }
+
+
+  /* ================================
+     HELPERS
+  ================================= */
+
+  function el(id) {
+
+    return document.getElementById(id);
+
+  }
+
+
+  function openSheet(id) {
+
+    el(id).classList.add("open");
+
+  }
+
+
+  function closeSheet(id) {
+
+    el(id).classList.remove("open");
+
+  }
+
+
+  function escapeHtml(str) {
+
+    const d = document.createElement("div");
+
+    d.textContent = str || "";
+
+    return d.innerHTML;
+
+  }
+
+
+  /* ================================
+     SEARCH USERS
+  ================================= */
+
+  function matchesSearch(u, q) {
+
+    if (!q) return true;
+
+    q = q.toLowerCase();
+
+    return (
+      (u.fullName || "")
+        .toLowerCase()
+        .includes(q)
+
+      ||
+
+      (u.email || "")
+        .toLowerCase()
+        .includes(q)
+
+      ||
+
+      (u.role || "")
+        .toLowerCase()
+        .includes(q)
+
+      ||
+
+      (u.assignedSubject || "")
+        .toLowerCase()
+        .includes(q)
+    );
+
+  }
+
+
+  /* ================================
+     RENDER USER LIST
+  ================================= */
+
+  function renderUserList() {
+
+    const q =
+      el("userSearch")
+        .value
+        .trim();
+
+    const list =
+      el("userList");
+
+    list.innerHTML = "";
+
+
+    const uids =
+      Object.keys(allUsers)
+        .filter(uid =>
+          matchesSearch(
+            allUsers[uid],
+            q
+          )
+        );
+
+
+    el("userCount").textContent =
+      uids.length +
+      (uids.length === 1
+        ? " user"
+        : " users");
+
+
+    el("usersEmpty")
+      .classList
+      .toggle(
+        "hidden",
+        uids.length !== 0
+      );
+
+
+    uids.sort((a, b) =>
+
+      (allUsers[b].createdAt || 0) -
+      (allUsers[a].createdAt || 0)
+
+    );
+
+
+    uids.forEach(uid => {
+
+      const u =
+        allUsers[uid];
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "user-row";
+
+
+      const initials =
+        (
+          u.fullName ||
+          u.email ||
+          "?"
+        )
+        .trim()
+        .charAt(0)
+        .toUpperCase();
+
+
+      row.innerHTML = `
+
+        ${
+          u.profileImageUrl
+
+          ?
+
+          `
+          <img
+            class="user-avatar"
+            src="${escapeHtml(u.profileImageUrl)}"
+            alt=""
+          />
+          `
+
+          :
+
+          `
+          <div
+            class="user-avatar"
+            style="
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              font-family:'Space Grotesk',sans-serif;
+              font-weight:700;
+              color:var(--ink-soft);
+            "
+          >
+            ${escapeHtml(initials)}
+          </div>
+          `
+        }
+
+
+        <div class="user-info">
+
+          <div class="user-name">
+            ${escapeHtml(
+              u.fullName ||
+              "(no name)"
+            )}
+          </div>
+
+
+          <div class="user-meta">
+
+            <span>
+              ${escapeHtml(
+                u.email ||
+                "no email"
+              )}
+            </span>
+
+
+            <span
+              class="role-pill ${escapeHtml(
+                u.role || ""
+              )}"
+            >
+              ${escapeHtml(
+                u.role ||
+                "student"
+              )}
+            </span>
+
+
+            ${
+              u.assignedSubject
+
+              ?
+
+              `
+              <span>
+                ${escapeHtml(
+                  u.assignedSubject
+                )}
+              </span>
+              `
+
+              :
+
+              ""
+            }
+
+          </div>
+
+        </div>
+
+
+        <div class="user-actions">
+
+          <button
+            class="btn btn-ghost btn-sm"
+            data-edit="${escapeHtml(uid)}"
+          >
+            Edit
+          </button>
+
+
+          <button
+            class="btn btn-danger btn-sm"
+            data-delete="${escapeHtml(uid)}"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      `;
+
+
+      list.appendChild(row);
+
+    });
+
+
+    /* ================================
+       EDIT BUTTONS
+    ================================= */
+
+    list
+      .querySelectorAll("[data-edit]")
+      .forEach(btn => {
+
+        btn.addEventListener(
+          "click",
+          () =>
+            openEditSheet(
+              btn.dataset.edit
+            )
+        );
+
+      });
+
+
+    /* ================================
+       DELETE BUTTONS
+    ================================= */
+
+    list
+      .querySelectorAll("[data-delete]")
+      .forEach(btn => {
+
+        btn.addEventListener(
+          "click",
+          () =>
+            deleteUser(
+              btn.dataset.delete
+            )
+        );
+
+      });
+
+  }
+
+
+  /* ================================
+     EDIT USER
+  ================================= */
+
+  let editingUid = null;
+
+
+  function openEditSheet(uid) {
+
+    const u =
+      allUsers[uid];
+
+    if (!u) return;
+
+    editingUid = uid;
+
+
+    el("editFullName").value =
+      u.fullName || "";
+
+
+    el("editEmail").value =
+      u.email || "";
+
+
+    el("editPhone").value =
+      u.phone || "";
+
+
+    el("editDob").value =
+      u.dob || "";
+
+
+    el("editGender").value =
+      u.gender || "";
+
+
+    el("editRole").value =
+      u.role || "student";
+
+
+    el("editSubject").value =
+      u.assignedSubject || "";
+
+
+    el("editStatus").textContent =
+      "";
+
+    el("editStatus")
+      .classList
+      .remove(
+        "error",
+        "ok"
+      );
+
+
+    openSheet(
+      "editBackdrop"
+    );
+
+  }
+
+
+  /* ================================
+     SAVE USER
+  ================================= */
+
+  function saveEditedUser() {
+
+    if (!editingUid) return;
+
+
+    const status =
+      el("editStatus");
+
+
+    const updates = {
+
+      fullName:
+        el("editFullName")
+          .value
+          .trim(),
+
+      email:
+        el("editEmail")
+          .value
+          .trim(),
+
+      phone:
+        el("editPhone")
+          .value
+          .trim(),
+
+      dob:
+        el("editDob")
+          .value
+          .trim(),
+
+      gender:
+        el("editGender")
+          .value
+          .trim(),
+
+      role:
+        el("editRole")
+          .value,
+
+      assignedSubject:
+        el("editSubject")
+          .value
+          .trim()
+
+    };
+
+
+    status.textContent =
+      "Saving...";
+
+
+    status
+      .classList
+      .remove(
+        "error",
+        "ok"
+      );
+
+
+    db.ref("users")
+      .child(editingUid)
+      .update(updates)
+
+      .then(() => {
+
+        status.textContent =
+          "Saved.";
+
+        status
+          .classList
+          .add("ok");
+
+
+        setTimeout(
+          () =>
+            closeSheet(
+              "editBackdrop"
+            ),
+          500
+        );
+
+      })
+
+      .catch(err => {
+
+        status.textContent =
+          "Failed: " +
+          err.message;
+
+        status
+          .classList
+          .add("error");
+
+      });
+
+  }
+
+
+  /* ================================
+     DELETE USER
+  ================================= */
+
+  function deleteUser(uid) {
+
+    const u =
+      allUsers[uid];
+
+
+    const label =
+      (
+        u &&
+        (
+          u.fullName ||
+          u.email
+        )
+      ) ||
+      uid;
+
+
+    if (
+      !confirm(
+        `Delete "${label}"? This removes their profile record permanently and can't be undone.`
+      )
+    ) {
+      return;
+    }
+
+
+    db.ref("users")
+      .child(uid)
+      .remove()
+
+      .catch(err => {
+
+        alert(
+          "Failed to delete: " +
+          err.message
+        );
+
+      });
+
+  }
+
+
+  /* ================================
+     MIGRATION
+  ================================= */
+
+  const MIGRATABLE_FIELDS = [
+
+    "fullName",
+    "dob",
+    "phone",
+    "gender",
+    "profileImageUrl",
+    "assignedSubject"
+
+  ];
+
+
+  let sourceOldUid = null;
+  let sourceNewUid = null;
+
+
+  function findBestMatch(query) {
+
+    query =
+      query
+        .trim()
+        .toLowerCase();
+
+
+    if (!query) return null;
+
+
+    let exact = null;
+
+
+    for (
+      const uid of Object.keys(allUsers)
+    ) {
+
+      const u =
+        allUsers[uid];
+
+
+      if (
+        (u.email || "")
+          .toLowerCase() === query
+      ) {
+
+        return uid;
+
+      }
+
+
+      if (
+        !exact &&
+        (
+          (u.fullName || "")
+            .toLowerCase()
+            .includes(query)
+
+          ||
+
+          (u.email || "")
+            .toLowerCase()
+            .includes(query)
+        )
+      ) {
+
+        exact = uid;
+
+      }
+
+    }
+
+
+    return exact;
+
+  }
+
+
+  function selectSourceUser(which) {
+
+    const query =
+      el(
+        which +
+        "UserSearch"
+      ).value;
+
+
+    const uid =
+      findBestMatch(query);
+
+
+    if (which === "old") {
+
+      sourceOldUid = uid;
+
+    } else {
+
+      sourceNewUid = uid;
+
+    }
+
+
+    refreshMigrateCards();
+
+  }
+
+
+  function refreshMigrateCards() {
+
+    renderFoundCard(
+      "old",
+      sourceOldUid
+    );
+
+
+    renderFoundCard(
+      "new",
+      sourceNewUid
+    );
+
+
+    renderMigrateSummary();
+
+  }
+
+
+  function renderFoundCard(
+    which,
+    uid
+  ) {
+
+    const card =
+      el(
+        which +
+        "UserCard"
+      );
+
+
+    if (
+      !uid ||
+      !allUsers[uid]
+    ) {
+
+      card
+        .classList
+        .add("hidden");
+
+      card.innerHTML =
+        "";
+
+      return;
+
+    }
+
+
+    const u =
+      allUsers[uid];
+
+
+    card
+      .classList
+      .remove("hidden");
+
+
+    card.innerHTML = `
+
+      <div class="name">
+        ${escapeHtml(
+          u.fullName ||
+          "(no name)"
+        )}
+      </div>
+
+
+      <div class="meta">
+
+        ${escapeHtml(
+          u.email ||
+          "no email"
+        )}
+
+        <br/>
+
+        role:
+        ${escapeHtml(
+          u.role ||
+          "student"
+        )}
+
+        ${
+          u.assignedSubject
+            ? " · " +
+              escapeHtml(
+                u.assignedSubject
+              )
+            : ""
+        }
+
+        <br/>
+
+        uid:
+        ${escapeHtml(uid)}
+
+        ${
+          which === "old" &&
+          u.migratedTo
+
+          ?
+
+          `
+          <br/>
+
+          <strong
+            style="color:var(--marker)"
+          >
+            Already migrated to
+            ${escapeHtml(
+              u.migratedTo
+            )}
+          </strong>
+          `
+
+          :
+
+          ""
+        }
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* ================================
+     MIGRATION SUMMARY
+  ================================= */
+
+  function renderMigrateSummary() {
+
+    const box =
+      el("migrateSummary");
+
+    const runBtn =
+      el("runMigrateBtn");
+
+
+    if (
+      !sourceOldUid ||
+      !sourceNewUid
+    ) {
+
+      box
+        .classList
+        .add("hidden");
+
+      runBtn.disabled =
+        true;
+
+      return;
+
+    }
+
+
+    if (
+      sourceOldUid ===
+      sourceNewUid
+    ) {
+
+      box
+        .classList
+        .remove("hidden");
+
+
+      box.innerHTML =
+        "Old and new accounts can't be the same.";
+
+
+      runBtn.disabled =
+        true;
+
+
+      return;
+
+    }
+
+
+    const oldU =
+      allUsers[
+        sourceOldUid
+      ];
+
+
+    const newU =
+      allUsers[
+        sourceNewUid
+      ];
+
+
+    let rows = "";
+
+    let anyChanges =
+      false;
+
+
+    MIGRATABLE_FIELDS
+      .forEach(field => {
+
+        const oldVal =
+          (
+            oldU[field] ||
+            ""
+          )
+          .toString()
+          .trim();
+
+
+        const newVal =
+          (
+            newU[field] ||
+            ""
+          )
+          .toString()
+          .trim();
+
+
+        if (
+          oldVal &&
+          !newVal
+        ) {
+
+          anyChanges =
+            true;
+
+
+          rows += `
+
+            <div class="diff-row">
+
+              <span class="field">
+                ${escapeHtml(field)}
+              </span>
+
+
+              <span>
+
+                <span class="old-val">
+                  (empty)
+                </span>
+
+                &rarr;
+
+                <span class="new-val">
+                  ${escapeHtml(
+                    oldVal
+                  )}
+                </span>
+
+              </span>
+
+            </div>
+
+          `;
+
+        }
+
+      });
+
+
+    box
+      .classList
+      .remove("hidden");
+
+
+    box.innerHTML = `
+
+      <strong>
+        This will copy the following
+        into the new account.
+        Only empty fields are filled.
+        Nothing on the new account
+        gets overwritten.
+      </strong>
+
+
+      <div
+        style="margin-top:8px;"
+      >
+
+        ${
+          rows ||
+          "<em>No empty fields to fill — new account already has all its info.</em>"
+        }
+
+      </div>
+
+
+      <div
+        style="margin-top:10px;"
+      >
+
+        The old account will be marked
+        <span class="mono">
+          migratedTo
+        </span>
+        and left in place.
+        Nothing is deleted.
+
+      </div>
+
+    `;
+
+
+    runBtn.disabled =
+      !anyChanges;
+
+  }
+
+
+  /* ================================
+     RUN MIGRATION
+  ================================= */
+
+  function runMigration() {
+
+    if (
+      !sourceOldUid ||
+      !sourceNewUid ||
+      sourceOldUid ===
+      sourceNewUid
+    ) {
+      return;
+    }
+
+
+    const status =
+      el("migrateStatus");
+
+
+    const oldU =
+      allUsers[
+        sourceOldUid
+      ];
+
+
+    const newU =
+      allUsers[
+        sourceNewUid
+      ];
+
+
+    const updates = {};
+
+
+    MIGRATABLE_FIELDS
+      .forEach(field => {
+
+        const oldVal =
+          (
+            oldU[field] ||
+            ""
+          )
+          .toString()
+          .trim();
+
+
+        const newVal =
+          (
+            newU[field] ||
+            ""
+          )
+          .toString()
+          .trim();
+
+
+        if (
+          oldVal &&
+          !newVal
+        ) {
+
+          updates[field] =
+            oldVal;
+
+        }
+
+      });
+
+
+    if (
+      Object.keys(updates)
+        .length === 0
+    ) {
+
+      status.textContent =
+        "Nothing to migrate — new account already has this info.";
+
+      status
+        .classList
+        .add("error");
+
+      return;
+
+    }
+
+
+    if (
+      !confirm(
+        `Copy ${Object.keys(updates).length} field(s) from the old account into the new one, and mark the old account as migrated?`
+      )
+    ) {
+      return;
+    }
+
+
+    status.textContent =
+      "Migrating...";
+
+
+    status
+      .classList
+      .remove(
+        "error",
+        "ok"
+      );
+
+
+    const newRef =
+      db.ref("users")
+        .child(sourceNewUid)
+        .update(updates);
+
+
+    const oldRef =
+      db.ref("users")
+        .child(sourceOldUid)
+        .update({
+
+          migratedTo:
+            sourceNewUid,
+
+          migratedAt:
+            Date.now()
+
+        });
+
+
+    Promise
+      .all([
+        newRef,
+        oldRef
+      ])
+
+      .then(() => {
+
+        status.textContent =
+          "Migration complete.";
+
+        status
+          .classList
+          .add("ok");
+
+      })
+
+      .catch(err => {
+
+        status.textContent =
+          "Failed: " +
+          err.message;
+
+        status
+          .classList
+          .add("error");
+
+      });
+
+  }
+
+
+  /* ================================
+     START ADMIN DIRECTLY
+  ================================= */
+
+  initAdmin();
+
+})();
+</script>
+
+</body>
+</html>

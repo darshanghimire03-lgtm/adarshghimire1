@@ -1,652 +1,1565 @@
 <!DOCTYPE html>
-<html lang="ne">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keyboard Shortcuts & Extensions</title>
 
-    <title>Doroi Software</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+:root {
+  --bg: #0b0d12;
+  --card: #141821;
+  --card2: #191e29;
+  --text: #f5f7fa;
+  --muted: #9aa3b2;
+  --border: #272e3b;
+  --accent: #4f8cff;
+  --accent2: #2868dc;
+}
 
-        :root {
-            --background: #f5f6f8;
-            --card: #ffffff;
-            --text: #111827;
-            --secondary: #6b7280;
-            --border: #e5e7eb;
-            --blue: #2563eb;
-        }
+body.light {
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --card2: #eef1f6;
+  --text: #111827;
+  --muted: #687386;
+  --border: #dce1e8;
+}
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family:
-                Arial,
-                "Noto Sans Devanagari",
-                sans-serif;
-            background: var(--background);
-            color: var(--text);
-        }
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: .25s;
+}
 
-        .gallery-container {
-            width: 100%;
-            max-width: 1400px;
-            margin: auto;
-            padding: 22px 20px 25px;
-        }
+/* HEADER */
+header {
+  padding: 55px 20px 35px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
 
-        .gallery-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
+.logo {
+  width: 65px;
+  height: 65px;
+  margin: auto auto 18px;
+  border-radius: 16px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: bold;
+}
 
-        .gallery-title {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 700;
-        }
+header h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
 
-        .gallery-subtitle {
-            margin: 4px 0 0;
-            color: var(--secondary);
-            font-size: 12px;
-        }
+header p {
+  color: var(--muted);
+}
 
-        .image-count {
-            padding: 7px 11px;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 999px;
-            color: var(--secondary);
-            font-size: 11px;
-        }
+/* CONTROLS */
+.container {
+  width: min(1150px, 92%);
+  margin: 30px auto;
+}
 
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 12px;
-        }
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
 
-        .image-card {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            cursor: pointer;
-            transition: 0.25s ease;
-        }
+.search {
+  flex: 1;
+  padding: 15px 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  outline: none;
+  font-size: 15px;
+}
 
-        .image-card:hover {
-            transform: translateY(-3px);
-            box-shadow:
-                0 12px 28px rgba(0, 0, 0, 0.10);
-        }
+.search:focus {
+  border-color: var(--accent);
+}
 
-        .image-card img {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: cover;
-            transition: transform 0.35s ease;
-        }
+.theme-btn {
+  width: 50px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 20px;
+}
 
-        .image-card:hover img {
-            transform: scale(1.05);
-        }
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 35px;
+  padding-bottom: 5px;
+}
 
-        /* Founder */
+.tab {
+  white-space: nowrap;
+  padding: 11px 17px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+}
 
-        .profile-section {
-            max-width: 1400px;
-            margin: 25px auto 0;
-            padding: 35px 20px 30px;
-            text-align: center;
-            border-top: 1px solid var(--border);
-        }
+.tab.active,
+.tab:hover {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
 
-        .profile-photo {
-            width: 110px;
-            height: 110px;
-            display: block;
-            margin: 0 auto 15px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 4px solid white;
-            box-shadow:
-                0 8px 25px rgba(0, 0, 0, 0.12);
-        }
+/* SECTION */
+.section {
+  margin-bottom: 45px;
+}
 
-        .profile-name {
-            margin: 0;
-            font-size: 21px;
-            font-weight: 750;
-        }
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 17px;
+}
 
-        .profile-company {
-            margin: 5px 0 0;
-            color: var(--blue);
-            font-size: 14px;
-            font-weight: 600;
-        }
+.section-title h2 {
+  font-size: 23px;
+}
 
-        .profile-role {
-            margin: 6px 0 0;
-            color: var(--secondary);
-            font-size: 13px;
-        }
+.count {
+  color: var(--muted);
+  font-size: 13px;
+}
 
-        .profile-contact {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px 18px;
-            margin-top: 14px;
-            color: var(--secondary);
-            font-size: 13px;
-        }
+/* CARDS */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
 
-        /* Footer */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  transition: .2s;
+}
 
-        .footer {
-            padding: 18px 20px 25px;
-            text-align: center;
-            color: var(--secondary);
-            font-size: 11px;
-        }
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
 
-        .footer strong {
-            color: var(--text);
-        }
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
 
-        /* Modal */
+.card h3 {
+  font-size: 16px;
+  margin-bottom: 7px;
+}
 
-        .modal {
-            position: fixed;
-            inset: 0;
-            z-index: 1000;
+.description {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
 
-            display: none;
-            align-items: center;
-            justify-content: center;
+/* KEYS */
+.keys {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 15px;
+}
 
-            padding: 18px;
+.key {
+  min-width: 34px;
+  padding: 7px 10px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-bottom-width: 3px;
+  border-radius: 7px;
+  background: var(--card2);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: bold;
+}
 
-            background: rgba(0, 0, 0, 0.68);
-            backdrop-filter: blur(6px);
-        }
+.plus {
+  color: var(--muted);
+}
 
-        .modal.active {
-            display: flex;
-        }
+.copy {
+  border: 0;
+  background: var(--card2);
+  color: var(--muted);
+  border-radius: 7px;
+  padding: 7px 9px;
+  cursor: pointer;
+}
 
-        .modal-box {
-            width: min(450px, 100%);
-            overflow: hidden;
+.copy:hover {
+  color: var(--text);
+}
 
-            background: white;
-            border-radius: 20px;
+/* EXTENSIONS */
+.extension {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
 
-            box-shadow:
-                0 25px 70px rgba(0, 0, 0, 0.28);
+.ext-icon {
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--card2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--accent);
+}
 
-            animation: modalIn 0.25s ease;
-        }
+/* EMPTY */
+.empty {
+  display: none;
+  text-align: center;
+  padding: 50px;
+  color: var(--muted);
+}
 
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95)
-                    translateY(12px);
-            }
+/* FOOTER */
+footer {
+  text-align: center;
+  color: var(--muted);
+  padding: 35px 20px;
+  border-top: 1px solid var(--border);
+  margin-top: 50px;
+}
 
-            to {
-                opacity: 1;
-                transform: scale(1)
-                    translateY(0);
-            }
-        }
+@media(max-width:600px) {
+  header {
+    padding-top: 35px;
+  }
 
-        .modal-image {
-            width: 100%;
-            height: 270px;
-            display: block;
-            object-fit: cover;
-        }
+  header h1 {
+    font-size: 27px;
+  }
 
-        .modal-content {
-            padding: 22px;
-        }
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 10px 0;
+    background: var(--bg);
+  }
 
-        .modal-type {
-            display: inline-block;
-
-            margin-bottom: 9px;
-            padding: 6px 10px;
-
-            background: #eff6ff;
-            color: var(--blue);
-
-            border-radius: 999px;
-
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .modal-title {
-            margin: 0 0 10px;
-            font-size: 21px;
-        }
-
-        .modal-description {
-            margin: 0;
-
-            color: var(--secondary);
-
-            font-size: 14px;
-            line-height: 1.7;
-        }
-
-        .close-button {
-            width: 100%;
-            margin-top: 20px;
-            padding: 12px;
-
-            border: none;
-            border-radius: 10px;
-
-            background: #111827;
-            color: white;
-
-            font-size: 14px;
-            font-weight: 600;
-
-            cursor: pointer;
-        }
-
-        .close-button:active {
-            transform: scale(0.98);
-        }
-
-        @media (max-width: 600px) {
-
-            .gallery-container {
-                padding: 18px 16px 25px;
-            }
-
-            .gallery {
-                grid-template-columns:
-                    repeat(4, minmax(0, 1fr));
-                gap: 9px;
-            }
-
-            .image-card {
-                border-radius: 11px;
-            }
-
-            .profile-section {
-                margin-top: 20px;
-                padding: 30px 16px 25px;
-            }
-
-            .profile-photo {
-                width: 100px;
-                height: 100px;
-            }
-
-            .modal-image {
-                height: 240px;
-            }
-        }
-
-        @media (max-width: 400px) {
-
-            .gallery {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-                gap: 12px;
-            }
-
-            .profile-contact {
-                flex-direction: column;
-                gap: 7px;
-            }
-        }
-    </style>
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
 </head>
 
 <body>
 
+<header>
+  <div class="logo">⌨</div>
+  <h1>Keyboard Shortcuts</h1>
+  <p>Ctrl, Alt & Windows key shortcuts + Web Developer Extensions</p>
+</header>
 
-    <!-- GALLERY -->
+<main class="container">
 
-    <main class="gallery-container">
-
-        <div class="gallery-header">
-
-            <div>
-                <h2 class="gallery-title">
-                    मेरो ग्यालरी
-                </h2>
-
-                <p class="gallery-subtitle">
-                    पानी सम्बन्धी सामग्रीहरू
-                </p>
-            </div>
-
-            <div class="image-count">
-                <span id="imageCount">4</span> तस्बिर
-            </div>
-
-        </div>
-
-
-        <div class="gallery">
-
-
-            <!-- IMAGE 1 -->
-
-            <div
-                class="image-card"
-                data-image="img1.jpg"
-                data-title="Water Hand Dispenser"
-                data-type="हातले चलाउने पानी डिस्पेन्सर"
-                data-description="यो हातले चलाएर पानी निकाल्न प्रयोग गरिने पानी डिस्पेन्सर हो। ठूलो पानीको बोतलमा जडान गरेर सजिलै पानी निकाल्न सकिन्छ। यसलाई बिजुलीको आवश्यकता पर्दैन।"
-            >
-
-                <img
-                    src="img1.jpg"
-                    alt="Water Hand Dispenser"
-                >
-
-            </div>
-
-
-            <!-- IMAGE 2 -->
-
-            <div
-                class="image-card"
-                data-image="img2.webp"
-                data-title="Water Tap Container"
-                data-type="पानीको ट्याप भएको कन्टेनर"
-                data-description="यो पानी भण्डारण गर्न प्रयोग गरिने कन्टेनर हो। यसमा ट्याप जडान गरिएको हुन्छ, जसले कन्टेनर नउठाई सजिलै पानी निकाल्न र प्रयोग गर्न सकिन्छ।"
-            >
-
-                <img
-                    src="img2.webp"
-                    alt="Water Tap Container"
-                >
-
-            </div>
-
-
-            <!-- IMAGE 3 -->
-
-            <div
-                class="image-card"
-                data-image="img3.jpg"
-                data-title="Water Tap Container"
-                data-type="पानीको ट्याप भएको कन्टेनर"
-                data-description="यो पानी भण्डारण गर्न प्रयोग गरिने कन्टेनर हो। यसमा ट्याप जडान गरिएको हुन्छ, जसले कन्टेनर नउठाई सजिलै पानी निकाल्न र प्रयोग गर्न सकिन्छ।"
-            >
-
-                <img
-                    src="img3.jpg"
-                    alt="Water Tap Container"
-                >
-
-            </div>
-
-
-            <!-- IMAGE 4 -->
-
-            <div
-                class="image-card"
-                data-image="img4.jpg"
-                data-title="Water Tap Container"
-                data-type="पानीको ट्याप भएको कन्टेनर"
-                data-description="यो पानी भण्डारण गर्न प्रयोग गरिने कन्टेनर हो। यसमा ट्याप जडान गरिएको हुन्छ, जसले कन्टेनर नउठाई सजिलै पानी निकाल्न र प्रयोग गर्न सकिन्छ।"
-            >
-
-                <img
-                    src="img4.jpg"
-                    alt="Water Tap Container"
-                >
-
-            </div>
-
-        </div>
-
-    </main>
-
-
-    <!-- FOUNDER -->
-
-    <section class="profile-section">
-
-        <img
-            src="img5.jpg"
-            alt="Darshan Ghimire"
-            class="profile-photo"
-        >
-
-        <h2 class="profile-name">
-            Darshan Ghimire
-        </h2>
-
-        <div class="profile-company">
-            Founder of Doroi Software Company
-        </div>
-
-        <div class="profile-role">
-            Android App Developer
-        </div>
-
-        <div class="profile-contact">
-
-            <span>
-                📞 9744444812
-            </span>
-
-            <span>
-                ✉️ doroi.prvt.ltd@gmail.com
-            </span>
-
-        </div>
-
-    </section>
-
-
-    <!-- FOOTER -->
-
-    <footer class="footer">
-
-        © 2026
-        <strong>Doroi Software Company</strong>.
-        All Rights Reserved.
-
-    </footer>
-
-
-    <!-- INFORMATION MODAL -->
-
-    <div
-        class="modal"
-        id="infoModal"
+  <div class="controls">
+    <input
+      type="text"
+      id="search"
+      class="search"
+      placeholder="Search shortcuts or extensions..."
     >
 
-        <div class="modal-box">
+    <button class="theme-btn" id="themeBtn" title="Change theme">
+      ☀
+    </button>
+  </div>
 
-            <img
-                id="modalImage"
-                class="modal-image"
-                src=""
-                alt=""
-            >
+  <div class="tabs">
+    <button class="tab active" data-filter="all">All</button>
+    <button class="tab" data-filter="ctrl">Ctrl</button>
+    <button class="tab" data-filter="alt">Alt</button>
+    <button class="tab" data-filter="win">Windows</button>
+    <button class="tab" data-filter="extensions">Extensions</button>
+  </div>
 
-            <div class="modal-content">
+  <!-- CTRL -->
+  <section class="section shortcut-section" data-category="ctrl">
 
-                <span
-                    id="modalType"
-                    class="modal-type"
-                ></span>
-
-                <h2
-                    id="modalTitle"
-                    class="modal-title"
-                ></h2>
-
-                <p
-                    id="modalDescription"
-                    class="modal-description"
-                ></p>
-
-                <button
-                    class="close-button"
-                    id="closeButton"
-                >
-                    बन्द गर्नुहोस्
-                </button>
-
-            </div>
-
-        </div>
-
+    <div class="section-title">
+      <h2>Ctrl Key Shortcuts</h2>
+      <span class="count">Common shortcuts</span>
     </div>
 
+    <div class="grid">
 
-    <script>
+      <div class="card shortcut" data-text="ctrl c copy">
+        <div class="card-top">
+          <div>
+            <h3>Copy</h3>
+            <p class="description">Copy selected text or files.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + C">Copy</button>
+        </div>
 
-        const cards =
-            document.querySelectorAll(
-                ".image-card"
-            );
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">C</span>
+        </div>
+      </div>
 
-        const modal =
-            document.getElementById(
-                "infoModal"
-            );
+      <div class="card shortcut" data-text="ctrl x cut">
+        <div class="card-top">
+          <div>
+            <h3>Cut</h3>
+            <p class="description">Cut selected content.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + X">Copy</button>
+        </div>
 
-        const modalImage =
-            document.getElementById(
-                "modalImage"
-            );
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">X</span>
+        </div>
+      </div>
 
-        const modalTitle =
-            document.getElementById(
-                "modalTitle"
-            );
+      <div class="card shortcut" data-text="ctrl v paste">
+        <div class="card-top">
+          <div>
+            <h3>Paste</h3>
+            <p class="description">Paste copied or cut content.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + V">Copy</button>
+        </div>
 
-        const modalType =
-            document.getElementById(
-                "modalType"
-            );
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">V</span>
+        </div>
+      </div>
 
-        const modalDescription =
-            document.getElementById(
-                "modalDescription"
-            );
+      <div class="card shortcut" data-text="ctrl a select all">
+        <div class="card-top">
+          <div>
+            <h3>Select All</h3>
+            <p class="description">Select everything in the current area.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + A">Copy</button>
+        </div>
 
-        const closeButton =
-            document.getElementById(
-                "closeButton"
-            );
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">A</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl z undo">
+        <div class="card-top">
+          <div>
+            <h3>Undo</h3>
+            <p class="description">Undo your last action.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + Z">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">Z</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl y redo">
+        <div class="card-top">
+          <div>
+            <h3>Redo</h3>
+            <p class="description">Redo the previously undone action.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + Y">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">Y</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl f find">
+        <div class="card-top">
+          <div>
+            <h3>Find</h3>
+            <p class="description">Find text on the current page or document.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + F">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">F</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl h replace history">
+        <div class="card-top">
+          <div>
+            <h3>Replace / History</h3>
+            <p class="description">Commonly opens replace or history functions depending on the app.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + H">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">H</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl s save">
+        <div class="card-top">
+          <div>
+            <h3>Save</h3>
+            <p class="description">Save the current file or document.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + S">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">S</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl p print">
+        <div class="card-top">
+          <div>
+            <h3>Print</h3>
+            <p class="description">Open the print dialog.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + P">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">P</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl n new">
+        <div class="card-top">
+          <div>
+            <h3>New</h3>
+            <p class="description">Create a new document or window.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + N">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">N</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl w close">
+        <div class="card-top">
+          <div>
+            <h3>Close</h3>
+            <p class="description">Close the current tab or document.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + W">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">W</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl t new tab">
+        <div class="card-top">
+          <div>
+            <h3>New Tab</h3>
+            <p class="description">Open a new browser tab.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + T">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">T</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl shift t reopen tab">
+        <div class="card-top">
+          <div>
+            <h3>Reopen Closed Tab</h3>
+            <p class="description">Restore the most recently closed browser tab.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + Shift + T">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">Shift</span>
+          <span class="plus">+</span>
+          <span class="key">T</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl tab next tab">
+        <div class="card-top">
+          <div>
+            <h3>Next Tab</h3>
+            <p class="description">Move to the next browser tab.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + Tab">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">Tab</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl r refresh">
+        <div class="card-top">
+          <div>
+            <h3>Refresh</h3>
+            <p class="description">Reload the current webpage.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + R">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">R</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl shift r hard refresh">
+        <div class="card-top">
+          <div>
+            <h3>Hard Refresh</h3>
+            <p class="description">Reload a webpage while bypassing cached resources.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + Shift + R">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">Shift</span>
+          <span class="plus">+</span>
+          <span class="key">R</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl d bookmark">
+        <div class="card-top">
+          <div>
+            <h3>Bookmark</h3>
+            <p class="description">Bookmark the current webpage in most browsers.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + D">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">D</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl j downloads">
+        <div class="card-top">
+          <div>
+            <h3>Downloads</h3>
+            <p class="description">Open the browser downloads page.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + J">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">J</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl plus zoom in">
+        <div class="card-top">
+          <div>
+            <h3>Zoom In</h3>
+            <p class="description">Increase browser or application zoom.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + +">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">+</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl minus zoom out">
+        <div class="card-top">
+          <div>
+            <h3>Zoom Out</h3>
+            <p class="description">Decrease browser or application zoom.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + -">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">−</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="ctrl 0 reset zoom">
+        <div class="card-top">
+          <div>
+            <h3>Reset Zoom</h3>
+            <p class="description">Return browser zoom to the default level.</p>
+          </div>
+          <button class="copy" data-copy="Ctrl + 0">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">0</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
 
 
-        document.getElementById(
-            "imageCount"
-        ).textContent = cards.length;
+  <!-- ALT -->
+  <section class="section shortcut-section" data-category="alt">
+
+    <div class="section-title">
+      <h2>Alt Key Shortcuts</h2>
+      <span class="count">Window & navigation</span>
+    </div>
+
+    <div class="grid">
+
+      <div class="card shortcut" data-text="alt tab switch windows">
+        <div class="card-top">
+          <div>
+            <h3>Switch Windows</h3>
+            <p class="description">Switch between open applications.</p>
+          </div>
+          <button class="copy" data-copy="Alt + Tab">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Alt</span>
+          <span class="plus">+</span>
+          <span class="key">Tab</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="alt f4 close">
+        <div class="card-top">
+          <div>
+            <h3>Close Window</h3>
+            <p class="description">Close the active window or application.</p>
+          </div>
+          <button class="copy" data-copy="Alt + F4">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Alt</span>
+          <span class="plus">+</span>
+          <span class="key">F4</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="alt enter properties">
+        <div class="card-top">
+          <div>
+            <h3>Properties</h3>
+            <p class="description">Open properties for a selected file or item.</p>
+          </div>
+          <button class="copy" data-copy="Alt + Enter">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Alt</span>
+          <span class="plus">+</span>
+          <span class="key">Enter</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="alt left back">
+        <div class="card-top">
+          <div>
+            <h3>Back</h3>
+            <p class="description">Go back in File Explorer or browser history.</p>
+          </div>
+          <button class="copy" data-copy="Alt + Left Arrow">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Alt</span>
+          <span class="plus">+</span>
+          <span class="key">←</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="alt right forward">
+        <div class="card-top">
+          <div>
+            <h3>Forward</h3>
+            <p class="description">Go forward in navigation history.</p>
+          </div>
+          <button class="copy" data-copy="Alt + Right Arrow">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Alt</span>
+          <span class="plus">+</span>
+          <span class="key">→</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="alt up parent folder">
+        <div class="card-top">
+          <div>
+            <h3>Parent Folder</h3>
+            <p class="description">Move up one folder in File Explorer.</p>
+          </div>
+          <button class="copy" data-copy="Alt + Up Arrow">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Alt</span>
+          <span class="plus">+</span>
+          <span class="key">↑</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="alt print screen screenshot active window">
+        <div class="card-top">
+          <div>
+            <h3>Active Window Screenshot</h3>
+            <p class="description">Capture the currently active window.</p>
+          </div>
+          <button class="copy" data-copy="Alt + Print Screen">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Alt</span>
+          <span class="plus">+</span>
+          <span class="key">PrtSc</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
 
 
-        cards.forEach(card => {
+  <!-- WINDOWS -->
+  <section class="section shortcut-section" data-category="win">
 
-            card.addEventListener(
-                "click",
-                () => {
+    <div class="section-title">
+      <h2>Windows Key Shortcuts</h2>
+      <span class="count">Windows system</span>
+    </div>
 
-                    modalImage.src =
-                        card.dataset.image;
+    <div class="grid">
 
-                    modalImage.alt =
-                        card.dataset.title;
+      <div class="card shortcut" data-text="windows d desktop">
+        <div class="card-top">
+          <div>
+            <h3>Show Desktop</h3>
+            <p class="description">Show or hide all open windows.</p>
+          </div>
+          <button class="copy" data-copy="Win + D">Copy</button>
+        </div>
 
-                    modalTitle.textContent =
-                        card.dataset.title;
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">D</span>
+        </div>
+      </div>
 
-                    modalType.textContent =
-                        card.dataset.type;
+      <div class="card shortcut" data-text="windows e file explorer">
+        <div class="card-top">
+          <div>
+            <h3>File Explorer</h3>
+            <p class="description">Open Windows File Explorer.</p>
+          </div>
+          <button class="copy" data-copy="Win + E">Copy</button>
+        </div>
 
-                    modalDescription.textContent =
-                        card.dataset.description;
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">E</span>
+        </div>
+      </div>
 
-                    modal.classList.add(
-                        "active"
-                    );
+      <div class="card shortcut" data-text="windows i settings">
+        <div class="card-top">
+          <div>
+            <h3>Settings</h3>
+            <p class="description">Open Windows Settings.</p>
+          </div>
+          <button class="copy" data-copy="Win + I">Copy</button>
+        </div>
 
-                    document.body.style.overflow =
-                        "hidden";
-                }
-            );
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">I</span>
+        </div>
+      </div>
 
-        });
+      <div class="card shortcut" data-text="windows l lock">
+        <div class="card-top">
+          <div>
+            <h3>Lock PC</h3>
+            <p class="description">Instantly lock your computer.</p>
+          </div>
+          <button class="copy" data-copy="Win + L">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">L</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows r run">
+        <div class="card-top">
+          <div>
+            <h3>Run</h3>
+            <p class="description">Open the Windows Run dialog.</p>
+          </div>
+          <button class="copy" data-copy="Win + R">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">R</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows s search">
+        <div class="card-top">
+          <div>
+            <h3>Search</h3>
+            <p class="description">Open Windows Search.</p>
+          </div>
+          <button class="copy" data-copy="Win + S">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">S</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows x quick link menu">
+        <div class="card-top">
+          <div>
+            <h3>Quick Link Menu</h3>
+            <p class="description">Open the Windows power-user menu.</p>
+          </div>
+          <button class="copy" data-copy="Win + X">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">X</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows tab task view">
+        <div class="card-top">
+          <div>
+            <h3>Task View</h3>
+            <p class="description">View open windows and virtual desktops.</p>
+          </div>
+          <button class="copy" data-copy="Win + Tab">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">Tab</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows left snap window left">
+        <div class="card-top">
+          <div>
+            <h3>Snap Left</h3>
+            <p class="description">Snap the current window to the left.</p>
+          </div>
+          <button class="copy" data-copy="Win + Left Arrow">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">←</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows right snap window right">
+        <div class="card-top">
+          <div>
+            <h3>Snap Right</h3>
+            <p class="description">Snap the current window to the right.</p>
+          </div>
+          <button class="copy" data-copy="Win + Right Arrow">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">→</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows up maximize">
+        <div class="card-top">
+          <div>
+            <h3>Maximize Window</h3>
+            <p class="description">Maximize the active window.</p>
+          </div>
+          <button class="copy" data-copy="Win + Up Arrow">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">↑</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows down minimize restore">
+        <div class="card-top">
+          <div>
+            <h3>Minimize / Restore</h3>
+            <p class="description">Minimize or restore the active window.</p>
+          </div>
+          <button class="copy" data-copy="Win + Down Arrow">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">↓</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows shift s screenshot snipping">
+        <div class="card-top">
+          <div>
+            <h3>Screen Snipping</h3>
+            <p class="description">Select an area of the screen to capture.</p>
+          </div>
+          <button class="copy" data-copy="Win + Shift + S">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">Shift</span>
+          <span class="plus">+</span>
+          <span class="key">S</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows print screen screenshot save">
+        <div class="card-top">
+          <div>
+            <h3>Save Screenshot</h3>
+            <p class="description">Capture the full screen and save it automatically.</p>
+          </div>
+          <button class="copy" data-copy="Win + PrtSc">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">PrtSc</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows v clipboard">
+        <div class="card-top">
+          <div>
+            <h3>Clipboard History</h3>
+            <p class="description">View previously copied items.</p>
+          </div>
+          <button class="copy" data-copy="Win + V">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">V</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows p display project">
+        <div class="card-top">
+          <div>
+            <h3>Display Project</h3>
+            <p class="description">Choose how your display is projected.</p>
+          </div>
+          <button class="copy" data-copy="Win + P">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">P</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows k connect cast">
+        <div class="card-top">
+          <div>
+            <h3>Connect / Cast</h3>
+            <p class="description">Open the Windows connection panel.</p>
+          </div>
+          <button class="copy" data-copy="Win + K">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">K</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows . emoji">
+        <div class="card-top">
+          <div>
+            <h3>Emoji Panel</h3>
+            <p class="description">Open the Windows emoji picker.</p>
+          </div>
+          <button class="copy" data-copy="Win + .">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">.</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows space language keyboard">
+        <div class="card-top">
+          <div>
+            <h3>Change Keyboard Language</h3>
+            <p class="description">Switch between installed keyboard languages.</p>
+          </div>
+          <button class="copy" data-copy="Win + Space">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">Space</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows ctrl d new desktop">
+        <div class="card-top">
+          <div>
+            <h3>New Virtual Desktop</h3>
+            <p class="description">Create a new virtual desktop.</p>
+          </div>
+          <button class="copy" data-copy="Win + Ctrl + D">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">D</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows ctrl left desktop">
+        <div class="card-top">
+          <div>
+            <h3>Previous Desktop</h3>
+            <p class="description">Move to the previous virtual desktop.</p>
+          </div>
+          <button class="copy" data-copy="Win + Ctrl + Left Arrow">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">←</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows ctrl right desktop">
+        <div class="card-top">
+          <div>
+            <h3>Next Desktop</h3>
+            <p class="description">Move to the next virtual desktop.</p>
+          </div>
+          <button class="copy" data-copy="Win + Ctrl + Right Arrow">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">→</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows u accessibility">
+        <div class="card-top">
+          <div>
+            <h3>Accessibility</h3>
+            <p class="description">Open Windows accessibility settings.</p>
+          </div>
+          <button class="copy" data-copy="Win + U">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">U</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows h voice typing">
+        <div class="card-top">
+          <div>
+            <h3>Voice Typing</h3>
+            <p class="description">Start Windows voice typing.</p>
+          </div>
+          <button class="copy" data-copy="Win + H">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">H</span>
+        </div>
+      </div>
+
+      <div class="card shortcut" data-text="windows ctrl shift b graphics driver">
+        <div class="card-top">
+          <div>
+            <h3>Reset Graphics Driver</h3>
+            <p class="description">Restart the Windows graphics driver.</p>
+          </div>
+          <button class="copy" data-copy="Win + Ctrl + Shift + B">Copy</button>
+        </div>
+
+        <div class="keys">
+          <span class="key">Win</span>
+          <span class="plus">+</span>
+          <span class="key">Ctrl</span>
+          <span class="plus">+</span>
+          <span class="key">Shift</span>
+          <span class="plus">+</span>
+          <span class="key">B</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
 
 
-        function closeModal() {
+  <!-- EXTENSIONS -->
+  <section class="section extension-section" data-category="extensions">
 
-            modal.classList.remove(
-                "active"
-            );
+    <div class="section-title">
+      <h2>Web Developer Extensions</h2>
+      <span class="count">VS Code</span>
+    </div>
 
-            document.body.style.overflow =
-                "";
-        }
+    <div class="grid">
+
+      <div class="card extension-card" data-text="live server extension html">
+        <div class="extension">
+          <div class="ext-icon">LS</div>
+          <div>
+            <h3>Live Server</h3>
+            <p class="description">Launch a local development server with live reload.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="live preview extension html">
+        <div class="extension">
+          <div class="ext-icon">LP</div>
+          <div>
+            <h3>Live Preview</h3>
+            <p class="description">Preview HTML directly inside VS Code.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="five server extension">
+        <div class="extension">
+          <div class="ext-icon">5S</div>
+          <div>
+            <h3>Five Server</h3>
+            <p class="description">Fast local development server with automatic reload.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="auto rename tag html">
+        <div class="extension">
+          <div class="ext-icon">AR</div>
+          <div>
+            <h3>Auto Rename Tag</h3>
+            <p class="description">Automatically rename paired HTML tags.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="auto close tag html">
+        <div class="extension">
+          <div class="ext-icon">AC</div>
+          <div>
+            <h3>Auto Close Tag</h3>
+            <p class="description">Automatically add closing HTML tags.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="html css support">
+        <div class="extension">
+          <div class="ext-icon">HC</div>
+          <div>
+            <h3>HTML CSS Support</h3>
+            <p class="description">CSS class and ID autocomplete for HTML.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="emmet html css">
+        <div class="extension">
+          <div class="ext-icon">E</div>
+          <div>
+            <h3>Emmet</h3>
+            <p class="description">Write HTML and CSS faster with abbreviations.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="prettier formatter">
+        <div class="extension">
+          <div class="ext-icon">P</div>
+          <div>
+            <h3>Prettier</h3>
+            <p class="description">Format HTML, CSS, JavaScript and other files.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="css peek css">
+        <div class="extension">
+          <div class="ext-icon">CP</div>
+          <div>
+            <h3>CSS Peek</h3>
+            <p class="description">Quickly inspect CSS definitions.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="path intellisense path">
+        <div class="extension">
+          <div class="ext-icon">PI</div>
+          <div>
+            <h3>Path Intellisense</h3>
+            <p class="description">Autocomplete filenames and paths.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="error lens errors">
+        <div class="extension">
+          <div class="ext-icon">EL</div>
+          <div>
+            <h3>Error Lens</h3>
+            <p class="description">Display errors and warnings directly in the editor.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="eslint javascript">
+        <div class="extension">
+          <div class="ext-icon">ES</div>
+          <div>
+            <h3>ESLint</h3>
+            <p class="description">Find and fix JavaScript and TypeScript problems.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="gitlens git">
+        <div class="extension">
+          <div class="ext-icon">GL</div>
+          <div>
+            <h3>GitLens</h3>
+            <p class="description">Enhanced Git history and code insights.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="thunder client api rest">
+        <div class="extension">
+          <div class="ext-icon">TC</div>
+          <div>
+            <h3>Thunder Client</h3>
+            <p class="description">Test REST APIs directly from VS Code.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card extension-card" data-text="material icon theme icons">
+        <div class="extension">
+          <div class="ext-icon">MI</div>
+          <div>
+            <h3>Material Icon Theme</h3>
+            <p class="description">Adds modern file and folder icons.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="empty" id="empty">
+    <h3>No results found</h3>
+    <p>Try another shortcut or extension name.</p>
+  </div>
+
+</main>
+
+<footer>
+  <p>Keyboard Shortcuts & Web Developer Extensions</p>
+</footer>
 
 
-        closeButton.addEventListener(
-            "click",
-            closeModal
-        );
+<script>
+
+/* SEARCH + FILTER */
+
+const search = document.getElementById("search");
+const tabs = document.querySelectorAll(".tab");
+const sections = document.querySelectorAll(".section");
+const empty = document.getElementById("empty");
+
+let activeFilter = "all";
+
+function filterContent() {
+
+  const query = search.value.toLowerCase().trim();
+  let visibleTotal = 0;
+
+  sections.forEach(section => {
+
+    const category = section.dataset.category;
+
+    if (
+      activeFilter !== "all" &&
+      category !== activeFilter
+    ) {
+      section.style.display = "none";
+      return;
+    }
+
+    const cards = section.querySelectorAll(
+      ".shortcut, .extension-card"
+    );
+
+    let visibleCards = 0;
+
+    cards.forEach(card => {
+
+      const text = (
+        card.innerText +
+        " " +
+        card.dataset.text
+      ).toLowerCase();
+
+      if (text.includes(query)) {
+        card.style.display = "";
+        visibleCards++;
+        visibleTotal++;
+      } else {
+        card.style.display = "none";
+      }
+
+    });
+
+    section.style.display =
+      visibleCards > 0 ? "" : "none";
+  });
+
+  empty.style.display =
+    visibleTotal === 0 ? "block" : "none";
+}
 
 
-        modal.addEventListener(
-            "click",
-            event => {
+/* TABS */
 
-                if (
-                    event.target === modal
-                ) {
-                    closeModal();
-                }
+tabs.forEach(tab => {
 
-            }
-        );
+  tab.addEventListener("click", () => {
+
+    tabs.forEach(t => t.classList.remove("active"));
+
+    tab.classList.add("active");
+
+    activeFilter = tab.dataset.filter;
+
+    filterContent();
+
+  });
+
+});
 
 
-        document.addEventListener(
-            "keydown",
-            event => {
+/* SEARCH */
 
-                if (
-                    event.key === "Escape" &&
-                    modal.classList.contains(
-                        "active"
-                    )
-                ) {
-                    closeModal();
-                }
+search.addEventListener("input", filterContent);
 
-            }
-        );
 
-    </script>
+/* COPY */
+
+document.querySelectorAll(".copy").forEach(button => {
+
+  button.addEventListener("click", async () => {
+
+    const value = button.dataset.copy;
+
+    try {
+
+      await navigator.clipboard.writeText(value);
+
+      const oldText = button.innerText;
+
+      button.innerText = "Copied!";
+
+      setTimeout(() => {
+        button.innerText = oldText;
+      }, 1000);
+
+    } catch {
+
+      alert("Shortcut: " + value);
+
+    }
+
+  });
+
+});
+
+
+/* THEME */
+
+const themeBtn = document.getElementById("themeBtn");
+
+themeBtn.addEventListener("click", () => {
+
+  document.body.classList.toggle("light");
+
+  if (document.body.classList.contains("light")) {
+    themeBtn.innerText = "🌙";
+    localStorage.setItem("theme", "light");
+  } else {
+    themeBtn.innerText = "☀";
+    localStorage.setItem("theme", "dark");
+  }
+
+});
+
+
+/* REMEMBER THEME */
+
+if (localStorage.getItem("theme") === "light") {
+  document.body.classList.add("light");
+  themeBtn.innerText = "🌙";
+}
+
+</script>
 
 </body>
 </html>

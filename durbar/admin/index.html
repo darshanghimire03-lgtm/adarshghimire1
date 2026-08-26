@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>English Notes — Durbar</title>
+
+<!-- ============================================================
+     FIREBASE / UPLOAD CONFIG
+     Fill these in before using the site.
+
+     apiKey / authDomain / databaseURL / projectId / storageBucket / appId
+       -> Firebase Console > Project settings > General > "Your apps" >
+          Web app > SDK setup and configuration > Config object.
+          If you only have an Android app registered, add a new
+          "Web app" inside the SAME Firebase project (darbarhigh-4c642)
+          — it's free, takes 30 seconds, and gives you a web apiKey/appId
+          without touching your Android app.
+
+     IMGBB_API_KEY
+       -> https://api.imgbb.com/  (sign in, "Add API key")
+
+     CLOUDINARY_CLOUD_NAME
+       -> Cloudinary Dashboard > top-left, under your account name.
+          Your Android app already uses cloud name "ddgpgkjpz"
+          (see BADGE_PROFESSOR_URL in Constants.kt) if this is the
+          same Cloudinary account.
+
+     CLOUDINARY_UPLOAD_PRESET
+       -> Cloudinary Dashboard > Settings (gear icon) > Upload >
+          Upload presets > Add upload preset > Signing Mode: "Unsigned"
+          > Save, then copy its name here.
+
+     IMPORTANT: this file is public. Anyone who opens it in a
+     browser and views source can read these values. Before filling
+     them in, set Firebase Realtime Database rules that don't allow
+     unrestricted public writes (e.g. require App Check, or gate
+     writes behind a shared secret you check in your own rules) —
+     an exposed apiKey alone is normal for Firebase web apps, but
+     your database *rules* are what actually protect the data.
+============================================================= -->
+<script>
+  const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCumgad3NpIBi94q4MwHpq9kHq4cuuSkoQ",
+  authDomain: "darbarhigh-4c642.firebaseapp.com",
+  databaseURL: "https://darbarhigh-4c642-default-rtdb.firebaseio.com",
+  projectId: "darbarhigh-4c642",
+  storageBucket: "darbarhigh-4c642.firebasestorage.app",
+  messagingSenderId: "451147040929",
+  appId: "1:451147040929:web:c105a00233209c5c05c8e0"
+};
+
+  // ImgBB is used for optional photo attachments.
+  const IMGBB_API_KEY = "303993ee7899893174e5ea35aa54d996";
+
+  // Cloudinary is used for PDF / document attachments.
+  const CLOUDINARY_CLOUD_NAME = "ddgpgkjpz";
+  const CLOUDINARY_UPLOAD_PRESET = "Durbar";
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<style>
+  /* ---------------------------------------------------------
+     DESIGN TOKENS
+     Subject: an English study-notes board for Plus2 / HSC
+     students — lives on a phone, flipped through between
+     classes. Identity borrows from a ruled exercise notebook
+     and a chalkboard, not a generic SaaS dashboard.
+
+     Color
+       --paper:      #F6F1E4  (unbleached notebook paper)
+       --ink:        #1F2A24  (chalkboard-adjacent near-black, warm)
+       --rule:       #C9BFA3  (faint ruled-line tan)
+       --board:      #23342B  (chalkboard green, section anchor)
+       --chalk:      #E7E2C9  (chalk-dust off-white, text on board)
+       --marker:     #B24C2F  (red marking-pen accent — corrections/CTAs)
+       --tab:        #D8CFA9  (manila folder tab tone)
+
+     Type
+       Display: "Space Grotesk" — geometric but a little hand-cut,
+         reads like stencilled chapter headings.
+       Body: "Source Serif 4" — a working serif, like a printed
+         textbook page, calm at reading length.
+       Utility/mono: "IBM Plex Mono" — file names, sizes, meta.
+
+     Layout
+       Three in-page "screens" swapped via JS (no page reloads):
+         1. Chapters screen  — folder-tab grid of chapters
+         2. Notes screen     — index-card list of notes in a chapter
+         3. Note detail      — single note, full attachments, edit/delete
+       A slide transition moves between them so it still feels like
+       flipping through a notebook rather than a dashboard switching
+       views.
+
+     Signature
+       Chapter cards read like manila folder tabs sitting on ruled
+       paper; the notes list renders as index cards with a torn-edge
+       marker-red top border; note detail opens as a full "page".
+  --------------------------------------------------------- */
+
+  :root{
+    --paper:#F6F1E4;
+    --paper-2:#EFE8D4;
+    --ink:#1F2A24;
+    --ink-soft:#4B5750;
+    --rule:#C9BFA3;
+    --board:#23342B;
+    --board-2:#2C4034;
+    --chalk:#E7E2C9;
+    --marker:#B24C2F;
+    --marker-dark:#8F3A22;
+    --tab:#D8CFA9;
+    --card:#FFFDF6;
+    --shadow: 0 1px 0 rgba(31,42,36,0.06);
+    --radius: 3px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ -webkit-tap-highlight-color: transparent; }
+
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        var(--paper) 0px, var(--paper) 27px,
+        rgba(201,191,163,0.55) 28px
+      );
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, serif;
+    min-height: 100vh;
+    padding-bottom: 48px;
+    overflow-x: hidden;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  h1,h2,h3, .display{
+    font-family: "Space Grotesk", sans-serif;
+    letter-spacing: -0.01em;
+  }
+  .mono{ font-family: "IBM Plex Mono", monospace; }
+
+  a{ color: inherit; }
+  button{ font: inherit; }
+
+  /* Red margin rule down the left, notebook-style */
+  .margin-rule{
+    position: fixed;
+    top:0; bottom:0;
+    left: 34px;
+    width: 2px;
+    background: rgba(178,76,47,0.28);
+    z-index: 0;
+    pointer-events: none;
+  }
+  @media (max-width: 640px){
+    .margin-rule{ left: 20px; }
+  }
+
+  .wrap{
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* -------------------- HEADER / BOARD -------------------- */
+  header.board{
+    background: var(--board);
+    color: var(--chalk);
+    padding: 24px 20px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  header.board::after{
+    content:"";
+    position:absolute; inset:0;
+    background-image: radial-gradient(rgba(231,226,201,0.05) 1px, transparent 1px);
+    background-size: 6px 6px;
+    pointer-events:none;
+  }
+  .board-inner{
+    max-width: 760px;
+    margin: 0 auto;
+    position: relative;
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+  .board-back{
+    flex: 0 0 auto;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(231,226,201,0.35);
+    background: rgba(231,226,201,0.06);
+    color: var(--chalk);
+    font-size: 18px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+  .board-back:hover{ background: rgba(231,226,201,0.14); }
+  .board-titles{ flex: 1 1 auto; min-width: 0; }
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(231,226,201,0.62);
+    margin: 0 0 6px;
+  }
+  header.board h1{
+    margin: 0;
+    font-size: clamp(24px, 6vw, 34px);
+    font-weight: 700;
+    color: var(--chalk);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  header.board h1 em{
+    font-style: normal;
+    color: #E3A98E;
+  }
+  header.board p.tagline{
+    margin: 8px 0 0;
+    font-family: "Source Serif 4", serif;
+    font-size: 14px;
+    color: rgba(231,226,201,0.78);
+    max-width: 50ch;
+  }
+
+  /* -------------------- SCREENS -------------------- */
+  .screen{
+    display:none;
+  }
+  .screen.active{
+    display:block;
+    animation: slideIn .22s ease;
+  }
+  @keyframes slideIn{
+    from{ opacity:0; transform: translateX(10px); }
+    to{ opacity:1; transform: translateX(0); }
+  }
+
+  main.wrap{ padding-top: 20px; }
+
+  .section-head{
+    display:flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .section-head h2{
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .section-head .count{
+    font-family:"IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+
+  .btn{
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    border: none;
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: transform .1s ease, box-shadow .15s ease, opacity .15s ease;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn-marker{
+    background: var(--marker);
+    color: #FFF8EF;
+    box-shadow: 0 2px 0 var(--marker-dark);
+  }
+  .btn-marker:hover{ box-shadow: 0 3px 0 var(--marker-dark); transform: translateY(-1px); }
+  .btn-ghost{
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--rule);
+  }
+  .btn-ghost:hover{ background: var(--paper-2); }
+  .btn-danger{
+    background: transparent;
+    color: var(--marker);
+    border: 1px solid rgba(178,76,47,0.4);
+  }
+  .btn-danger:hover{ background: #FBEFE6; }
+  .btn:disabled{ opacity: .55; cursor: not-allowed; }
+  .btn-block{ width: 100%; }
+  .btn-sm{ padding: 7px 12px; font-size: 12.5px; }
+
+  /* -------------------- SCREEN 1: CHAPTERS GRID -------------------- */
+  .chapter-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 420px){
+    .chapter-grid{ grid-template-columns: 1fr; }
+  }
+
+  .chapter-card{
+    background: var(--tab);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 16px 14px 14px;
+    cursor: pointer;
+    position: relative;
+    text-align: left;
+    display:flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 92px;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .chapter-card::before{
+    content:"";
+    position:absolute;
+    top:0; left: 14px; right: 14px;
+    height: 6px;
+    background: var(--marker);
+    border-radius: 0 0 4px 4px;
+    opacity: .85;
+  }
+  .chapter-card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(31,42,36,0.12);
+  }
+  .chapter-card .name{
+    font-family:"Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 15.5px;
+    color: var(--ink);
+    margin-top: 6px;
+    line-height: 1.3;
+  }
+  .chapter-card .meta{
+    font-family:"IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .chapter-card-new{
+    background: transparent;
+    border: 1px dashed var(--rule);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--ink-soft);
+    font-family:"Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .chapter-card-new::before{ display:none; }
+  .chapter-card-new:hover{ background: var(--paper-2); }
+
+  /* -------------------- SCREEN 2: NOTES LIST -------------------- */
+  .notes-list{ display:flex; flex-direction:column; gap: 14px; }
+
+  .note-row{
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--marker);
+    border-radius: var(--radius);
+    padding: 14px 16px 12px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    text-align: left;
+    display:block;
+    width: 100%;
+  }
+  .note-row:hover{ background: #FFFEFA; }
+  .note-title{
+    margin: 0 0 4px;
+    font-size: 16.5px;
+    font-weight: 600;
+    font-family: "Space Grotesk", sans-serif;
+  }
+  .note-meta{
+    font-family:"IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .note-preview{
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .attach-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+  }
+
+  /* -------------------- SCREEN 3: NOTE DETAIL -------------------- */
+  .note-detail{
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-top: 4px solid var(--marker);
+    border-radius: var(--radius);
+    padding: 20px 20px 18px;
+    box-shadow: var(--shadow);
+  }
+  .note-detail .note-title{ font-size: 21px; margin-bottom: 6px; }
+  .note-detail .note-desc{
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin: 14px 0;
+    white-space: pre-wrap;
+  }
+
+  .attachments{ display:flex; flex-direction:column; gap:8px; margin-top: 6px; }
+
+  .pdf-chip, .yt-chip{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 9px 12px;
+    text-decoration: none;
+    color: var(--ink);
+    font-family:"IBM Plex Mono", monospace;
+    font-size: 12.5px;
+  }
+  .pdf-chip:hover, .yt-chip:hover{ background:#E7E0C6; }
+  .chip-icon{
+    flex: 0 0 auto;
+    width: 26px; height: 26px;
+    border-radius: 4px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 11px;
+    font-weight: 700;
+    color:#fff;
+  }
+  .chip-icon.pdf{ background: var(--marker); }
+  .chip-icon.yt{ background:#C4271B; }
+  .chip-name{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .chip-size{ color: var(--ink-soft); flex: 0 0 auto; }
+
+  .photo-strip{
+    display:flex; gap:8px; overflow-x:auto; margin-top: 4px; padding-bottom:2px;
+  }
+  .photo-strip img{
+    height: 100px; width: 100px; object-fit:cover;
+    border-radius: var(--radius);
+    border: 1px solid var(--rule);
+    flex: 0 0 auto;
+    cursor: pointer;
+  }
+
+  .field-block{ margin-top: 18px; }
+  .field-block h4{
+    font-family:"IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 8px;
+    font-weight: 500;
+  }
+
+  .card-foot{
+    display:flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+    border-top: 1px dashed var(--rule);
+    padding-top: 14px;
+  }
+
+  /* -------------------- EMPTY STATE -------------------- */
+  .empty{
+    text-align:center;
+    padding: 48px 20px;
+    color: var(--ink-soft);
+  }
+  .empty h3{ margin: 0 0 6px; color: var(--ink); font-size:18px; }
+  .empty p{ margin:0 0 18px; font-size:14px; }
+
+  /* -------------------- FAB -------------------- */
+  .fab{
+    position: fixed;
+    right: 20px;
+    bottom: 22px;
+    z-index: 20;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--marker);
+    color: #FFF8EF;
+    border:none;
+    box-shadow: 0 3px 0 var(--marker-dark), 0 6px 16px rgba(31,42,36,0.25);
+    font-size: 28px;
+    line-height: 1;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .fab:active{ transform: translateY(2px); box-shadow: 0 1px 0 var(--marker-dark); }
+  .fab.hidden{ display:none; }
+
+  /* -------------------- MODAL / SHEET -------------------- */
+  .sheet-backdrop{
+    position: fixed; inset:0;
+    background: rgba(31,42,36,0.45);
+    z-index: 50;
+    display:none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .sheet-backdrop.open{ display:flex; }
+  @media (min-width: 640px){
+    .sheet-backdrop{ align-items:center; }
+  }
+
+  .sheet{
+    background: var(--paper);
+    width: 100%;
+    max-width: 560px;
+    max-height: 92vh;
+    overflow-y: auto;
+    border-radius: 14px 14px 0 0;
+    border: 1px solid var(--rule);
+    padding: 20px 20px 24px;
+    position: relative;
+  }
+  @media (min-width: 640px){
+    .sheet{ border-radius: 10px; }
+  }
+
+  .sheet-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom: 16px;
+  }
+  .sheet-head h3{ margin:0; font-size: 19px; }
+  .sheet-close{
+    background:none; border:none; font-size: 22px; cursor:pointer;
+    color: var(--ink-soft); line-height:1; padding: 4px;
+  }
+
+  label.field-label{
+    display:block;
+    font-family:"IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 16px 0 6px;
+  }
+  label.field-label:first-of-type{ margin-top: 0; }
+
+  input[type=text], textarea, input[type=url]{
+    width: 100%;
+    font-family: "Source Serif 4", serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    resize: vertical;
+  }
+  input:focus, textarea:focus{
+    outline: 2px solid var(--marker);
+    outline-offset: 1px;
+  }
+  textarea{ min-height: 88px; line-height:1.5; }
+
+  .picker-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 4px; }
+  .picker-btn{
+    flex:1 1 auto;
+    min-width: 140px;
+    border: 1px dashed var(--rule);
+    background: var(--paper-2);
+    border-radius: var(--radius);
+    padding: 12px;
+    text-align:center;
+    cursor:pointer;
+    font-family:"Space Grotesk", sans-serif;
+    font-size: 13px;
+    font-weight:600;
+    color: var(--ink-soft);
+  }
+  .picker-btn:hover{ background:#E7E0C6; }
+
+  .pending-list{ display:flex; flex-direction:column; gap:6px; margin-top:10px; }
+  .pending-item{
+    display:flex; align-items:center; gap:8px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    background: var(--card);
+    border:1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 7px 10px;
+  }
+  .pending-item .name{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pending-item button{
+    background:none; border:none; color: var(--marker); cursor:pointer; font-size:15px;
+  }
+  .pending-thumb{ width:28px; height:28px; object-fit:cover; border-radius:3px; flex:0 0 auto; }
+
+  .yt-input-row{ display:flex; gap:8px; }
+  .yt-input-row input{ flex:1; }
+
+  .sheet-actions{
+    margin-top: 20px;
+    display:flex;
+    gap:10px;
+  }
+  .sheet-actions .btn{ flex:1; }
+
+  .status-line{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    color: var(--ink-soft);
+    margin-top: 10px;
+    min-height: 16px;
+  }
+  .status-line.error{ color: var(--marker); }
+
+  .config-warning{
+    max-width: 760px;
+    margin: 16px auto 0;
+    padding: 0 20px;
+  }
+  .config-warning .box{
+    background:#FBEFE6;
+    border:1px solid #E3A98E;
+    border-left:4px solid var(--marker);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height:1.5;
+    color: var(--marker-dark);
+  }
+  .config-warning code{
+    font-family:"IBM Plex Mono", monospace;
+    background: rgba(0,0,0,0.06);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .hidden{ display:none !important; }
+
+  input[type=file]{ display:none; }
+
+  .visually-hidden{
+    position:absolute; width:1px; height:1px; overflow:hidden;
+    clip:rect(0 0 0 0); white-space:nowrap;
+  }
+
+  /* Lightbox for photo viewing */
+  .lightbox{
+    position: fixed; inset:0;
+    background: rgba(15,20,17,0.92);
+    z-index: 60;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding: 20px;
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox img{
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 4px;
+  }
+  .lightbox-close{
+    position: fixed;
+    top: 16px; right: 16px;
+    width: 40px; height:40px;
+    border-radius: 50%;
+    background: rgba(231,226,201,0.12);
+    border: 1px solid rgba(231,226,201,0.3);
+    color: var(--chalk);
+    font-size: 22px;
+    cursor:pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="margin-rule" aria-hidden="true"></div>
+
+<header class="board">
+  <div class="board-inner">
+    <button class="board-back hidden" id="headerBackBtn" aria-label="Back">&larr;</button>
+    <div class="board-titles">
+      <p class="eyebrow" id="headerEyebrow">Durbar &middot; Plus2 Study Notes</p>
+      <h1 id="headerTitle">English <em>Notes</em></h1>
+      <p class="tagline" id="headerTagline">Browse chapter notes, PDFs, reference photos and video links for English — organised by chapter, open to the whole class.</p>
+    </div>
+  </div>
+</header>
+
+<div class="config-warning hidden" id="configWarning">
+  <div class="box">
+    <strong>Setup needed:</strong> this site's Firebase / upload keys haven't been filled in yet.
+    Open <code>index.html</code> and fill in <code>FIREBASE_CONFIG</code>, <code>IMGBB_API_KEY</code>,
+    <code>CLOUDINARY_CLOUD_NAME</code> and <code>CLOUDINARY_UPLOAD_PRESET</code> at the top of the file.
+    See the comments right above those values for exactly where each one comes from.
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 1 — CHAPTER LIST
+============================================================= -->
+<main class="wrap screen active" id="screenChapters">
+  <div class="section-head">
+    <h2>Chapters</h2>
+    <span class="count" id="chapterCount">0 chapters</span>
+  </div>
+
+  <div class="chapter-grid" id="chapterGrid"></div>
+
+  <div class="empty hidden" id="chaptersEmpty">
+    <h3>No chapters yet</h3>
+    <p>Add the first chapter to start collecting notes.</p>
+    <button class="btn btn-marker" id="chaptersEmptyAddBtn">+ Add a chapter</button>
+  </div>
+</main>
+
+<!-- ============================================================
+     SCREEN 2 — NOTES LIST (within a chapter)
+============================================================= -->
+<main class="wrap screen" id="screenNotes">
+  <div class="section-head">
+    <h2 id="chapterHeading">Chapter</h2>
+    <span class="count" id="noteCount">0 notes</span>
+  </div>
+
+  <div class="notes-list" id="notesList"></div>
+
+  <div class="empty hidden" id="notesEmpty">
+    <h3>No notes here yet</h3>
+    <p>Be the first to add a note for this chapter.</p>
+    <button class="btn btn-marker" id="notesEmptyAddBtn">+ Add the first note</button>
+  </div>
+</main>
+
+<!-- ============================================================
+     SCREEN 3 — NOTE DETAIL
+============================================================= -->
+<main class="wrap screen" id="screenDetail">
+  <div class="note-detail" id="noteDetailBody">
+    <!-- filled by JS -->
+  </div>
+</main>
+
+<button class="fab" id="fabAdd" title="Add" aria-label="Add">+</button>
+
+<!-- ============ ADD CHAPTER SHEET ============ -->
+<div class="sheet-backdrop" id="chapterBackdrop">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="chapterSheetTitle">
+    <div class="sheet-head">
+      <h3 id="chapterSheetTitle">New chapter</h3>
+      <button class="sheet-close" data-close="chapterBackdrop" aria-label="Close">&times;</button>
+    </div>
+    <label class="field-label" for="newChapterName">Chapter name</label>
+    <input type="text" id="newChapterName" placeholder="e.g. Prose — Chapter 3" maxlength="60" />
+    <div class="status-line" id="chapterStatus"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" data-close="chapterBackdrop">Cancel</button>
+      <button class="btn btn-marker" id="saveChapterBtn">Add chapter</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADD / EDIT NOTE SHEET ============ -->
+<div class="sheet-backdrop" id="noteBackdrop">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="noteSheetTitle">
+    <div class="sheet-head">
+      <h3 id="noteSheetTitle">Add note</h3>
+      <button class="sheet-close" data-close="noteBackdrop" aria-label="Close">&times;</button>
+    </div>
+
+    <label class="field-label" for="noteTitle">Title</label>
+    <input type="text" id="noteTitle" placeholder="e.g. Summary — The Last Leaf" maxlength="120" />
+
+    <label class="field-label" for="noteDesc">Description</label>
+    <textarea id="noteDesc" placeholder="Add a short explanation, key points, or context for this note..."></textarea>
+
+    <label class="field-label">PDF / document</label>
+    <div class="picker-row">
+      <div class="picker-btn" id="pickPdfBtn">+ Attach a PDF or document</div>
+    </div>
+    <input type="file" id="pdfInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" multiple />
+    <div class="pending-list" id="pdfPendingList"></div>
+
+    <label class="field-label">Photos <span class="mono" style="text-transform:none;">(up to 6)</span></label>
+    <div class="picker-row">
+      <div class="picker-btn" id="pickPhotoBtn">+ Add photos</div>
+    </div>
+    <input type="file" id="photoInput" accept="image/*" multiple />
+    <div class="pending-list" id="photoPendingList"></div>
+
+    <label class="field-label" for="ytInput">YouTube link</label>
+    <div class="yt-input-row">
+      <input type="url" id="ytInput" placeholder="https://youtube.com/watch?v=..." />
+      <button class="btn btn-ghost btn-sm" id="addYtBtn">Add</button>
+    </div>
+    <div class="pending-list" id="ytPendingList"></div>
+
+    <div class="status-line" id="noteStatus"></div>
+
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" data-close="noteBackdrop">Cancel</button>
+      <button class="btn btn-marker btn-block" id="saveNoteBtn">Save note</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PHOTO LIGHTBOX ============ -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+  <img id="lightboxImg" src="" alt="Photo" />
+</div>
+
+<script>
+/* =====================================================================
+   ENGLISH NOTES — app logic
+   Data shape (Firebase Realtime Database):
+
+   units/
+     English/
+       {chapterId}/
+         name: string
+         createdAt: number
+         notes/
+           {noteId}/
+             id, title, description, createdAt
+             pdfs:   [{ url, name, sizeBytes }]
+             photos: [{ url }]
+             youtubeLinks: [{ url, videoId }]
+
+   This mirrors the note shape used by the Durbar Android app
+   (Note / NotePdf / NotePhoto / NoteYoutubeLink), scoped to a
+   single subject ("English").
+
+   Three screens, one page:
+     #screenChapters -> #screenNotes -> #screenDetail
+   Navigation is pure JS (show/hide + hash for back-button support),
+   no page reloads, so it matches the "3 screens, 1 file" ask.
+   ===================================================================== */
+
+(function () {
+  "use strict";
+
+  const SUBJECT = "English";
+
+  // ---------------------------------------------------------------
+  // Config check
+  // ---------------------------------------------------------------
+  function isPlaceholder(v) {
+    return !v || /^PASTE_/.test(v);
+  }
+  const configIncomplete =
+    isPlaceholder(FIREBASE_CONFIG.apiKey) ||
+    isPlaceholder(FIREBASE_CONFIG.appId) ||
+    isPlaceholder(FIREBASE_CONFIG.projectId);
+
+  if (configIncomplete) {
+    document.getElementById("configWarning").classList.remove("hidden");
+  }
+
+  let db = null;
+  if (!configIncomplete) {
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.database();
+    } catch (e) {
+      console.error("Firebase init failed:", e);
+      document.getElementById("configWarning").classList.remove("hidden");
+    }
+  }
+
+  const chaptersRef = () => db.ref("units/" + SUBJECT);
+
+  // ---------------------------------------------------------------
+  // State
+  // ---------------------------------------------------------------
+  let chapters = {};          // { chapterId: { name, createdAt, notes: {...} } }
+  let currentChapterId = null;
+  let currentNoteId = null;
+  let editingNoteId = null;   // set when the note sheet is in "edit" mode
+
+  let pendingPdfs = [];       // [{file, name, sizeBytes}]
+  let pendingPhotos = [];     // [{file, previewUrl}]
+  let pendingYoutube = [];    // [{url, videoId}]
+
+  // ---------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------
+  function el(id) { return document.getElementById(id); }
+
+  function fmtDate(ts) {
+    if (!ts) return "";
+    const d = new Date(ts);
+    return d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
+  }
+
+  function fmtSize(bytes) {
+    if (!bytes) return "";
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  }
+
+  function extractYoutubeId(url) {
+    try {
+      const u = new URL(url);
+      if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);
+      if (u.searchParams.get("v")) return u.searchParams.get("v");
+      const m = u.pathname.match(/\/embed\/([^/?]+)/);
+      if (m) return m[1];
+    } catch (e) { /* not a valid URL */ }
+    return null;
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement("div");
+    d.textContent = str || "";
+    return d.innerHTML;
+  }
+
+  function newId(prefix) {
+    return prefix + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+
+  // ---------------------------------------------------------------
+  // Screen navigation
+  // ---------------------------------------------------------------
+  function showScreen(name) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    el("screen" + name).classList.add("active");
+    window.scrollTo(0, 0);
+
+    const backBtn = el("headerBackBtn");
+    const fab = el("fabAdd");
+
+    if (name === "Chapters") {
+      backBtn.classList.add("hidden");
+      el("headerEyebrow").textContent = "Durbar · Plus2 Study Notes";
+      el("headerTitle").innerHTML = 'English <em>Notes</em>';
+      el("headerTagline").textContent = "Browse chapter notes, PDFs, reference photos and video links for English — organised by chapter, open to the whole class.";
+      fab.classList.remove("hidden");
+      fab.title = "Add chapter";
+      location.hash = "";
+    } else if (name === "Notes") {
+      backBtn.classList.remove("hidden");
+      const ch = chapters[currentChapterId];
+      el("headerEyebrow").textContent = "English · Chapter";
+      el("headerTitle").textContent = ch ? ch.name : "Chapter";
+      el("headerTagline").textContent = "All notes, PDFs, photos and video links for this chapter.";
+      fab.classList.remove("hidden");
+      fab.title = "Add note";
+      location.hash = "chapter=" + encodeURIComponent(currentChapterId);
+    } else if (name === "Detail") {
+      backBtn.classList.remove("hidden");
+      el("headerEyebrow").textContent = "English · Note";
+      const note = getCurrentNote();
+      el("headerTitle").textContent = note ? note.title : "Note";
+      el("headerTagline").textContent = "";
+      fab.classList.add("hidden");
+      location.hash = "chapter=" + encodeURIComponent(currentChapterId) + "&note=" + encodeURIComponent(currentNoteId);
+    }
+  }
+
+  el("headerBackBtn").addEventListener("click", () => {
+    const detailScreen = el("screenDetail").classList.contains("active");
+    if (detailScreen) {
+      renderNotesList();
+      showScreen("Notes");
+    } else {
+      showScreen("Chapters");
+    }
+  });
+
+  // ---------------------------------------------------------------
+  // Firebase live sync
+  // ---------------------------------------------------------------
+  function startSync() {
+    if (!db) return;
+    chaptersRef().on("value", snap => {
+      chapters = snap.val() || {};
+      renderChapters();
+      if (currentChapterId) renderNotesList();
+      if (currentNoteId) renderNoteDetail();
+    }, err => {
+      console.error("Firebase read failed:", err);
+    });
+  }
+
+  // ---------------------------------------------------------------
+  // SCREEN 1: Chapters grid
+  // ---------------------------------------------------------------
+  function renderChapters() {
+    const grid = el("chapterGrid");
+    const ids = Object.keys(chapters).sort((a, b) =>
+      (chapters[a].createdAt || 0) - (chapters[b].createdAt || 0)
+    );
+
+    el("chapterCount").textContent = ids.length + (ids.length === 1 ? " chapter" : " chapters");
+    el("chaptersEmpty").classList.toggle("hidden", ids.length !== 0);
+
+    grid.innerHTML = "";
+
+    ids.forEach(id => {
+      const ch = chapters[id];
+      const noteCount = ch.notes ? Object.keys(ch.notes).length : 0;
+      const card = document.createElement("button");
+      card.className = "chapter-card";
+      card.innerHTML = `
+        <div class="name">${escapeHtml(ch.name || "Untitled chapter")}</div>
+        <div class="meta">${noteCount} ${noteCount === 1 ? "note" : "notes"}</div>
+      `;
+      card.addEventListener("click", () => {
+        currentChapterId = id;
+        renderNotesList();
+        showScreen("Notes");
+      });
+      grid.appendChild(card);
+    });
+
+    const addCard = document.createElement("button");
+    addCard.className = "chapter-card chapter-card-new";
+    addCard.textContent = "+ Add chapter";
+    addCard.addEventListener("click", openChapterSheet);
+    grid.appendChild(addCard);
+  }
+
+  el("chaptersEmptyAddBtn").addEventListener("click", openChapterSheet);
+
+  // ---------------------------------------------------------------
+  // SCREEN 2: Notes list
+  // ---------------------------------------------------------------
+  function renderNotesList() {
+    const ch = chapters[currentChapterId];
+    const list = el("notesList");
+    list.innerHTML = "";
+
+    if (!ch) {
+      el("chapterHeading").textContent = "Chapter";
+      el("noteCount").textContent = "0 notes";
+      el("notesEmpty").classList.remove("hidden");
+      return;
+    }
+
+    el("chapterHeading").textContent = ch.name;
+    const notes = ch.notes || {};
+    const ids = Object.keys(notes).sort((a, b) => (notes[b].createdAt || 0) - (notes[a].createdAt || 0));
+
+    el("noteCount").textContent = ids.length + (ids.length === 1 ? " note" : " notes");
+    el("notesEmpty").classList.toggle("hidden", ids.length !== 0);
+
+    ids.forEach(id => {
+      const note = notes[id];
+      const pdfCount = (note.pdfs || []).length;
+      const photoCount = (note.photos || []).length;
+      const ytCount = (note.youtubeLinks || []).length;
+
+      const row = document.createElement("button");
+      row.className = "note-row";
+      row.innerHTML = `
+        <h3 class="note-title">${escapeHtml(note.title || "Untitled note")}</h3>
+        <div class="note-meta">
+          <span>${fmtDate(note.createdAt)}</span>
+          ${pdfCount ? `<span class="attach-pill">📄 ${pdfCount}</span>` : ""}
+          ${photoCount ? `<span class="attach-pill">🖼 ${photoCount}</span>` : ""}
+          ${ytCount ? `<span class="attach-pill">▶ ${ytCount}</span>` : ""}
+        </div>
+        ${note.description ? `<p class="note-preview">${escapeHtml(note.description)}</p>` : ""}
+      `;
+      row.addEventListener("click", () => {
+        currentNoteId = id;
+        renderNoteDetail();
+        showScreen("Detail");
+      });
+      list.appendChild(row);
+    });
+  }
+
+  el("notesEmptyAddBtn").addEventListener("click", () => openNoteSheet());
+
+  // ---------------------------------------------------------------
+  // SCREEN 3: Note detail
+  // ---------------------------------------------------------------
+  function getCurrentNote() {
+    const ch = chapters[currentChapterId];
+    if (!ch || !ch.notes) return null;
+    return ch.notes[currentNoteId] || null;
+  }
+
+  function renderNoteDetail() {
+    const note = getCurrentNote();
+    const body = el("noteDetailBody");
+
+    if (!note) {
+      body.innerHTML = `<div class="empty"><h3>Note not found</h3><p>It may have been deleted.</p></div>`;
+      return;
+    }
+
+    el("headerTitle").textContent = note.title || "Note";
+
+    let html = `
+      <h3 class="note-title">${escapeHtml(note.title || "Untitled note")}</h3>
+      <div class="note-meta"><span>${fmtDate(note.createdAt)}</span></div>
+    `;
+
+    if (note.description) {
+      html += `<p class="note-desc">${escapeHtml(note.description)}</p>`;
+    }
+
+    if (note.pdfs && note.pdfs.length) {
+      html += `<div class="field-block"><h4>Documents</h4><div class="attachments">`;
+      note.pdfs.forEach(p => {
+        html += `
+          <a class="pdf-chip" href="${escapeHtml(p.url)}" target="_blank" rel="noopener">
+            <span class="chip-icon pdf">PDF</span>
+            <span class="chip-name">${escapeHtml(p.name || "document")}</span>
+            <span class="chip-size">${fmtSize(p.sizeBytes)}</span>
+          </a>`;
+      });
+      html += `</div></div>`;
+    }
+
+    if (note.photos && note.photos.length) {
+      html += `<div class="field-block"><h4>Photos</h4><div class="photo-strip">`;
+      note.photos.forEach(ph => {
+        html += `<img src="${escapeHtml(ph.url)}" data-full="${escapeHtml(ph.url)}" alt="Note photo" />`;
+      });
+      html += `</div></div>`;
+    }
+
+    if (note.youtubeLinks && note.youtubeLinks.length) {
+      html += `<div class="field-block"><h4>Video links</h4><div class="attachments">`;
+      note.youtubeLinks.forEach(y => {
+        html += `
+          <a class="yt-chip" href="${escapeHtml(y.url)}" target="_blank" rel="noopener">
+            <span class="chip-icon yt">▶</span>
+            <span class="chip-name">${escapeHtml(y.url)}</span>
+          </a>`;
+      });
+      html += `</div></div>`;
+    }
+
+    html += `
+      <div class="card-foot">
+        <button class="btn btn-danger btn-sm" id="deleteNoteBtn">Delete</button>
+        <button class="btn btn-ghost btn-sm" id="editNoteBtn">Edit</button>
+      </div>
+    `;
+
+    body.innerHTML = html;
+
+    body.querySelectorAll(".photo-strip img").forEach(img => {
+      img.addEventListener("click", () => openLightbox(img.dataset.full));
+    });
+    el("editNoteBtn").addEventListener("click", () => openNoteSheet(note, currentNoteId));
+    el("deleteNoteBtn").addEventListener("click", () => deleteNote(currentNoteId));
+  }
+
+  function deleteNote(noteId) {
+    if (!confirm("Delete this note? This can't be undone.")) return;
+    chaptersRef().child(currentChapterId).child("notes").child(noteId).remove()
+      .then(() => {
+        renderNotesList();
+        showScreen("Notes");
+      })
+      .catch(err => alert("Could not delete note: " + err.message));
+  }
+
+  // ---------------------------------------------------------------
+  // Lightbox
+  // ---------------------------------------------------------------
+  function openLightbox(src) {
+    el("lightboxImg").src = src;
+    el("lightbox").classList.add("open");
+  }
+  el("lightboxClose").addEventListener("click", () => el("lightbox").classList.remove("open"));
+  el("lightbox").addEventListener("click", e => {
+    if (e.target.id === "lightbox") el("lightbox").classList.remove("open");
+  });
+
+  // ---------------------------------------------------------------
+  // FAB — context-aware (add chapter vs add note)
+  // ---------------------------------------------------------------
+  el("fabAdd").addEventListener("click", () => {
+    if (el("screenChapters").classList.contains("active")) {
+      openChapterSheet();
+    } else if (el("screenNotes").classList.contains("active")) {
+      openNoteSheet();
+    }
+  });
+
+  // ---------------------------------------------------------------
+  // Sheet open/close plumbing
+  // ---------------------------------------------------------------
+  document.querySelectorAll("[data-close]").forEach(btn => {
+    btn.addEventListener("click", () => closeSheet(btn.dataset.close));
+  });
+  document.querySelectorAll(".sheet-backdrop").forEach(bd => {
+    bd.addEventListener("click", e => {
+      if (e.target === bd) closeSheet(bd.id);
+    });
+  });
+
+  function openSheet(id) { el(id).classList.add("open"); }
+  function closeSheet(id) { el(id).classList.remove("open"); }
+
+  // ---------------------------------------------------------------
+  // Add chapter
+  // ---------------------------------------------------------------
+  function openChapterSheet() {
+    el("newChapterName").value = "";
+    el("chapterStatus").textContent = "";
+    el("chapterStatus").classList.remove("error");
+    openSheet("chapterBackdrop");
+    setTimeout(() => el("newChapterName").focus(), 50);
+  }
+
+  el("saveChapterBtn").addEventListener("click", () => {
+    const name = el("newChapterName").value.trim();
+    const status = el("chapterStatus");
+
+    if (!name) {
+      status.textContent = "Please enter a chapter name.";
+      status.classList.add("error");
+      return;
+    }
+    if (!db) {
+      status.textContent = "Firebase isn't configured yet — see the setup notice above.";
+      status.classList.add("error");
+      return;
+    }
+
+    const id = newId("ch");
+    status.textContent = "Saving...";
+    status.classList.remove("error");
+
+    chaptersRef().child(id).set({
+      name: name,
+      createdAt: Date.now(),
+      notes: {}
+    }).then(() => {
+      closeSheet("chapterBackdrop");
+    }).catch(err => {
+      status.textContent = "Could not save: " + err.message;
+      status.classList.add("error");
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // Add / edit note
+  // ---------------------------------------------------------------
+  function resetNoteForm() {
+    el("noteTitle").value = "";
+    el("noteDesc").value = "";
+    el("ytInput").value = "";
+    el("noteStatus").textContent = "";
+    el("noteStatus").classList.remove("error");
+    pendingPdfs = [];
+    pendingPhotos = [];
+    pendingYoutube = [];
+    renderPendingPdfs();
+    renderPendingPhotos();
+    renderPendingYoutube();
+    el("pdfInput").value = "";
+    el("photoInput").value = "";
+  }
+
+  function openNoteSheet(existingNote, existingId) {
+    resetNoteForm();
+    editingNoteId = existingId || null;
+
+    if (existingNote) {
+      el("noteSheetTitle").textContent = "Edit note";
+      el("noteTitle").value = existingNote.title || "";
+      el("noteDesc").value = existingNote.description || "";
+      (existingNote.pdfs || []).forEach(p => pendingPdfs.push({ existing: true, url: p.url, name: p.name, sizeBytes: p.sizeBytes }));
+      (existingNote.photos || []).forEach(p => pendingPhotos.push({ existing: true, url: p.url }));
+      (existingNote.youtubeLinks || []).forEach(y => pendingYoutube.push({ url: y.url, videoId: y.videoId }));
+      renderPendingPdfs();
+      renderPendingPhotos();
+      renderPendingYoutube();
+    } else {
+      el("noteSheetTitle").textContent = "Add note";
+    }
+
+    openSheet("noteBackdrop");
+    setTimeout(() => el("noteTitle").focus(), 50);
+  }
+
+  // --- PDF picker ---
+  el("pickPdfBtn").addEventListener("click", () => el("pdfInput").click());
+  el("pdfInput").addEventListener("change", e => {
+    Array.from(e.target.files).forEach(file => {
+      pendingPdfs.push({ file, name: file.name, sizeBytes: file.size });
+    });
+    renderPendingPdfs();
+    e.target.value = "";
+  });
+
+  function renderPendingPdfs() {
+    const wrap = el("pdfPendingList");
+    wrap.innerHTML = "";
+    pendingPdfs.forEach((p, idx) => {
+      const row = document.createElement("div");
+      row.className = "pending-item";
+      row.innerHTML = `
+        <span class="name">${escapeHtml(p.name)} ${p.sizeBytes ? "(" + fmtSize(p.sizeBytes) + ")" : ""}${p.existing ? " · saved" : ""}</span>
+        <button type="button" aria-label="Remove">&times;</button>
+      `;
+      row.querySelector("button").addEventListener("click", () => {
+        pendingPdfs.splice(idx, 1);
+        renderPendingPdfs();
+      });
+      wrap.appendChild(row);
+    });
+  }
+
+  // --- Photo picker ---
+  el("pickPhotoBtn").addEventListener("click", () => el("photoInput").click());
+  el("photoInput").addEventListener("change", e => {
+    const room = 6 - pendingPhotos.length;
+    Array.from(e.target.files).slice(0, Math.max(room, 0)).forEach(file => {
+      pendingPhotos.push({ file, previewUrl: URL.createObjectURL(file) });
+    });
+    renderPendingPhotos();
+    e.target.value = "";
+  });
+
+  function renderPendingPhotos() {
+    const wrap = el("photoPendingList");
+    wrap.innerHTML = "";
+    pendingPhotos.forEach((p, idx) => {
+      const row = document.createElement("div");
+      row.className = "pending-item";
+      const thumbSrc = p.existing ? p.url : p.previewUrl;
+      row.innerHTML = `
+        <img class="pending-thumb" src="${escapeHtml(thumbSrc)}" alt="" />
+        <span class="name">${p.existing ? "Saved photo" : (p.file ? p.file.name : "Photo")}</span>
+        <button type="button" aria-label="Remove">&times;</button>
+      `;
+      row.querySelector("button").addEventListener("click", () => {
+        pendingPhotos.splice(idx, 1);
+        renderPendingPhotos();
+      });
+      wrap.appendChild(row);
+    });
+  }
+
+  // --- YouTube link ---
+  el("addYtBtn").addEventListener("click", () => {
+    const url = el("ytInput").value.trim();
+    const status = el("noteStatus");
+    if (!url) return;
+    const videoId = extractYoutubeId(url);
+    if (!videoId) {
+      status.textContent = "That doesn't look like a valid YouTube link.";
+      status.classList.add("error");
+      return;
+    }
+    status.textContent = "";
+    status.classList.remove("error");
+    pendingYoutube.push({ url, videoId });
+    el("ytInput").value = "";
+    renderPendingYoutube();
+  });
+
+  function renderPendingYoutube() {
+    const wrap = el("ytPendingList");
+    wrap.innerHTML = "";
+    pendingYoutube.forEach((y, idx) => {
+      const row = document.createElement("div");
+      row.className = "pending-item";
+      row.innerHTML = `
+        <span class="name">${escapeHtml(y.url)}</span>
+        <button type="button" aria-label="Remove">&times;</button>
+      `;
+      row.querySelector("button").addEventListener("click", () => {
+        pendingYoutube.splice(idx, 1);
+        renderPendingYoutube();
+      });
+      wrap.appendChild(row);
+    });
+  }
+
+  // --- Upload helpers ---
+  function uploadPhotoToImgbb(file) {
+    if (isPlaceholder(IMGBB_API_KEY)) {
+      return Promise.reject(new Error("ImgBB API key isn't configured yet."));
+    }
+    const formData = new FormData();
+    formData.append("image", file);
+    return fetch("https://api.imgbb.com/1/upload?key=" + encodeURIComponent(IMGBB_API_KEY), {
+      method: "POST",
+      body: formData
+    })
+      .then(r => r.json())
+      .then(json => {
+        if (!json.success) throw new Error("ImgBB upload failed.");
+        return json.data.url;
+      });
+  }
+
+  function uploadDocToCloudinary(file) {
+    if (isPlaceholder(CLOUDINARY_CLOUD_NAME) || isPlaceholder(CLOUDINARY_UPLOAD_PRESET)) {
+      return Promise.reject(new Error("Cloudinary isn't configured yet."));
+    }
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+    return fetch("https://api.cloudinary.com/v1_1/" + CLOUDINARY_CLOUD_NAME + "/auto/upload", {
+      method: "POST",
+      body: formData
+    })
+      .then(r => r.json())
+      .then(json => {
+        if (!json.secure_url) throw new Error("Cloudinary upload failed.");
+        return json.secure_url;
+      });
+  }
+
+  // --- Save note (create or update) ---
+  el("saveNoteBtn").addEventListener("click", async () => {
+    const title = el("noteTitle").value.trim();
+    const description = el("noteDesc").value.trim();
+    const status = el("noteStatus");
+    const saveBtn = el("saveNoteBtn");
+
+    if (!title) {
+      status.textContent = "Please enter a title.";
+      status.classList.add("error");
+      return;
+    }
+    if (!db) {
+      status.textContent = "Firebase isn't configured yet — see the setup notice above.";
+      status.classList.add("error");
+      return;
+    }
+
+    saveBtn.disabled = true;
+    status.classList.remove("error");
+
+    try {
+      // Upload new PDFs
+      const pdfResults = [];
+      for (let i = 0; i < pendingPdfs.length; i++) {
+        const p = pendingPdfs[i];
+        if (p.existing) {
+          pdfResults.push({ url: p.url, name: p.name, sizeBytes: p.sizeBytes || 0 });
+        } else {
+          status.textContent = `Uploading document ${i + 1} of ${pendingPdfs.length}...`;
+          const url = await uploadDocToCloudinary(p.file);
+          pdfResults.push({ url, name: p.name, sizeBytes: p.sizeBytes });
+        }
+      }
+
+      // Upload new photos
+      const photoResults = [];
+      for (let i = 0; i < pendingPhotos.length; i++) {
+        const p = pendingPhotos[i];
+        if (p.existing) {
+          photoResults.push({ url: p.url });
+        } else {
+          status.textContent = `Uploading photo ${i + 1} of ${pendingPhotos.length}...`;
+          const url = await uploadPhotoToImgbb(p.file);
+          photoResults.push({ url });
+        }
+      }
+
+      const youtubeResults = pendingYoutube.map((y, idx) => ({
+        url: y.url,
+        videoId: y.videoId,
+        videoNumber: idx + 1
+      }));
+
+      status.textContent = "Saving note...";
+
+      const noteId = editingNoteId || newId("note");
+      const noteData = {
+        id: noteId,
+        title,
+        description,
+        pdfs: pdfResults,
+        photos: photoResults,
+        youtubeLinks: youtubeResults,
+        createdAt: editingNoteId
+          ? (chapters[currentChapterId].notes[editingNoteId].createdAt || Date.now())
+          : Date.now()
+      };
+
+      await chaptersRef().child(currentChapterId).child("notes").child(noteId).set(noteData);
+
+      status.textContent = "";
+      saveBtn.disabled = false;
+      closeSheet("noteBackdrop");
+
+      currentNoteId = noteId;
+      renderNoteDetail();
+      showScreen("Detail");
+    } catch (err) {
+      status.textContent = "Could not save: " + err.message;
+      status.classList.add("error");
+      saveBtn.disabled = false;
+    }
+  });
+
+  // ---------------------------------------------------------------
+  // Deep-link on load (supports back/forward + shareable links)
+  // ---------------------------------------------------------------
+  function restoreFromHash() {
+    const hash = location.hash.replace(/^#/, "");
+    if (!hash) { showScreen("Chapters"); return; }
+    const params = new URLSearchParams(hash);
+    const chapterId = params.get("chapter");
+    const noteId = params.get("note");
+
+    if (chapterId && chapters[chapterId]) {
+      currentChapterId = chapterId;
+      if (noteId && chapters[chapterId].notes && chapters[chapterId].notes[noteId]) {
+        currentNoteId = noteId;
+        renderNoteDetail();
+        showScreen("Detail");
+      } else {
+        renderNotesList();
+        showScreen("Notes");
+      }
+    } else {
+      showScreen("Chapters");
+    }
+  }
+
+  window.addEventListener("hashchange", restoreFromHash);
+
+  // ---------------------------------------------------------------
+  // Boot
+  // ---------------------------------------------------------------
+  startSync();
+  showScreen("Chapters");
+  if (location.hash) {
+    // give first Firebase snapshot a moment to arrive before deep-linking
+    setTimeout(restoreFromHash, 400);
+  }
+})();
+</script>
+</body>
+</html>
