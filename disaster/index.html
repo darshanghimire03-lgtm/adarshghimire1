@@ -338,6 +338,9 @@
   .logout-btn:hover{ background:rgba(255,255,255,0.16); }
 
   .dash-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .dash-grid > .dash-card:first-child{ grid-column:1 / -1; }
+  .dash-grid > .dash-card.fine-card{ grid-column:1 / -1; }
+  .dash-grid > .dash-card.donations-card{ grid-column:1 / -1; }
 
   .dash-card{ border-radius:14px; padding:26px; text-align:left; }
   .dash-card h3{ margin:0 0 6px; font-size:1.15rem; font-weight:600; }
@@ -349,6 +352,71 @@
     font-size:0.9rem;
     border:1px dashed var(--glass-border);
     border-radius:10px;
+  }
+
+  .fine-amount-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .fine-amount-display{
+    font-family:'Fraunces', serif;
+    font-size:1.8rem;
+    font-weight:600;
+    color:var(--blue-bright);
+  }
+  .fine-amount-display .rs{ font-size:1.1rem; color:var(--ink-soft); font-weight:500; margin-right:4px; }
+
+  .donation-form-row{
+    display:flex;
+    gap:10px;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+  }
+  .donation-form-row > div{ flex:1; min-width:160px; }
+  .donation-form-row .field{ margin-bottom:0; }
+  .donation-form-row .btn-add{
+    padding:13px 22px;
+    border-radius:8px;
+    border:none;
+    font-weight:700;
+    font-size:0.95rem;
+    color:var(--white);
+    background:linear-gradient(135deg, var(--blue) 0%, var(--blue-bright) 100%);
+    cursor:pointer;
+    transition:filter 0.2s ease;
+    white-space:nowrap;
+  }
+  .donation-form-row .btn-add:hover{ filter:brightness(1.12); }
+  .donation-form-row .btn-add:disabled{ opacity:0.6; cursor:not-allowed; }
+
+  .donation-table-wrap{ overflow-x:auto; }
+  table.donation-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.92rem;
+  }
+  table.donation-table th, table.donation-table td{
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid var(--glass-border);
+  }
+  table.donation-table th{
+    color:var(--ink-faint);
+    font-weight:600;
+    font-size:0.78rem;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+  }
+  table.donation-table td.amt-col, table.donation-table th.amt-col{ text-align:right; }
+  table.donation-table td.sn-col, table.donation-table th.sn-col{ width:50px; color:var(--ink-faint); }
+  table.donation-table tfoot td{
+    font-weight:700;
+    color:var(--white);
+    border-top:1px solid var(--glass-border);
+    border-bottom:none;
   }
 
   @media (max-width:640px){
@@ -378,7 +446,7 @@
       </svg>
       <div class="brand-name">Durbar Disaster Relief Fund</div>
     </div>
-    <button class="login-btn" type="button" id="openLoginBtn">Log in</button>
+    <button class="login-btn" type="button" id="topbarAuthBtn">Log in</button>
   </div>
 
   <div class="page-body" id="pageBody">
@@ -463,14 +531,63 @@
 
     <div class="dash-grid">
       <div class="dash-card glass">
-        <h3>Donations</h3>
-        <p class="desc">Track relief fund contributions from this class.</p>
-        <div class="empty-state">No donations recorded yet.</div>
+        <h3>Class Leadership</h3>
+        <p class="desc">Set your class Captain and Vice Captain. Visible to everyone on the home page.</p>
+        <label class="field-label" for="dashCaptainInput">Captain name</label>
+        <input class="field" type="text" id="dashCaptainInput" placeholder="Captain's name">
+        <label class="field-label" for="dashViceInput">Vice Captain name</label>
+        <input class="field" type="text" id="dashViceInput" placeholder="Vice Captain's name">
+        <button class="submit-btn" type="button" id="dashSaveLeadershipBtn">Save leadership</button>
+        <div class="error-msg" id="dashLeadershipStatus" style="color:var(--ink-soft);"></div>
       </div>
-      <div class="dash-card glass">
-        <h3>Members</h3>
-        <p class="desc">Students participating in the relief fund drive.</p>
-        <div class="empty-state">No members added yet.</div>
+      <div class="dash-card glass fine-card">
+        <h3>Class Fine Contribution</h3>
+        <p class="desc">The total amount your class has decided to contribute. Visible to everyone on the home page.</p>
+        <div class="fine-amount-row">
+          <div class="fine-amount-display"><span class="rs">Rs.</span><span id="fineAmountDisplay">0</span></div>
+          <input class="field" type="number" min="0" step="1" id="fineAmountInput" placeholder="Enter amount" style="max-width:200px; margin-bottom:0;">
+          <button class="btn-add" id="saveFineBtn" style="padding:12px 22px;">Save amount</button>
+        </div>
+        <div class="error-msg" id="fineStatus" style="color:var(--ink-soft); margin-top:10px; margin-bottom:0;"></div>
+      </div>
+
+      <div class="dash-card glass donations-card">
+        <h3>Donations</h3>
+        <p class="desc">Add each student's donation to the relief fund below.</p>
+
+        <div class="donation-form-row">
+          <div>
+            <label class="field-label" for="donorNameInput">Student name</label>
+            <input class="field" type="text" id="donorNameInput" placeholder="Student's name">
+          </div>
+          <div>
+            <label class="field-label" for="donorAmountInput">Amount (Rs.)</label>
+            <input class="field" type="number" min="0" step="1" id="donorAmountInput" placeholder="0">
+          </div>
+          <button class="btn-add" id="addDonationBtn">Add donation</button>
+        </div>
+        <div class="error-msg" id="donationStatus"></div>
+
+        <div class="donation-table-wrap">
+          <table class="donation-table">
+            <thead>
+              <tr>
+                <th class="sn-col">S.N.</th>
+                <th>Student Name</th>
+                <th class="amt-col">Donate (Rs.)</th>
+              </tr>
+            </thead>
+            <tbody id="donationTableBody">
+              <tr id="donationEmptyRow"><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">No donations recorded yet.</td></tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2">Total</td>
+                <td class="amt-col" id="donationTotal">Rs. 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -508,7 +625,7 @@
   <!-- Firebase SDK: Realtime Database only, no Auth -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import { getDatabase, ref, get, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDNnCaEWJNG2DHAqo0nhQFozfHg7O8QW-0",
@@ -528,7 +645,7 @@
     const dashboardView = document.getElementById('dashboardView');
     const dashClassName = document.getElementById('dashClassName');
 
-    const openLoginBtn = document.getElementById('openLoginBtn');
+    const topbarAuthBtn = document.getElementById('topbarAuthBtn');
     const closeLoginBtn = document.getElementById('closeLoginBtn');
     const loginOverlay = document.getElementById('loginOverlay');
     const loginForm = document.getElementById('loginForm');
@@ -537,6 +654,20 @@
     const loginError = document.getElementById('loginError');
     const loginSubmitBtn = document.getElementById('loginSubmitBtn');
     const logoutBtn = document.getElementById('logoutBtn');
+    const dashCaptainInput = document.getElementById('dashCaptainInput');
+    const dashViceInput = document.getElementById('dashViceInput');
+    const dashSaveLeadershipBtn = document.getElementById('dashSaveLeadershipBtn');
+    const dashLeadershipStatus = document.getElementById('dashLeadershipStatus');
+    const fineAmountDisplay = document.getElementById('fineAmountDisplay');
+    const fineAmountInput = document.getElementById('fineAmountInput');
+    const saveFineBtn = document.getElementById('saveFineBtn');
+    const fineStatus = document.getElementById('fineStatus');
+    const donorNameInput = document.getElementById('donorNameInput');
+    const donorAmountInput = document.getElementById('donorAmountInput');
+    const addDonationBtn = document.getElementById('addDonationBtn');
+    const donationStatus = document.getElementById('donationStatus');
+    const donationTableBody = document.getElementById('donationTableBody');
+    const donationTotal = document.getElementById('donationTotal');
 
     // ---------- Class picker highlight ----------
     const classButtons = document.querySelectorAll('.class-btn');
@@ -560,7 +691,13 @@
       loginForm.reset();
       loginError.textContent = '';
     }
-    openLoginBtn.addEventListener('click', openModal);
+    topbarAuthBtn.addEventListener('click', () => {
+      if (isLoggedIn()) {
+        hideDashboard();
+      } else {
+        openModal();
+      }
+    });
     closeLoginBtn.addEventListener('click', closeModal);
     loginOverlay.addEventListener('click', (e) => {
       if (e.target === loginOverlay) closeModal();
@@ -620,19 +757,213 @@
     });
 
     // ---------- Dashboard show/hide ----------
+    let activeClassId = null;
+
+    function isLoggedIn(){
+      return !!activeClassId;
+    }
+
     function showDashboard(className){
       dashClassName.textContent = className;
+      activeClassId = classIdMap[className];
       pageBody.classList.add('hidden');
       dashboardView.classList.add('active');
+      topbarAuthBtn.textContent = 'Log out';
+      loadLeadershipIntoDash();
+      loadFineIntoDash();
+      watchDonations();
+    }
+
+    async function loadLeadershipIntoDash(){
+      if (!activeClassId) return;
+      dashLeadershipStatus.textContent = '';
+      try {
+        const snap = await get(ref(db, 'classLeadership/' + activeClassId));
+        const data = snap.exists() ? snap.val() : {};
+        dashCaptainInput.value = data.captain || '';
+        dashViceInput.value = data.viceCaptain || '';
+      } catch (err) {
+        console.error(err);
+        dashLeadershipStatus.style.color = '#ff8080';
+        dashLeadershipStatus.textContent = 'Could not load current leadership: ' + (err.code || err.message);
+      }
+    }
+
+    async function loadFineIntoDash(){
+      if (!activeClassId) return;
+      fineStatus.textContent = '';
+      try {
+        const snap = await get(ref(db, 'classFine/' + activeClassId + '/amount'));
+        const amt = snap.exists() ? snap.val() : 0;
+        fineAmountDisplay.textContent = formatRs(amt);
+        fineAmountInput.value = amt || '';
+      } catch (err) {
+        console.error(err);
+        fineStatus.style.color = '#ff8080';
+        fineStatus.textContent = 'Could not load current amount: ' + (err.code || err.message);
+      }
+    }
+
+    let donationsUnsubscribe = null;
+    function watchDonations(){
+      if (!activeClassId) return;
+      donationsUnsubscribe = onValue(ref(db, 'classDonations/' + activeClassId), (snap) => {
+        const data = snap.exists() ? snap.val() : {};
+        renderDonationTable(data);
+      }, (err) => {
+        console.error(err);
+        donationStatus.textContent = 'Could not load donations: ' + (err.code || err.message);
+      });
+    }
+
+    function renderDonationTable(data){
+      const entries = Object.entries(data || {});
+      donationTableBody.innerHTML = '';
+
+      if (entries.length === 0) {
+        donationTableBody.innerHTML = '<tr id="donationEmptyRow"><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">No donations recorded yet.</td></tr>';
+        donationTotal.textContent = 'Rs. 0';
+        return;
+      }
+
+      entries.sort((a, b) => (a[1].createdAt || 0) - (b[1].createdAt || 0));
+
+      let total = 0;
+      entries.forEach(([key, entry], idx) => {
+        const amt = Number(entry.amount) || 0;
+        total += amt;
+        const row = document.createElement('tr');
+        row.innerHTML =
+          '<td class="sn-col">' + (idx + 1) + '</td>' +
+          '<td>' + escapeHtml(entry.name || '') + '</td>' +
+          '<td class="amt-col">' + formatRs(amt) + '</td>';
+        donationTableBody.appendChild(row);
+      });
+
+      donationTotal.textContent = 'Rs. ' + formatRs(total);
+    }
+
+    function formatRs(n){
+      return Number(n || 0).toLocaleString('en-IN');
+    }
+
+    function escapeHtml(str){
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
     }
 
     function hideDashboard(){
       pageBody.classList.remove('hidden');
       dashboardView.classList.remove('active');
       localStorage.removeItem('durbar_active_class');
+      activeClassId = null;
+      topbarAuthBtn.textContent = 'Log in';
+      if (donationsUnsubscribe) {
+        donationsUnsubscribe();
+        donationsUnsubscribe = null;
+      }
     }
 
     logoutBtn.addEventListener('click', hideDashboard);
+
+    dashSaveLeadershipBtn.addEventListener('click', async () => {
+      if (!activeClassId) return;
+      const captainName = dashCaptainInput.value.trim();
+      const viceName = dashViceInput.value.trim();
+      dashLeadershipStatus.style.color = '#ff8080';
+      dashLeadershipStatus.textContent = '';
+
+      if (!captainName && !viceName) {
+        dashLeadershipStatus.textContent = 'Enter at least one name before saving.';
+        return;
+      }
+
+      dashSaveLeadershipBtn.disabled = true;
+      dashSaveLeadershipBtn.textContent = 'Saving...';
+
+      try {
+        await set(ref(db, 'classLeadership/' + activeClassId), {
+          captain: captainName,
+          viceCaptain: viceName
+        });
+        dashLeadershipStatus.style.color = '#7fe08a';
+        dashLeadershipStatus.textContent = 'Saved.';
+      } catch (err) {
+        console.error(err);
+        dashLeadershipStatus.textContent = 'Failed to save: ' + (err.code || err.message || 'unknown error');
+      } finally {
+        dashSaveLeadershipBtn.disabled = false;
+        dashSaveLeadershipBtn.textContent = 'Save leadership';
+      }
+    });
+
+    saveFineBtn.addEventListener('click', async () => {
+      if (!activeClassId) return;
+      const amt = Number(fineAmountInput.value);
+      fineStatus.style.color = '#ff8080';
+      fineStatus.textContent = '';
+
+      if (fineAmountInput.value === '' || isNaN(amt) || amt < 0) {
+        fineStatus.textContent = 'Enter a valid amount.';
+        return;
+      }
+
+      saveFineBtn.disabled = true;
+      saveFineBtn.textContent = 'Saving...';
+
+      try {
+        await set(ref(db, 'classFine/' + activeClassId), { amount: amt });
+        fineAmountDisplay.textContent = formatRs(amt);
+        fineStatus.style.color = '#7fe08a';
+        fineStatus.textContent = 'Saved.';
+      } catch (err) {
+        console.error(err);
+        fineStatus.textContent = 'Failed to save: ' + (err.code || err.message || 'unknown error');
+      } finally {
+        saveFineBtn.disabled = false;
+        saveFineBtn.textContent = 'Save amount';
+      }
+    });
+
+    addDonationBtn.addEventListener('click', async () => {
+      if (!activeClassId) return;
+      const name = donorNameInput.value.trim();
+      const amt = Number(donorAmountInput.value);
+      donationStatus.style.color = '#ff8080';
+      donationStatus.textContent = '';
+
+      if (!name) {
+        donationStatus.textContent = 'Enter the student name.';
+        return;
+      }
+      if (donorAmountInput.value === '' || isNaN(amt) || amt < 0) {
+        donationStatus.textContent = 'Enter a valid donation amount.';
+        return;
+      }
+
+      addDonationBtn.disabled = true;
+      addDonationBtn.textContent = 'Adding...';
+
+      try {
+        const newRef = push(ref(db, 'classDonations/' + activeClassId));
+        await set(newRef, {
+          name: name,
+          amount: amt,
+          createdAt: Date.now()
+        });
+        donorNameInput.value = '';
+        donorAmountInput.value = '';
+        donationStatus.style.color = '#7fe08a';
+        donationStatus.textContent = 'Added.';
+      } catch (err) {
+        console.error(err);
+        donationStatus.textContent = 'Failed to add: ' + (err.code || err.message || 'unknown error');
+      } finally {
+        addDonationBtn.disabled = false;
+        addDonationBtn.textContent = 'Add donation';
+      }
+    });
 
     const savedClass = localStorage.getItem('durbar_active_class');
     if (savedClass) {
