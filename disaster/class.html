@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>कक्षा विवरण — दरबार विपद् राहत कोष</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="topbar">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="19" stroke="#b5482f" stroke-width="2"/>
+        <path d="M20 9 L20 31 M11 16 L29 16 M13 24 L27 24" stroke="#f7f3ea" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="brand-name">दरबार विपद् राहत कोष</div>
+    </a>
+    <div class="topbar-right">
+      <button class="topbar-menu-btn" type="button" id="dashMenuBtn" aria-label="मेनु खोल्नुहोस्">&#9776;</button>
+      <button class="login-btn" type="button" id="topbarAuthBtn">लग इन</button>
+    </div>
+  </div>
+
+  <!-- ---------- Public class detail view (no login needed) ---------- -->
+  <div class="class-detail" id="classDetailView">
+    <div class="detail-header">
+      <div class="pmdrf">प्रधानमन्त्री विपद् राहत कोष</div>
+      <h2 id="detailClassName">Class 11 A</h2>
+      <div class="detail-header-links">
+        <a class="back-link" href="index.html">&larr; सबै कक्षाहरूमा फर्कनुहोस्</a>
+      </div>
+    </div>
+
+    <div class="detail-stats">
+      <div class="stat-card card">
+        <div class="stat-label">कुल दान</div>
+        <div class="stat-value" id="detailDonationTotal">रु. 0</div>
+      </div>
+      <div class="stat-card card fine-stat">
+        <div class="stat-label">कक्षा जरिवाना योगदान</div>
+        <div class="stat-value" id="detailFineAmount">रु. 0</div>
+      </div>
+    </div>
+
+    <div class="detail-section card">
+      <h3>दाताहरू</h3>
+      <p class="desc">यस कक्षाबाट राहत कोषमा योगदान गर्ने विद्यार्थीहरू।</p>
+      <div class="donation-table-wrap">
+        <table class="donation-table">
+          <thead>
+            <tr>
+              <th class="sn-col">क्र.सं.</th>
+              <th>विद्यार्थीको नाम</th>
+              <th class="amt-col">दान (रु.)</th>
+            </tr>
+          </thead>
+          <tbody id="detailDonationTableBody">
+            <tr><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">अहिलेसम्म कुनै दान दर्ता भएको छैन।</td></tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">जम्मा</td>
+              <td class="amt-col" id="detailDonationTableTotal">रु. 0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Captain dashboard (after login) ---------- -->
+  <div class="class-detail" id="dashboardView">
+    <div class="detail-header dash-detail-header">
+      <div class="pmdrf">प्रधानमन्त्री विपद् राहत कोष</div>
+      <h2 id="dashClassName">Class 11 A</h2>
+    </div>
+
+    <div class="detail-section card">
+      <div class="dash-list-header">
+        <div>
+          <h3>दानहरू</h3>
+          <p class="desc">यस कक्षाबाट राहत कोषमा योगदान गर्ने दाताहरू।</p>
+        </div>
+        <button class="btn-add" type="button" id="openAddDonorBtn">+ Add Donor</button>
+      </div>
+
+      <div class="donation-table-wrap">
+        <table class="donation-table">
+          <thead>
+            <tr>
+              <th class="sn-col">क्र.सं.</th>
+              <th>विद्यार्थीको नाम</th>
+              <th class="amt-col">दान (रु.)</th>
+              <th class="actions-col"></th>
+            </tr>
+          </thead>
+          <tbody id="donationTableBody">
+            <tr id="donationEmptyRow"><td colspan="4" style="text-align:center; color:var(--ink-faint); padding:20px;">अहिलेसम्म कुनै दान दर्ता भएको छैन।</td></tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">जम्मा</td>
+              <td class="amt-col" id="donationTotal">रु. 0</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Slide-in dashboard menu ---------- -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer" id="dashDrawer">
+    <div class="drawer-header">
+      <span>मेनु</span>
+      <button class="modal-close" id="closeDrawerBtn" aria-label="मेनु बन्द गर्नुहोस्">&times;</button>
+    </div>
+    <button class="drawer-item" type="button" id="drawerChangeCaptainBtn">क्याप्टेनको नाम परिवर्तन गर्नुहोस्</button>
+    <button class="drawer-item" type="button" id="drawerEditFineBtn">कक्षा जरिवाना सम्पादन गर्नुहोस्</button>
+    <button class="drawer-item drawer-item-danger" type="button" id="drawerLogoutBtn">लग आउट</button>
+  </div>
+
+  <!-- ---------- Popup: Change Captain's name ---------- -->
+  <div class="overlay" id="captainPopup">
+    <div class="modal card">
+      <button class="modal-close" id="closeCaptainPopupBtn" aria-label="बन्द गर्नुहोस्">&times;</button>
+      <h3>कक्षा नेतृत्व</h3>
+      <p class="sub">आफ्नो कक्षाको क्याप्टेन र उप क्याप्टेन तोक्नुहोस्।</p>
+      <label class="field-label" for="dashCaptainInput">क्याप्टेनको नाम</label>
+      <input class="field" type="text" id="dashCaptainInput" placeholder="क्याप्टेनको नाम">
+      <label class="field-label" for="dashViceInput">उप क्याप्टेनको नाम</label>
+      <input class="field" type="text" id="dashViceInput" placeholder="उप क्याप्टेनको नाम">
+      <button class="submit-btn" type="button" id="dashSaveLeadershipBtn">नेतृत्व सुरक्षित गर्नुहोस्</button>
+      <div class="error-msg" id="dashLeadershipStatus" style="color:var(--ink-soft);"></div>
+    </div>
+  </div>
+
+  <!-- ---------- Popup: Edit class fine ---------- -->
+  <div class="overlay" id="finePopup">
+    <div class="modal card">
+      <button class="modal-close" id="closeFinePopupBtn" aria-label="बन्द गर्नुहोस्">&times;</button>
+      <h3>कक्षा जरिवाना योगदान</h3>
+      <p class="sub">तपाईंको कक्षाले योगदान गर्ने निर्णय गरेको कुल रकम।</p>
+      <label class="field-label" for="fineAmountInput">रकम (रु.)</label>
+      <input class="field" type="number" min="0" step="1" id="fineAmountInput" placeholder="रकम प्रविष्ट गर्नुहोस्">
+      <button class="submit-btn" type="button" id="saveFineBtn">रकम सुरक्षित गर्नुहोस्</button>
+      <div class="error-msg" id="fineStatus" style="color:var(--ink-soft);"></div>
+    </div>
+  </div>
+
+  <!-- ---------- Popup: Add Donor ---------- -->
+  <div class="overlay" id="addDonorPopup">
+    <div class="modal card">
+      <button class="modal-close" id="closeAddDonorPopupBtn" aria-label="Close">&times;</button>
+      <h3>Add Donor</h3>
+      <p class="sub">विद्यार्थीको दान दर्ता गर्नुहोस्।</p>
+      <label class="field-label" for="donorNameInput">विद्यार्थीको नाम</label>
+      <input class="field" type="text" id="donorNameInput" placeholder="विद्यार्थीको नाम">
+      <label class="field-label" for="donorAmountInput">रकम (रु.)</label>
+      <input class="field" type="number" min="0" step="1" id="donorAmountInput" placeholder="0">
+      <button class="submit-btn" type="button" id="addDonationBtn">दान थप्नुहोस्</button>
+      <div class="error-msg" id="donationStatus"></div>
+    </div>
+  </div>
+
+  <!-- ---------- Popup: Edit Donor ---------- -->
+  <div class="overlay" id="editDonorPopup">
+    <div class="modal card">
+      <button class="modal-close" id="closeEditDonorPopupBtn" aria-label="बन्द गर्नुहोस्">&times;</button>
+      <h3>दाता सम्पादन गर्नुहोस्</h3>
+      <p class="sub">यस दाताको विवरण अद्यावधिक गर्नुहोस्।</p>
+      <label class="field-label" for="editDonorNameInput">विद्यार्थीको नाम</label>
+      <input class="field" type="text" id="editDonorNameInput" placeholder="विद्यार्थीको नाम">
+      <label class="field-label" for="editDonorAmountInput">रकम (रु.)</label>
+      <input class="field" type="number" min="0" step="1" id="editDonorAmountInput" placeholder="0">
+      <button class="submit-btn" type="button" id="saveEditDonorBtn">परिवर्तनहरू सुरक्षित गर्नुहोस्</button>
+      <div class="error-msg" id="editDonorStatus"></div>
+    </div>
+  </div>
+
+  <!-- ---------- Popup: Delete confirm ---------- -->
+  <div class="overlay" id="deleteConfirmPopup">
+    <div class="modal card">
+      <button class="modal-close" id="closeDeleteConfirmBtn" aria-label="बन्द गर्नुहोस्">&times;</button>
+      <h3>दाता हटाउने हो?</h3>
+      <p class="sub" id="deleteConfirmText">यसले यो दान प्रविष्टि स्थायी रूपमा हटाउनेछ।</p>
+      <button class="submit-btn" type="button" id="confirmDeleteBtn" style="background:var(--brick);">मेटाउनुहोस्</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="loginOverlay">
+    <div class="modal card">
+      <button class="modal-close" id="closeLoginBtn" aria-label="बन्द गर्नुहोस्">&times;</button>
+      <h3>कक्षा क्याप्टेन लग इन</h3>
+      <p class="sub">आफ्नो कक्षा छान्नुहोस् र कक्षाको पासकोड प्रविष्ट गर्नुहोस्।</p>
+
+      <form id="loginForm">
+        <label class="field-label" for="classSelect">कक्षा</label>
+        <select class="field" id="classSelect" required>
+          <option value="" disabled selected>कक्षा छान्नुहोस्</option>
+          <option value="Class 11 A">Class 11 A</option>
+          <option value="Class 11 B">Class 11 B</option>
+          <option value="Class 12 A">Class 12 A</option>
+          <option value="Class 12 B">Class 12 B</option>
+        </select>
+
+        <label class="field-label" for="passInput">पासकोड</label>
+        <input class="field" type="password" id="passInput" placeholder="कक्षाको पासकोड प्रविष्ट गर्नुहोस्" required>
+
+        <div class="error-msg" id="loginError"></div>
+
+        <button class="submit-btn" type="submit" id="loginSubmitBtn">लग इन</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    &copy; २०२६ दरबार विपद् राहत कोष। सर्वाधिकार सुरक्षित।
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>
