@@ -469,22 +469,6 @@
     text-decoration:underline;
   }
   .detail-header .back-link:hover{ color:var(--paper); }
-  .detail-header .download-link{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-size:0.85rem;
-    font-weight:600;
-    color:var(--ink);
-    background:var(--paper);
-    border:1px solid var(--paper);
-    padding:9px 18px;
-    border-radius:3px;
-    text-decoration:none;
-    cursor:pointer;
-    transition:background 0.15s ease;
-  }
-  .detail-header .download-link:hover{ background:var(--brick); border-color:var(--brick); color:var(--white); }
 
   .detail-stats{
     display:grid;

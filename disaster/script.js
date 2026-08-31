@@ -306,7 +306,6 @@ function initClassPage(){
   const classDetailView = document.getElementById('classDetailView');
   const dashboardView = document.getElementById('dashboardView');
   const dashClassName = document.getElementById('dashClassName');
-  const dashDownloadListLink = document.getElementById('dashDownloadListLink');
 
   const dashMenuBtn = document.getElementById('dashMenuBtn');
   const drawerOverlay = document.getElementById('drawerOverlay');
@@ -353,7 +352,6 @@ function initClassPage(){
   const donationTotal = document.getElementById('donationTotal');
 
   const detailClassName = document.getElementById('detailClassName');
-  const downloadListLink = document.getElementById('downloadListLink');
   const detailDonationTotal = document.getElementById('detailDonationTotal');
   const detailFineAmount = document.getElementById('detailFineAmount');
   const detailDonationTableBody = document.getElementById('detailDonationTableBody');
@@ -369,7 +367,6 @@ function initClassPage(){
     dashboardView.classList.remove('active');
     classDetailView.classList.add('active');
     detailClassName.textContent = className;
-    if (downloadListLink) downloadListLink.href = 'download.html?c=' + classId;
 
     clearDetailListeners();
 
@@ -408,7 +405,6 @@ function initClassPage(){
     clearDetailListeners();
     classDetailView.classList.remove('active');
     dashClassName.textContent = className;
-    if (dashDownloadListLink) dashDownloadListLink.href = 'download.html?c=' + activeClassId;
     dashboardView.classList.add('active');
     watchDonations(activeClassId);
   }
