@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Durbar Disaster Relief Fund</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;700&display=swap');
+
+  :root{
+    --navy-deep:#050b1a;
+    --navy:#0a1530;
+    --navy-mid:#122048;
+    --blue:#2f5fe0;
+    --blue-bright:#5b8dff;
+    --white:#ffffff;
+    --ink-soft:#c7d0e8;
+    --ink-faint:#8a94b8;
+    --glass-border:rgba(255,255,255,0.14);
+    --glass-fill:rgba(255,255,255,0.06);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    min-height:100vh;
+    color:var(--white);
+    font-family:'Karla', sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(47,95,224,0.35), transparent 45%),
+      radial-gradient(circle at 85% 0%, rgba(91,141,255,0.25), transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(18,32,72,0.6), transparent 55%),
+      linear-gradient(180deg, var(--navy-deep) 0%, #000000 100%);
+    background-attachment:fixed;
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3,.display{ font-family:'Fraunces', serif; }
+
+  .glow{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(90px);
+    pointer-events:none;
+    z-index:0;
+  }
+  .glow-1{ width:420px; height:420px; background:rgba(47,95,224,0.35); top:-120px; left:-100px; }
+  .glow-2{ width:380px; height:380px; background:rgba(91,141,255,0.22); bottom:-140px; right:-100px; }
+
+  .glass{
+    background:var(--glass-fill);
+    border:1px solid var(--glass-border);
+    backdrop-filter:blur(18px) saturate(140%);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+    box-shadow:0 8px 32px rgba(0,0,0,0.35);
+  }
+
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 40px;
+    border-bottom:1px solid var(--glass-border);
+    background:rgba(5,11,26,0.55);
+    backdrop-filter:blur(18px) saturate(140%);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+  }
+
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{ width:38px; height:38px; flex-shrink:0; }
+  .brand-name{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1.15rem;
+    line-height:1.15;
+    letter-spacing:0.01em;
+    color:var(--white);
+  }
+
+  .login-btn{
+    font-family:'Karla', sans-serif;
+    font-weight:700;
+    font-size:0.95rem;
+    color:var(--white);
+    background:linear-gradient(135deg, var(--blue) 0%, var(--blue-bright) 100%);
+    border:1px solid rgba(255,255,255,0.25);
+    padding:11px 26px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:filter 0.2s ease, transform 0.15s ease;
+  }
+  .login-btn:hover{ filter:brightness(1.12); }
+  .login-btn:active{ transform:translateY(1px); }
+  .login-btn:focus-visible{ outline:3px solid var(--blue-bright); outline-offset:2px; }
+
+  main{
+    position:relative;
+    z-index:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:100px 24px 60px;
+    max-width:760px;
+    margin:0 auto;
+  }
+
+  .kicker{
+    font-size:0.85rem;
+    color:var(--blue-bright);
+    font-weight:700;
+    margin-bottom:18px;
+    letter-spacing:0.02em;
+  }
+
+  main h2{
+    font-size:clamp(1.9rem, 4vw, 2.7rem);
+    font-weight:600;
+    line-height:1.25;
+    margin:0 0 46px;
+    color:var(--white);
+  }
+
+  .class-options{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    justify-content:center;
+  }
+
+  .class-btn{
+    font-family:'Karla', sans-serif;
+    font-size:1rem;
+    font-weight:500;
+    color:var(--white);
+    padding:16px 32px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+  }
+  .class-btn:hover{ border-color:var(--blue-bright); background:rgba(91,141,255,0.14); transform:translateY(-2px); }
+  .class-btn:active{ transform:translateY(0); }
+  .class-btn.selected{
+    background:linear-gradient(135deg, var(--blue) 0%, var(--blue-bright) 100%);
+    border-color:transparent;
+  }
+  .class-btn:focus-visible{ outline:3px solid var(--blue-bright); outline-offset:2px; }
+
+  .confirm-line{
+    margin-top:34px;
+    font-size:0.95rem;
+    color:var(--ink-soft);
+    min-height:1.2em;
+  }
+  .confirm-line strong{ color:var(--blue-bright); }
+
+  .captains-section{
+    position:relative;
+    z-index:1;
+    max-width:920px;
+    margin:0 auto;
+    padding:70px 24px 110px;
+  }
+
+  .captains-section .kicker{ text-align:center; }
+  .captains-section > h2{
+    text-align:center;
+    font-size:clamp(1.6rem, 3.4vw, 2.2rem);
+    font-weight:600;
+    margin:0 0 46px;
+  }
+
+  .captains-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:20px;
+  }
+
+  .captain-card{
+    border-radius:14px;
+    padding:24px;
+    text-align:left;
+  }
+  .captain-card h3{
+    margin:0 0 18px;
+    font-size:1.1rem;
+    font-weight:600;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--glass-border);
+  }
+
+  .role-row{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:12px;
+    padding:9px 0;
+  }
+  .role-label{ font-size:0.78rem; color:var(--ink-faint); flex-shrink:0; }
+  .role-name{ font-size:0.95rem; color:var(--white); font-weight:500; text-align:right; }
+  .role-name.empty{ color:var(--ink-faint); font-weight:400; font-style:italic; }
+
+  footer{
+    position:relative;
+    z-index:1;
+    text-align:center;
+    padding:26px 24px;
+    font-size:0.8rem;
+    color:var(--ink-faint);
+    border-top:1px solid var(--glass-border);
+  }
+
+  .overlay{
+    position:fixed;
+    inset:0;
+    z-index:50;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:rgba(0,0,0,0.55);
+    backdrop-filter:blur(4px);
+  }
+  .overlay.active{ display:flex; }
+
+  .modal{
+    width:100%;
+    max-width:400px;
+    border-radius:16px;
+    padding:36px 32px;
+    text-align:center;
+    position:relative;
+  }
+  .modal h3{ font-size:1.5rem; font-weight:600; margin:0 0 8px; }
+  .modal p.sub{ color:var(--ink-soft); font-size:0.9rem; margin:0 0 26px; }
+
+  .modal-close{
+    position:absolute;
+    top:14px;
+    right:14px;
+    background:none;
+    border:none;
+    color:var(--ink-faint);
+    font-size:1.3rem;
+    line-height:1;
+    cursor:pointer;
+    padding:6px;
+  }
+  .modal-close:hover{ color:var(--white); }
+
+  .field-label{
+    display:block;
+    text-align:left;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+
+  select.field, input.field{
+    width:100%;
+    padding:13px 14px;
+    border-radius:8px;
+    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.07);
+    color:var(--white);
+    font-family:'Karla', sans-serif;
+    font-size:1rem;
+    margin-bottom:18px;
+  }
+  select.field option{ background:#0a1530; color:var(--white); }
+  input.field::placeholder{ color:var(--ink-faint); }
+  select.field:focus, input.field:focus{ outline:2px solid var(--blue-bright); }
+
+  .submit-btn{
+    width:100%;
+    padding:13px;
+    border-radius:8px;
+    border:none;
+    font-weight:700;
+    font-size:1rem;
+    color:var(--white);
+    background:linear-gradient(135deg, var(--blue) 0%, var(--blue-bright) 100%);
+    cursor:pointer;
+    transition:filter 0.2s ease;
+  }
+  .submit-btn:hover{ filter:brightness(1.12); }
+  .submit-btn:disabled{ opacity:0.6; cursor:not-allowed; }
+
+  .error-msg{
+    color:#ff8080;
+    font-size:0.85rem;
+    margin:-8px 0 16px;
+    min-height:1.1em;
+    text-align:left;
+  }
+
+  .dashboard{
+    display:none;
+    position:relative;
+    z-index:1;
+    max-width:920px;
+    margin:0 auto;
+    padding:60px 24px 100px;
+  }
+  .dashboard.active{ display:block; }
+  .page-body.hidden{ display:none; }
+
+  .dash-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-bottom:40px;
+    padding-bottom:24px;
+    border-bottom:1px solid var(--glass-border);
+  }
+  .dash-header h2{ margin:0 0 4px; font-size:2rem; }
+  .dash-header p{ margin:0; color:var(--ink-soft); font-size:0.95rem; }
+
+  .logout-btn{
+    padding:10px 22px;
+    border-radius:8px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid var(--glass-border);
+    color:var(--white);
+    font-family:'Karla', sans-serif;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.2s ease;
+  }
+  .logout-btn:hover{ background:rgba(255,255,255,0.16); }
+
+  .dash-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+
+  .dash-card{ border-radius:14px; padding:26px; text-align:left; }
+  .dash-card h3{ margin:0 0 6px; font-size:1.15rem; font-weight:600; }
+  .dash-card p.desc{ margin:0 0 20px; color:var(--ink-soft); font-size:0.88rem; }
+  .empty-state{
+    padding:28px 16px;
+    text-align:center;
+    color:var(--ink-faint);
+    font-size:0.9rem;
+    border:1px dashed var(--glass-border);
+    border-radius:10px;
+  }
+
+  @media (max-width:640px){
+    .topbar{ padding:16px 20px; }
+    .brand-name{ font-size:1rem; }
+    main{ padding:70px 20px 50px; }
+    .class-btn{ padding:14px 22px; font-size:0.95rem; }
+    .dash-grid{ grid-template-columns:1fr; }
+    .dashboard{ padding:40px 18px 80px; }
+    .captains-grid{ grid-template-columns:1fr; }
+    .captains-section{ padding:50px 18px 80px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body>
+
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <div class="topbar glass">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="19" stroke="#5b8dff" stroke-width="2"/>
+        <path d="M20 9 L20 31 M11 16 L29 16 M13 24 L27 24" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="brand-name">Durbar Disaster Relief Fund</div>
+    </div>
+    <button class="login-btn" type="button" id="openLoginBtn">Log in</button>
+  </div>
+
+  <div class="page-body" id="pageBody">
+    <main id="mainView">
+      <div class="kicker">Getting started</div>
+      <h2>What is your class?</h2>
+
+      <div class="class-options" role="group" aria-label="Select your class">
+        <button class="class-btn glass" type="button" data-class="Class 11 A">Class 11 A</button>
+        <button class="class-btn glass" type="button" data-class="Class 11 B">Class 11 B</button>
+        <button class="class-btn glass" type="button" data-class="Class 12 A">Class 12 A</button>
+        <button class="class-btn glass" type="button" data-class="Class 12 B">Class 12 B</button>
+      </div>
+
+      <div class="confirm-line" id="confirmLine"></div>
+    </main>
+
+    <section class="captains-section">
+      <div class="kicker">Leadership</div>
+      <h2>Class Captains &amp; Vice Captains</h2>
+
+      <div class="captains-grid" id="captainsGrid">
+        <div class="captain-card glass" data-key="class11A">
+          <h3>Class 11 A</h3>
+          <div class="role-row">
+            <span class="role-label">Captain</span>
+            <span class="role-name empty" data-captain>Loading…</span>
+          </div>
+          <div class="role-row">
+            <span class="role-label">Vice Captain</span>
+            <span class="role-name empty" data-vice-captain>Loading…</span>
+          </div>
+        </div>
+
+        <div class="captain-card glass" data-key="class11B">
+          <h3>Class 11 B</h3>
+          <div class="role-row">
+            <span class="role-label">Captain</span>
+            <span class="role-name empty" data-captain>Loading…</span>
+          </div>
+          <div class="role-row">
+            <span class="role-label">Vice Captain</span>
+            <span class="role-name empty" data-vice-captain>Loading…</span>
+          </div>
+        </div>
+
+        <div class="captain-card glass" data-key="class12A">
+          <h3>Class 12 A</h3>
+          <div class="role-row">
+            <span class="role-label">Captain</span>
+            <span class="role-name empty" data-captain>Loading…</span>
+          </div>
+          <div class="role-row">
+            <span class="role-label">Vice Captain</span>
+            <span class="role-name empty" data-vice-captain>Loading…</span>
+          </div>
+        </div>
+
+        <div class="captain-card glass" data-key="class12B">
+          <h3>Class 12 B</h3>
+          <div class="role-row">
+            <span class="role-label">Captain</span>
+            <span class="role-name empty" data-captain>Loading…</span>
+          </div>
+          <div class="role-row">
+            <span class="role-label">Vice Captain</span>
+            <span class="role-name empty" data-vice-captain>Loading…</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="dashboard" id="dashboardView">
+    <div class="dash-header">
+      <div>
+        <h2 id="dashClassName">Class 11 A</h2>
+        <p>Class captain dashboard</p>
+      </div>
+      <button class="logout-btn glass" type="button" id="logoutBtn">Log out</button>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card glass">
+        <h3>Donations</h3>
+        <p class="desc">Track relief fund contributions from this class.</p>
+        <div class="empty-state">No donations recorded yet.</div>
+      </div>
+      <div class="dash-card glass">
+        <h3>Members</h3>
+        <p class="desc">Students participating in the relief fund drive.</p>
+        <div class="empty-state">No members added yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 Durbar Disaster Relief Fund. All rights reserved.
+  </footer>
+
+  <div class="overlay" id="loginOverlay">
+    <div class="modal glass">
+      <button class="modal-close" id="closeLoginBtn" aria-label="Close">&times;</button>
+      <h3>Class Captain Login</h3>
+      <p class="sub">Select your class and enter the class passcode.</p>
+
+      <form id="loginForm">
+        <label class="field-label" for="classSelect">Class</label>
+        <select class="field" id="classSelect" required>
+          <option value="" disabled selected>Choose a class</option>
+          <option value="Class 11 A">Class 11 A</option>
+          <option value="Class 11 B">Class 11 B</option>
+          <option value="Class 12 A">Class 12 A</option>
+          <option value="Class 12 B">Class 12 B</option>
+        </select>
+
+        <label class="field-label" for="passInput">Passcode</label>
+        <input class="field" type="password" id="passInput" placeholder="Enter class passcode" required>
+
+        <div class="error-msg" id="loginError"></div>
+
+        <button class="submit-btn" type="submit" id="loginSubmitBtn">Log in</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase SDK: Realtime Database only, no Auth -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDNnCaEWJNG2DHAqo0nhQFozfHg7O8QW-0",
+      authDomain: "disaster-3f81a.firebaseapp.com",
+      databaseURL: "https://disaster-3f81a-default-rtdb.firebaseio.com",
+      projectId: "disaster-3f81a",
+      storageBucket: "disaster-3f81a.firebasestorage.app",
+      messagingSenderId: "67104282273",
+      appId: "1:67104282273:web:a148968677ff377262c2e0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // ---------- Elements ----------
+    const pageBody = document.getElementById('pageBody');
+    const dashboardView = document.getElementById('dashboardView');
+    const dashClassName = document.getElementById('dashClassName');
+
+    const openLoginBtn = document.getElementById('openLoginBtn');
+    const closeLoginBtn = document.getElementById('closeLoginBtn');
+    const loginOverlay = document.getElementById('loginOverlay');
+    const loginForm = document.getElementById('loginForm');
+    const classSelect = document.getElementById('classSelect');
+    const passInput = document.getElementById('passInput');
+    const loginError = document.getElementById('loginError');
+    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // ---------- Class picker highlight ----------
+    const classButtons = document.querySelectorAll('.class-btn');
+    const confirmLine = document.getElementById('confirmLine');
+    classButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        classButtons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        confirmLine.innerHTML = 'Selected: <strong>' + btn.dataset.class + '</strong>';
+        classSelect.value = btn.dataset.class;
+      });
+    });
+
+    // ---------- Modal open/close ----------
+    function openModal(){
+      loginOverlay.classList.add('active');
+      loginError.textContent = '';
+    }
+    function closeModal(){
+      loginOverlay.classList.remove('active');
+      loginForm.reset();
+      loginError.textContent = '';
+    }
+    openLoginBtn.addEventListener('click', openModal);
+    closeLoginBtn.addEventListener('click', closeModal);
+    loginOverlay.addEventListener('click', (e) => {
+      if (e.target === loginOverlay) closeModal();
+    });
+
+    const classIdMap = {
+      "Class 11 A": "class11A",
+      "Class 11 B": "class11B",
+      "Class 12 A": "class12A",
+      "Class 12 B": "class12B"
+    };
+
+    // ---------- Login: verify passcode against Realtime Database ----------
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginError.textContent = '';
+
+      const className = classSelect.value;
+      const enteredPass = passInput.value.trim();
+
+      if (!className) {
+        loginError.textContent = 'Please select a class.';
+        return;
+      }
+      if (!enteredPass) {
+        loginError.textContent = 'Please enter the passcode.';
+        return;
+      }
+
+      loginSubmitBtn.disabled = true;
+      loginSubmitBtn.textContent = 'Checking...';
+
+      try {
+        const classId = classIdMap[className];
+        const passSnap = await get(ref(db, 'classPasscodes/' + classId + '/passcode'));
+
+        if (!passSnap.exists()) {
+          loginError.textContent = 'This class is not set up yet. Contact admin.';
+          return;
+        }
+
+        const storedPass = passSnap.val();
+        if (storedPass === enteredPass) {
+          localStorage.setItem('durbar_active_class', className);
+          showDashboard(className);
+          closeModal();
+        } else {
+          loginError.textContent = 'Incorrect passcode. Try again.';
+        }
+      } catch (err) {
+        console.error(err);
+        loginError.textContent = 'Error: ' + (err.code || err.message || 'something went wrong');
+      } finally {
+        loginSubmitBtn.disabled = false;
+        loginSubmitBtn.textContent = 'Log in';
+      }
+    });
+
+    // ---------- Dashboard show/hide ----------
+    function showDashboard(className){
+      dashClassName.textContent = className;
+      pageBody.classList.add('hidden');
+      dashboardView.classList.add('active');
+    }
+
+    function hideDashboard(){
+      pageBody.classList.remove('hidden');
+      dashboardView.classList.remove('active');
+      localStorage.removeItem('durbar_active_class');
+    }
+
+    logoutBtn.addEventListener('click', hideDashboard);
+
+    const savedClass = localStorage.getItem('durbar_active_class');
+    if (savedClass) {
+      showDashboard(savedClass);
+    }
+
+    // ---------- Live Captains & Vice Captains from Realtime Database ----------
+    function watchCaptains(){
+      const cards = document.querySelectorAll('#captainsGrid .captain-card');
+
+      cards.forEach(card => {
+        const classId = card.dataset.key;
+        const captainEl = card.querySelector('[data-captain]');
+        const viceEl = card.querySelector('[data-vice-captain]');
+
+        onValue(ref(db, 'classLeadership/' + classId), (snap) => {
+          const data = snap.exists() ? snap.val() : {};
+
+          if (data.captain) {
+            captainEl.textContent = data.captain;
+            captainEl.classList.remove('empty');
+          } else {
+            captainEl.textContent = 'Not assigned';
+            captainEl.classList.add('empty');
+          }
+
+          if (data.viceCaptain) {
+            viceEl.textContent = data.viceCaptain;
+            viceEl.classList.remove('empty');
+          } else {
+            viceEl.textContent = 'Not assigned';
+            viceEl.classList.add('empty');
+          }
+        }, (err) => {
+          console.error(err);
+          captainEl.textContent = 'Error: ' + (err.code || err.message);
+          viceEl.textContent = 'Error';
+        });
+      });
+    }
+
+    watchCaptains();
+  </script>
+
+</body>
+</html>
