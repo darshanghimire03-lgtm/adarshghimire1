@@ -8,16 +8,17 @@
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;700&display=swap');
 
   :root{
-    --navy-deep:#050b1a;
-    --navy:#0a1530;
-    --navy-mid:#122048;
-    --blue:#2f5fe0;
-    --blue-bright:#5b8dff;
     --white:#ffffff;
-    --ink-soft:#c7d0e8;
-    --ink-faint:#8a94b8;
-    --glass-border:rgba(255,255,255,0.14);
-    --glass-fill:rgba(255,255,255,0.06);
+    --blue:#1a4fd6;
+    --blue-dark:#0e2f8a;
+    --black:#0b0d12;
+    --ink:#1b1f27;
+    --ink-soft:#4a5164;
+    --ink-faint:#7a8194;
+    --red:#d61a2c;
+    --red-dark:#a30f1e;
+    --border:#dfe3ec;
+    --bg-soft:#f4f6fb;
   }
 
   *{ box-sizing:border-box; }
@@ -26,196 +27,208 @@
     margin:0;
     padding:0;
     min-height:100vh;
-    color:var(--white);
+    color:var(--ink);
     font-family:'Karla', sans-serif;
-    background:
-      radial-gradient(circle at 15% 10%, rgba(47,95,224,0.35), transparent 45%),
-      radial-gradient(circle at 85% 0%, rgba(91,141,255,0.25), transparent 40%),
-      radial-gradient(circle at 50% 100%, rgba(18,32,72,0.6), transparent 55%),
-      linear-gradient(180deg, var(--navy-deep) 0%, #000000 100%);
-    background-attachment:fixed;
-    overflow-x:hidden;
+    background:var(--white);
   }
 
   h1,h2,h3,.display{ font-family:'Fraunces', serif; }
 
-  .glow{
-    position:fixed;
-    border-radius:50%;
-    filter:blur(90px);
-    pointer-events:none;
-    z-index:0;
-  }
-  .glow-1{ width:420px; height:420px; background:rgba(47,95,224,0.35); top:-120px; left:-100px; }
-  .glow-2{ width:380px; height:380px; background:rgba(91,141,255,0.22); bottom:-140px; right:-100px; }
+  a{ color:inherit; }
 
-  .glass{
-    background:var(--glass-fill);
-    border:1px solid var(--glass-border);
-    backdrop-filter:blur(18px) saturate(140%);
-    -webkit-backdrop-filter:blur(18px) saturate(140%);
-    box-shadow:0 8px 32px rgba(0,0,0,0.35);
+  .card{
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:0 2px 10px rgba(11,13,18,0.06);
   }
 
+  /* ---------- Topbar ---------- */
   .topbar{
     position:sticky;
     top:0;
-    z-index:20;
+    z-index:30;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:18px 40px;
-    border-bottom:1px solid var(--glass-border);
-    background:rgba(5,11,26,0.55);
-    backdrop-filter:blur(18px) saturate(140%);
-    -webkit-backdrop-filter:blur(18px) saturate(140%);
+    padding:16px 32px;
+    background:var(--black);
+    border-bottom:3px solid var(--blue);
   }
-
-  .brand{ display:flex; align-items:center; gap:12px; }
-  .brand-mark{ width:38px; height:38px; flex-shrink:0; }
+  .brand{ display:flex; align-items:center; gap:12px; cursor:pointer; }
+  .brand-mark{ width:36px; height:36px; flex-shrink:0; }
   .brand-name{
     font-family:'Fraunces', serif;
     font-weight:600;
-    font-size:1.15rem;
-    line-height:1.15;
-    letter-spacing:0.01em;
+    font-size:1.1rem;
+    line-height:1.2;
     color:var(--white);
   }
-
   .login-btn{
     font-family:'Karla', sans-serif;
     font-weight:700;
-    font-size:0.95rem;
+    font-size:0.92rem;
     color:var(--white);
-    background:linear-gradient(135deg, var(--blue) 0%, var(--blue-bright) 100%);
-    border:1px solid rgba(255,255,255,0.25);
-    padding:11px 26px;
+    background:var(--blue);
+    border:none;
+    padding:10px 24px;
     border-radius:8px;
     cursor:pointer;
-    transition:filter 0.2s ease, transform 0.15s ease;
+    transition:background 0.15s ease, transform 0.1s ease;
   }
-  .login-btn:hover{ filter:brightness(1.12); }
+  .login-btn:hover{ background:var(--blue-dark); }
   .login-btn:active{ transform:translateY(1px); }
-  .login-btn:focus-visible{ outline:3px solid var(--blue-bright); outline-offset:2px; }
+  .login-btn.is-logout{ background:var(--red); }
+  .login-btn.is-logout:hover{ background:var(--red-dark); }
 
+  /* ---------- Main / hero ---------- */
   main{
-    position:relative;
-    z-index:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:100px 24px 60px;
-    max-width:760px;
+    padding:56px 24px 20px;
+    max-width:920px;
     margin:0 auto;
+    text-align:center;
   }
-
   .kicker{
-    font-size:0.85rem;
-    color:var(--blue-bright);
+    font-size:0.82rem;
+    color:var(--blue);
     font-weight:700;
-    margin-bottom:18px;
-    letter-spacing:0.02em;
+    margin-bottom:14px;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
   }
-
   main h2{
-    font-size:clamp(1.9rem, 4vw, 2.7rem);
+    font-size:clamp(1.7rem, 4vw, 2.5rem);
     font-weight:600;
     line-height:1.25;
-    margin:0 0 46px;
-    color:var(--white);
+    margin:0 0 8px;
+    color:var(--black);
   }
+  main .sub-line{ color:var(--ink-soft); font-size:0.95rem; margin:0 0 36px; }
 
+  /* ---------- Total summary ---------- */
+  .summary-block{
+    padding:34px 28px;
+    margin-bottom:44px;
+    text-align:center;
+  }
+  .summary-label{
+    font-size:0.82rem;
+    color:var(--ink-faint);
+    font-weight:700;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  .summary-total{
+    font-family:'Fraunces', serif;
+    font-size:clamp(2.2rem, 6vw, 3.2rem);
+    font-weight:700;
+    color:var(--blue);
+    line-height:1;
+    margin-bottom:6px;
+  }
+  .summary-total .rs{ font-size:0.5em; color:var(--ink-faint); font-weight:500; margin-right:6px; }
+  .summary-note{ font-size:0.85rem; color:var(--ink-faint); margin-bottom:26px; }
+
+  .summary-breakdown{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:14px;
+    text-align:left;
+  }
+  .breakdown-item{
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:14px 16px;
+    background:var(--bg-soft);
+  }
+  .breakdown-item .b-class{ font-size:0.78rem; color:var(--ink-faint); font-weight:700; text-transform:uppercase; letter-spacing:0.02em; margin-bottom:4px; }
+  .breakdown-item .b-amt{ font-size:1.15rem; font-weight:700; color:var(--black); }
+  .breakdown-item .b-fine{ font-size:0.76rem; color:var(--ink-faint); margin-top:2px; }
+
+  /* ---------- Class picker ---------- */
   .class-options{
     display:flex;
     flex-wrap:wrap;
     gap:14px;
     justify-content:center;
+    margin-bottom:36px;
   }
-
   .class-btn{
     font-family:'Karla', sans-serif;
     font-size:1rem;
-    font-weight:500;
-    color:var(--white);
-    padding:16px 32px;
+    font-weight:600;
+    color:var(--black);
+    background:var(--white);
+    border:2px solid var(--border);
+    padding:15px 30px;
     border-radius:10px;
     cursor:pointer;
-    transition:border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+    transition:border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
   }
-  .class-btn:hover{ border-color:var(--blue-bright); background:rgba(91,141,255,0.14); transform:translateY(-2px); }
+  .class-btn:hover{ border-color:var(--blue); background:var(--bg-soft); transform:translateY(-2px); }
   .class-btn:active{ transform:translateY(0); }
-  .class-btn.selected{
-    background:linear-gradient(135deg, var(--blue) 0%, var(--blue-bright) 100%);
-    border-color:transparent;
-  }
-  .class-btn:focus-visible{ outline:3px solid var(--blue-bright); outline-offset:2px; }
+  .class-btn:focus-visible{ outline:3px solid var(--blue); outline-offset:2px; }
 
-  .confirm-line{
-    margin-top:34px;
-    font-size:0.95rem;
-    color:var(--ink-soft);
-    min-height:1.2em;
-  }
-  .confirm-line strong{ color:var(--blue-bright); }
-
+  /* ---------- Captains section ---------- */
   .captains-section{
-    position:relative;
-    z-index:1;
-    max-width:920px;
-    margin:0 auto;
-    padding:70px 24px 110px;
+    max-width:820px;
+    margin:0 auto 70px;
+    padding:0 24px;
   }
+  .captains-toggle{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 22px;
+    background:var(--black);
+    color:var(--white);
+    border:none;
+    border-radius:12px;
+    font-family:'Karla', sans-serif;
+    font-size:1rem;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .captains-toggle .chev{
+    display:inline-block;
+    transition:transform 0.2s ease;
+    font-size:0.9rem;
+  }
+  .captains-toggle.open .chev{ transform:rotate(180deg); }
 
-  .captains-section .kicker{ text-align:center; }
-  .captains-section > h2{
-    text-align:center;
-    font-size:clamp(1.6rem, 3.4vw, 2.2rem);
-    font-weight:600;
-    margin:0 0 46px;
+  .captains-panel{
+    display:none;
+    padding:22px;
+    border:1px solid var(--border);
+    border-top:none;
+    border-radius:0 0 12px 12px;
   }
-
-  .captains-grid{
-    display:grid;
-    grid-template-columns:repeat(2, 1fr);
-    gap:20px;
-  }
-
-  .captain-card{
-    border-radius:14px;
-    padding:24px;
-    text-align:left;
-  }
-  .captain-card h3{
-    margin:0 0 18px;
-    font-size:1.1rem;
-    font-weight:600;
-    padding-bottom:14px;
-    border-bottom:1px solid var(--glass-border);
-  }
+  .captains-panel.open{ display:block; }
 
   .role-row{
     display:flex;
     align-items:baseline;
     justify-content:space-between;
     gap:12px;
-    padding:9px 0;
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
   }
-  .role-label{ font-size:0.78rem; color:var(--ink-faint); flex-shrink:0; }
-  .role-name{ font-size:0.95rem; color:var(--white); font-weight:500; text-align:right; }
+  .role-row:last-child{ border-bottom:none; }
+  .role-label{ font-size:0.8rem; color:var(--ink-faint); flex-shrink:0; font-weight:600; }
+  .role-name{ font-size:0.98rem; color:var(--black); font-weight:600; text-align:right; }
   .role-name.empty{ color:var(--ink-faint); font-weight:400; font-style:italic; }
 
   footer{
-    position:relative;
-    z-index:1;
     text-align:center;
     padding:26px 24px;
     font-size:0.8rem;
     color:var(--ink-faint);
-    border-top:1px solid var(--glass-border);
+    border-top:1px solid var(--border);
   }
 
+  /* ---------- Login modal ---------- */
   .overlay{
     position:fixed;
     inset:0;
@@ -224,8 +237,7 @@
     align-items:center;
     justify-content:center;
     padding:24px;
-    background:rgba(0,0,0,0.55);
-    backdrop-filter:blur(4px);
+    background:rgba(11,13,18,0.6);
   }
   .overlay.active{ display:flex; }
 
@@ -236,29 +248,31 @@
     padding:36px 32px;
     text-align:center;
     position:relative;
+    background:var(--white);
   }
-  .modal h3{ font-size:1.5rem; font-weight:600; margin:0 0 8px; }
-  .modal p.sub{ color:var(--ink-soft); font-size:0.9rem; margin:0 0 26px; }
+  .modal h3{ font-size:1.4rem; font-weight:600; margin:0 0 8px; color:var(--black); }
+  .modal p.sub{ color:var(--ink-soft); font-size:0.9rem; margin:0 0 24px; }
 
   .modal-close{
     position:absolute;
-    top:14px;
+    top:12px;
     right:14px;
     background:none;
     border:none;
     color:var(--ink-faint);
-    font-size:1.3rem;
+    font-size:1.4rem;
     line-height:1;
     cursor:pointer;
     padding:6px;
   }
-  .modal-close:hover{ color:var(--white); }
+  .modal-close:hover{ color:var(--black); }
 
   .field-label{
     display:block;
     text-align:left;
     font-size:0.85rem;
     color:var(--ink-soft);
+    font-weight:600;
     margin-bottom:8px;
   }
 
@@ -266,16 +280,16 @@
     width:100%;
     padding:13px 14px;
     border-radius:8px;
-    border:1px solid var(--glass-border);
-    background:rgba(255,255,255,0.07);
-    color:var(--white);
+    border:2px solid var(--border);
+    background:var(--white);
+    color:var(--black);
     font-family:'Karla', sans-serif;
     font-size:1rem;
     margin-bottom:18px;
   }
-  select.field option{ background:#0a1530; color:var(--white); }
+  select.field option{ background:var(--white); color:var(--black); }
   input.field::placeholder{ color:var(--ink-faint); }
-  select.field:focus, input.field:focus{ outline:2px solid var(--blue-bright); }
+  select.field:focus, input.field:focus{ outline:none; border-color:var(--blue); }
 
   .submit-btn{
     width:100%;
@@ -285,88 +299,101 @@
     font-weight:700;
     font-size:1rem;
     color:var(--white);
-    background:linear-gradient(135deg, var(--blue) 0%, var(--blue-bright) 100%);
+    background:var(--blue);
     cursor:pointer;
-    transition:filter 0.2s ease;
+    transition:background 0.15s ease;
   }
-  .submit-btn:hover{ filter:brightness(1.12); }
+  .submit-btn:hover{ background:var(--blue-dark); }
   .submit-btn:disabled{ opacity:0.6; cursor:not-allowed; }
 
   .error-msg{
-    color:#ff8080;
+    color:var(--red);
     font-size:0.85rem;
     margin:-8px 0 16px;
     min-height:1.1em;
     text-align:left;
   }
 
-  .dashboard{
+  /* ---------- Class detail view (public, no login) ---------- */
+  .class-detail{
     display:none;
-    position:relative;
-    z-index:1;
     max-width:920px;
     margin:0 auto;
-    padding:60px 24px 100px;
+    padding:0 24px 100px;
   }
-  .dashboard.active{ display:block; }
+  .class-detail.active{ display:block; }
   .page-body.hidden{ display:none; }
 
-  .dash-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:16px;
-    margin-bottom:40px;
-    padding-bottom:24px;
-    border-bottom:1px solid var(--glass-border);
-  }
-  .dash-header h2{ margin:0 0 4px; font-size:2rem; }
-  .dash-header p{ margin:0; color:var(--ink-soft); font-size:0.95rem; }
-
-  .logout-btn{
-    padding:10px 22px;
-    border-radius:8px;
-    background:rgba(255,255,255,0.08);
-    border:1px solid var(--glass-border);
-    color:var(--white);
-    font-family:'Karla', sans-serif;
-    font-weight:600;
-    cursor:pointer;
-    transition:background 0.2s ease;
-  }
-  .logout-btn:hover{ background:rgba(255,255,255,0.16); }
-
-  .dash-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-  .dash-grid > .dash-card:first-child{ grid-column:1 / -1; }
-  .dash-grid > .dash-card.fine-card{ grid-column:1 / -1; }
-  .dash-grid > .dash-card.donations-card{ grid-column:1 / -1; }
-
-  .dash-card{ border-radius:14px; padding:26px; text-align:left; }
-  .dash-card h3{ margin:0 0 6px; font-size:1.15rem; font-weight:600; }
-  .dash-card p.desc{ margin:0 0 20px; color:var(--ink-soft); font-size:0.88rem; }
-  .empty-state{
-    padding:28px 16px;
+  .detail-header{
+    padding:30px 28px;
+    margin-bottom:28px;
     text-align:center;
-    color:var(--ink-faint);
-    font-size:0.9rem;
-    border:1px dashed var(--glass-border);
-    border-radius:10px;
+    background:var(--black);
+    color:var(--white);
+    border-radius:14px;
+  }
+  .detail-header .pmdrf{
+    font-size:0.85rem;
+    color:#9db4ff;
+    font-weight:700;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .detail-header h2{ margin:0 0 4px; font-size:1.9rem; color:var(--white); }
+  .detail-header .back-link{
+    display:inline-block;
+    margin-top:14px;
+    font-size:0.85rem;
+    color:#9db4ff;
+    cursor:pointer;
+    text-decoration:underline;
   }
 
-  .fine-amount-row{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    flex-wrap:wrap;
+  .detail-stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-bottom:28px;
   }
-  .fine-amount-display{
-    font-family:'Fraunces', serif;
-    font-size:1.8rem;
-    font-weight:600;
-    color:var(--blue-bright);
+  .stat-card{
+    padding:20px 22px;
+    text-align:center;
   }
-  .fine-amount-display .rs{ font-size:1.1rem; color:var(--ink-soft); font-weight:500; margin-right:4px; }
+  .stat-card .stat-label{ font-size:0.78rem; color:var(--ink-faint); font-weight:700; text-transform:uppercase; letter-spacing:0.02em; margin-bottom:8px; }
+  .stat-card .stat-value{ font-family:'Fraunces', serif; font-size:1.7rem; font-weight:700; color:var(--blue); }
+  .stat-card.fine-stat .stat-value{ color:var(--red); }
+
+  .detail-section{ padding:26px; margin-bottom:24px; }
+  .detail-section h3{ margin:0 0 6px; font-size:1.1rem; font-weight:600; color:var(--black); }
+  .detail-section p.desc{ margin:0 0 18px; color:var(--ink-soft); font-size:0.88rem; }
+
+  .donation-table-wrap{ overflow-x:auto; }
+  table.donation-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.92rem;
+  }
+  table.donation-table th, table.donation-table td{
+    text-align:left;
+    padding:11px 12px;
+    border-bottom:1px solid var(--border);
+  }
+  table.donation-table th{
+    color:var(--ink-faint);
+    font-weight:700;
+    font-size:0.76rem;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+  }
+  table.donation-table td.amt-col, table.donation-table th.amt-col{ text-align:right; }
+  table.donation-table td.sn-col, table.donation-table th.sn-col{ width:50px; color:var(--ink-faint); }
+  table.donation-table tfoot td{
+    font-weight:700;
+    color:var(--black);
+    border-top:2px solid var(--border);
+    border-bottom:none;
+  }
 
   .donation-form-row{
     display:flex;
@@ -377,57 +404,63 @@
   }
   .donation-form-row > div{ flex:1; min-width:160px; }
   .donation-form-row .field{ margin-bottom:0; }
-  .donation-form-row .btn-add{
+  .btn-add{
     padding:13px 22px;
     border-radius:8px;
     border:none;
     font-weight:700;
     font-size:0.95rem;
     color:var(--white);
-    background:linear-gradient(135deg, var(--blue) 0%, var(--blue-bright) 100%);
+    background:var(--blue);
     cursor:pointer;
-    transition:filter 0.2s ease;
+    transition:background 0.15s ease;
     white-space:nowrap;
   }
-  .donation-form-row .btn-add:hover{ filter:brightness(1.12); }
-  .donation-form-row .btn-add:disabled{ opacity:0.6; cursor:not-allowed; }
+  .btn-add:hover{ background:var(--blue-dark); }
+  .btn-add:disabled{ opacity:0.6; cursor:not-allowed; }
 
-  .donation-table-wrap{ overflow-x:auto; }
-  table.donation-table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:0.92rem;
+  .fine-amount-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
   }
-  table.donation-table th, table.donation-table td{
-    text-align:left;
-    padding:10px 12px;
-    border-bottom:1px solid var(--glass-border);
-  }
-  table.donation-table th{
-    color:var(--ink-faint);
-    font-weight:600;
-    font-size:0.78rem;
-    text-transform:uppercase;
-    letter-spacing:0.03em;
-  }
-  table.donation-table td.amt-col, table.donation-table th.amt-col{ text-align:right; }
-  table.donation-table td.sn-col, table.donation-table th.sn-col{ width:50px; color:var(--ink-faint); }
-  table.donation-table tfoot td{
+  .fine-amount-display{
+    font-family:'Fraunces', serif;
+    font-size:1.7rem;
     font-weight:700;
-    color:var(--white);
-    border-top:1px solid var(--glass-border);
-    border-bottom:none;
+    color:var(--red);
+  }
+  .fine-amount-display .rs{ font-size:1.05rem; color:var(--ink-soft); font-weight:500; margin-right:4px; }
+
+  .dash-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:8px;
+  }
+  .dash-header p{ margin:0; color:var(--ink-soft); font-size:0.9rem; }
+
+  .empty-state{
+    padding:26px 16px;
+    text-align:center;
+    color:var(--ink-faint);
+    font-size:0.9rem;
+    border:1px dashed var(--border);
+    border-radius:10px;
   }
 
   @media (max-width:640px){
-    .topbar{ padding:16px 20px; }
-    .brand-name{ font-size:1rem; }
-    main{ padding:70px 20px 50px; }
+    .topbar{ padding:14px 18px; }
+    .brand-name{ font-size:0.98rem; }
+    main{ padding:40px 18px 10px; }
     .class-btn{ padding:14px 22px; font-size:0.95rem; }
-    .dash-grid{ grid-template-columns:1fr; }
-    .dashboard{ padding:40px 18px 80px; }
-    .captains-grid{ grid-template-columns:1fr; }
-    .captains-section{ padding:50px 18px 80px; }
+    .summary-breakdown{ grid-template-columns:1fr 1fr; }
+    .detail-stats{ grid-template-columns:1fr; }
+    .class-detail{ padding:0 16px 80px; }
+    .captains-section{ padding:0 16px; }
   }
 
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
@@ -435,13 +468,10 @@
 </head>
 <body>
 
-  <div class="glow glow-1"></div>
-  <div class="glow glow-2"></div>
-
-  <div class="topbar glass">
-    <div class="brand">
+  <div class="topbar">
+    <div class="brand" id="brandHome">
       <svg class="brand-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="20" cy="20" r="19" stroke="#5b8dff" stroke-width="2"/>
+        <circle cx="20" cy="20" r="19" stroke="#1a4fd6" stroke-width="2"/>
         <path d="M20 9 L20 31 M11 16 L29 16 M13 24 L27 24" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
       </svg>
       <div class="brand-name">Durbar Disaster Relief Fund</div>
@@ -451,143 +481,175 @@
 
   <div class="page-body" id="pageBody">
     <main id="mainView">
-      <div class="kicker">Getting started</div>
+      <div class="kicker">Prime Minister Disaster Relief Fund</div>
       <h2>What is your class?</h2>
+      <p class="sub-line">Select your class to view its donations, or log in as Captain to manage it.</p>
 
-      <div class="class-options" role="group" aria-label="Select your class">
-        <button class="class-btn glass" type="button" data-class="Class 11 A">Class 11 A</button>
-        <button class="class-btn glass" type="button" data-class="Class 11 B">Class 11 B</button>
-        <button class="class-btn glass" type="button" data-class="Class 12 A">Class 12 A</button>
-        <button class="class-btn glass" type="button" data-class="Class 12 B">Class 12 B</button>
+      <div class="summary-block card">
+        <div class="summary-label">Total Donation Amount</div>
+        <div class="summary-total"><span class="rs">Rs.</span><span id="grandTotalAmount">0</span></div>
+        <div class="summary-note">Combined donations across all classes</div>
+        <div class="summary-breakdown" id="summaryBreakdown">
+          <div class="breakdown-item" data-key="class11A">
+            <div class="b-class">Class 11 A</div>
+            <div class="b-amt" data-b-amt>Rs. 0</div>
+            <div class="b-fine" data-b-fine>Fine: Rs. 0</div>
+          </div>
+          <div class="breakdown-item" data-key="class11B">
+            <div class="b-class">Class 11 B</div>
+            <div class="b-amt" data-b-amt>Rs. 0</div>
+            <div class="b-fine" data-b-fine>Fine: Rs. 0</div>
+          </div>
+          <div class="breakdown-item" data-key="class12A">
+            <div class="b-class">Class 12 A</div>
+            <div class="b-amt" data-b-amt>Rs. 0</div>
+            <div class="b-fine" data-b-fine>Fine: Rs. 0</div>
+          </div>
+          <div class="breakdown-item" data-key="class12B">
+            <div class="b-class">Class 12 B</div>
+            <div class="b-amt" data-b-amt>Rs. 0</div>
+            <div class="b-fine" data-b-fine>Fine: Rs. 0</div>
+          </div>
+        </div>
       </div>
 
-      <div class="confirm-line" id="confirmLine"></div>
+      <div class="class-options" role="group" aria-label="Select your class">
+        <button class="class-btn" type="button" data-class="Class 11 A" data-key="class11A">Class 11 A</button>
+        <button class="class-btn" type="button" data-class="Class 11 B" data-key="class11B">Class 11 B</button>
+        <button class="class-btn" type="button" data-class="Class 12 A" data-key="class12A">Class 12 A</button>
+        <button class="class-btn" type="button" data-class="Class 12 B" data-key="class12B">Class 12 B</button>
+      </div>
     </main>
 
     <section class="captains-section">
-      <div class="kicker">Leadership</div>
-      <h2>Class Captains &amp; Vice Captains</h2>
-
-      <div class="captains-grid" id="captainsGrid">
-        <div class="captain-card glass" data-key="class11A">
-          <h3>Class 11 A</h3>
-          <div class="role-row">
-            <span class="role-label">Captain</span>
-            <span class="role-name empty" data-captain>Loading…</span>
-          </div>
-          <div class="role-row">
-            <span class="role-label">Vice Captain</span>
-            <span class="role-name empty" data-vice-captain>Loading…</span>
-          </div>
+      <button class="captains-toggle" type="button" id="captainsToggle">
+        <span id="captainsToggleLabel">Captains — select a class above</span>
+        <span class="chev">&#9662;</span>
+      </button>
+      <div class="captains-panel" id="captainsPanel">
+        <div class="role-row">
+          <span class="role-label">Captain</span>
+          <span class="role-name empty" id="panelCaptain">Select a class to view</span>
         </div>
-
-        <div class="captain-card glass" data-key="class11B">
-          <h3>Class 11 B</h3>
-          <div class="role-row">
-            <span class="role-label">Captain</span>
-            <span class="role-name empty" data-captain>Loading…</span>
-          </div>
-          <div class="role-row">
-            <span class="role-label">Vice Captain</span>
-            <span class="role-name empty" data-vice-captain>Loading…</span>
-          </div>
-        </div>
-
-        <div class="captain-card glass" data-key="class12A">
-          <h3>Class 12 A</h3>
-          <div class="role-row">
-            <span class="role-label">Captain</span>
-            <span class="role-name empty" data-captain>Loading…</span>
-          </div>
-          <div class="role-row">
-            <span class="role-label">Vice Captain</span>
-            <span class="role-name empty" data-vice-captain>Loading…</span>
-          </div>
-        </div>
-
-        <div class="captain-card glass" data-key="class12B">
-          <h3>Class 12 B</h3>
-          <div class="role-row">
-            <span class="role-label">Captain</span>
-            <span class="role-name empty" data-captain>Loading…</span>
-          </div>
-          <div class="role-row">
-            <span class="role-label">Vice Captain</span>
-            <span class="role-name empty" data-vice-captain>Loading…</span>
-          </div>
+        <div class="role-row">
+          <span class="role-label">Vice Captain</span>
+          <span class="role-name empty" id="panelVice">Select a class to view</span>
         </div>
       </div>
     </section>
   </div>
 
-  <div class="dashboard" id="dashboardView">
-    <div class="dash-header">
-      <div>
-        <h2 id="dashClassName">Class 11 A</h2>
-        <p>Class captain dashboard</p>
-      </div>
-      <button class="logout-btn glass" type="button" id="logoutBtn">Log out</button>
+  <!-- ---------- Public class detail view (no login needed) ---------- -->
+  <div class="class-detail" id="classDetailView">
+    <div class="detail-header">
+      <div class="pmdrf">Prime Minister Disaster Relief Fund</div>
+      <h2 id="detailClassName">Class 11 A</h2>
+      <div class="back-link" id="backToHomeLink">&larr; Back to all classes</div>
     </div>
 
-    <div class="dash-grid">
-      <div class="dash-card glass">
-        <h3>Class Leadership</h3>
-        <p class="desc">Set your class Captain and Vice Captain. Visible to everyone on the home page.</p>
-        <label class="field-label" for="dashCaptainInput">Captain name</label>
-        <input class="field" type="text" id="dashCaptainInput" placeholder="Captain's name">
-        <label class="field-label" for="dashViceInput">Vice Captain name</label>
-        <input class="field" type="text" id="dashViceInput" placeholder="Vice Captain's name">
-        <button class="submit-btn" type="button" id="dashSaveLeadershipBtn">Save leadership</button>
-        <div class="error-msg" id="dashLeadershipStatus" style="color:var(--ink-soft);"></div>
+    <div class="detail-stats">
+      <div class="stat-card card">
+        <div class="stat-label">Total Donations</div>
+        <div class="stat-value" id="detailDonationTotal">Rs. 0</div>
       </div>
-      <div class="dash-card glass fine-card">
-        <h3>Class Fine Contribution</h3>
-        <p class="desc">The total amount your class has decided to contribute. Visible to everyone on the home page.</p>
-        <div class="fine-amount-row">
-          <div class="fine-amount-display"><span class="rs">Rs.</span><span id="fineAmountDisplay">0</span></div>
-          <input class="field" type="number" min="0" step="1" id="fineAmountInput" placeholder="Enter amount" style="max-width:200px; margin-bottom:0;">
-          <button class="btn-add" id="saveFineBtn" style="padding:12px 22px;">Save amount</button>
-        </div>
-        <div class="error-msg" id="fineStatus" style="color:var(--ink-soft); margin-top:10px; margin-bottom:0;"></div>
+      <div class="stat-card card fine-stat">
+        <div class="stat-label">Class Fine Contribution</div>
+        <div class="stat-value" id="detailFineAmount">Rs. 0</div>
       </div>
+    </div>
 
-      <div class="dash-card glass donations-card">
-        <h3>Donations</h3>
-        <p class="desc">Add each student's donation to the relief fund below.</p>
+    <div class="detail-section card">
+      <h3>Donors</h3>
+      <p class="desc">Students who have contributed to the relief fund from this class.</p>
+      <div class="donation-table-wrap">
+        <table class="donation-table">
+          <thead>
+            <tr>
+              <th class="sn-col">S.N.</th>
+              <th>Student Name</th>
+              <th class="amt-col">Donate (Rs.)</th>
+            </tr>
+          </thead>
+          <tbody id="detailDonationTableBody">
+            <tr><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">No donations recorded yet.</td></tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">Total</td>
+              <td class="amt-col" id="detailDonationTableTotal">Rs. 0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
 
-        <div class="donation-form-row">
-          <div>
-            <label class="field-label" for="donorNameInput">Student name</label>
-            <input class="field" type="text" id="donorNameInput" placeholder="Student's name">
-          </div>
-          <div>
-            <label class="field-label" for="donorAmountInput">Amount (Rs.)</label>
-            <input class="field" type="number" min="0" step="1" id="donorAmountInput" placeholder="0">
-          </div>
-          <button class="btn-add" id="addDonationBtn">Add donation</button>
+  <!-- ---------- Captain dashboard (after login) ---------- -->
+  <div class="class-detail" id="dashboardView">
+    <div class="detail-header">
+      <div class="pmdrf">Prime Minister Disaster Relief Fund</div>
+      <h2 id="dashClassName">Class 11 A</h2>
+      <div class="back-link" id="logoutBtn">Log out</div>
+    </div>
+
+    <div class="detail-section card">
+      <h3>Class Leadership</h3>
+      <p class="desc">Set your class Captain and Vice Captain. Visible to everyone on the home page.</p>
+      <label class="field-label" for="dashCaptainInput">Captain name</label>
+      <input class="field" type="text" id="dashCaptainInput" placeholder="Captain's name">
+      <label class="field-label" for="dashViceInput">Vice Captain name</label>
+      <input class="field" type="text" id="dashViceInput" placeholder="Vice Captain's name">
+      <button class="submit-btn" type="button" id="dashSaveLeadershipBtn">Save leadership</button>
+      <div class="error-msg" id="dashLeadershipStatus" style="color:var(--ink-soft);"></div>
+    </div>
+
+    <div class="detail-section card">
+      <h3>Class Fine Contribution</h3>
+      <p class="desc">The total amount your class has decided to contribute. Visible to everyone on the home page.</p>
+      <div class="fine-amount-row">
+        <div class="fine-amount-display"><span class="rs">Rs.</span><span id="fineAmountDisplay">0</span></div>
+        <input class="field" type="number" min="0" step="1" id="fineAmountInput" placeholder="Enter amount" style="max-width:200px; margin-bottom:0;">
+        <button class="btn-add" id="saveFineBtn">Save amount</button>
+      </div>
+      <div class="error-msg" id="fineStatus" style="color:var(--ink-soft); margin-top:10px; margin-bottom:0;"></div>
+    </div>
+
+    <div class="detail-section card">
+      <h3>Donations</h3>
+      <p class="desc">Add each student's donation to the relief fund below.</p>
+
+      <div class="donation-form-row">
+        <div>
+          <label class="field-label" for="donorNameInput">Student name</label>
+          <input class="field" type="text" id="donorNameInput" placeholder="Student's name">
         </div>
-        <div class="error-msg" id="donationStatus"></div>
-
-        <div class="donation-table-wrap">
-          <table class="donation-table">
-            <thead>
-              <tr>
-                <th class="sn-col">S.N.</th>
-                <th>Student Name</th>
-                <th class="amt-col">Donate (Rs.)</th>
-              </tr>
-            </thead>
-            <tbody id="donationTableBody">
-              <tr id="donationEmptyRow"><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">No donations recorded yet.</td></tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="2">Total</td>
-                <td class="amt-col" id="donationTotal">Rs. 0</td>
-              </tr>
-            </tfoot>
-          </table>
+        <div>
+          <label class="field-label" for="donorAmountInput">Amount (Rs.)</label>
+          <input class="field" type="number" min="0" step="1" id="donorAmountInput" placeholder="0">
         </div>
+        <button class="btn-add" id="addDonationBtn">Add donation</button>
+      </div>
+      <div class="error-msg" id="donationStatus"></div>
+
+      <div class="donation-table-wrap">
+        <table class="donation-table">
+          <thead>
+            <tr>
+              <th class="sn-col">S.N.</th>
+              <th>Student Name</th>
+              <th class="amt-col">Donate (Rs.)</th>
+            </tr>
+          </thead>
+          <tbody id="donationTableBody">
+            <tr id="donationEmptyRow"><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">No donations recorded yet.</td></tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">Total</td>
+              <td class="amt-col" id="donationTotal">Rs. 0</td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
     </div>
   </div>
@@ -597,7 +659,7 @@
   </footer>
 
   <div class="overlay" id="loginOverlay">
-    <div class="modal glass">
+    <div class="modal card">
       <button class="modal-close" id="closeLoginBtn" aria-label="Close">&times;</button>
       <h3>Class Captain Login</h3>
       <p class="sub">Select your class and enter the class passcode.</p>
@@ -640,10 +702,26 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    const classIdMap = {
+      "Class 11 A": "class11A",
+      "Class 11 B": "class11B",
+      "Class 12 A": "class12A",
+      "Class 12 B": "class12B"
+    };
+    const classNameMap = {
+      class11A: "Class 11 A",
+      class11B: "Class 11 B",
+      class12A: "Class 12 A",
+      class12B: "Class 12 B"
+    };
+    const allClassIds = Object.keys(classNameMap);
+
     // ---------- Elements ----------
     const pageBody = document.getElementById('pageBody');
+    const classDetailView = document.getElementById('classDetailView');
     const dashboardView = document.getElementById('dashboardView');
     const dashClassName = document.getElementById('dashClassName');
+    const brandHome = document.getElementById('brandHome');
 
     const topbarAuthBtn = document.getElementById('topbarAuthBtn');
     const closeLoginBtn = document.getElementById('closeLoginBtn');
@@ -669,15 +747,135 @@
     const donationTableBody = document.getElementById('donationTableBody');
     const donationTotal = document.getElementById('donationTotal');
 
-    // ---------- Class picker highlight ----------
+    const captainsToggle = document.getElementById('captainsToggle');
+    const captainsToggleLabel = document.getElementById('captainsToggleLabel');
+    const captainsPanel = document.getElementById('captainsPanel');
+    const panelCaptain = document.getElementById('panelCaptain');
+    const panelVice = document.getElementById('panelVice');
+
+    const detailClassName = document.getElementById('detailClassName');
+    const backToHomeLink = document.getElementById('backToHomeLink');
+    const detailDonationTotal = document.getElementById('detailDonationTotal');
+    const detailFineAmount = document.getElementById('detailFineAmount');
+    const detailDonationTableBody = document.getElementById('detailDonationTableBody');
+    const detailDonationTableTotal = document.getElementById('detailDonationTableTotal');
+
+    const grandTotalAmount = document.getElementById('grandTotalAmount');
+
+    // ---------- Helpers ----------
+    function formatRs(n){
+      return Number(n || 0).toLocaleString('en-IN');
+    }
+    function escapeHtml(str){
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+    function buildDonationRows(data){
+      const entries = Object.entries(data || {});
+      entries.sort((a, b) => (a[1].createdAt || 0) - (b[1].createdAt || 0));
+      let total = 0;
+      let rowsHtml = '';
+      entries.forEach(([key, entry], idx) => {
+        const amt = Number(entry.amount) || 0;
+        total += amt;
+        rowsHtml +=
+          '<tr><td class="sn-col">' + (idx + 1) + '</td>' +
+          '<td>' + escapeHtml(entry.name || '') + '</td>' +
+          '<td class="amt-col">' + formatRs(amt) + '</td></tr>';
+      });
+      if (entries.length === 0) {
+        rowsHtml = '<tr><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">No donations recorded yet.</td></tr>';
+      }
+      return { rowsHtml, total };
+    }
+
+    // ---------- View switching ----------
+    function showHome(){
+      pageBody.classList.remove('hidden');
+      classDetailView.classList.remove('active');
+      dashboardView.classList.remove('active');
+    }
+
+    brandHome.addEventListener('click', () => {
+      if (!isLoggedIn()) showHome();
+    });
+
+    // ---------- Class picker: open public detail view ----------
     const classButtons = document.querySelectorAll('.class-btn');
-    const confirmLine = document.getElementById('confirmLine');
     classButtons.forEach(btn => {
       btn.addEventListener('click', () => {
-        classButtons.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        confirmLine.innerHTML = 'Selected: <strong>' + btn.dataset.class + '</strong>';
-        classSelect.value = btn.dataset.class;
+        openClassDetail(btn.dataset.key, btn.dataset.class);
+      });
+    });
+
+    let detailUnsubscribes = [];
+    function clearDetailListeners(){
+      detailUnsubscribes.forEach(fn => fn());
+      detailUnsubscribes = [];
+    }
+
+    function openClassDetail(classId, className){
+      pageBody.classList.add('hidden');
+      dashboardView.classList.remove('active');
+      classDetailView.classList.add('active');
+      detailClassName.textContent = className;
+
+      clearDetailListeners();
+
+      const unsubDonations = onValue(ref(db, 'classDonations/' + classId), (snap) => {
+        const data = snap.exists() ? snap.val() : {};
+        const { rowsHtml, total } = buildDonationRows(data);
+        detailDonationTableBody.innerHTML = rowsHtml;
+        detailDonationTableTotal.textContent = 'Rs. ' + formatRs(total);
+        detailDonationTotal.textContent = 'Rs. ' + formatRs(total);
+      });
+      const unsubFine = onValue(ref(db, 'classFine/' + classId + '/amount'), (snap) => {
+        const amt = snap.exists() ? snap.val() : 0;
+        detailFineAmount.textContent = 'Rs. ' + formatRs(amt);
+      });
+
+      detailUnsubscribes.push(unsubDonations, unsubFine);
+    }
+
+    backToHomeLink.addEventListener('click', () => {
+      clearDetailListeners();
+      classDetailView.classList.remove('active');
+      showHome();
+    });
+
+    // ---------- Captains dropdown: show only selected class ----------
+    let captainsUnsub = null;
+    captainsToggle.addEventListener('click', () => {
+      captainsToggle.classList.toggle('open');
+      captainsPanel.classList.toggle('open');
+    });
+
+    function watchCaptainsPanel(classId, className){
+      captainsToggleLabel.textContent = 'Captains — ' + className;
+      if (captainsUnsub) captainsUnsub();
+      captainsUnsub = onValue(ref(db, 'classLeadership/' + classId), (snap) => {
+        const data = snap.exists() ? snap.val() : {};
+        if (data.captain) {
+          panelCaptain.textContent = data.captain;
+          panelCaptain.classList.remove('empty');
+        } else {
+          panelCaptain.textContent = 'Not assigned';
+          panelCaptain.classList.add('empty');
+        }
+        if (data.viceCaptain) {
+          panelVice.textContent = data.viceCaptain;
+          panelVice.classList.remove('empty');
+        } else {
+          panelVice.textContent = 'Not assigned';
+          panelVice.classList.add('empty');
+        }
+      });
+    }
+
+    classButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        watchCaptainsPanel(btn.dataset.key, btn.dataset.class);
       });
     });
 
@@ -702,13 +900,6 @@
     loginOverlay.addEventListener('click', (e) => {
       if (e.target === loginOverlay) closeModal();
     });
-
-    const classIdMap = {
-      "Class 11 A": "class11A",
-      "Class 11 B": "class11B",
-      "Class 12 A": "class12A",
-      "Class 12 B": "class12B"
-    };
 
     // ---------- Login: verify passcode against Realtime Database ----------
     loginForm.addEventListener('submit', async (e) => {
@@ -764,11 +955,14 @@
     }
 
     function showDashboard(className){
+      clearDetailListeners();
+      classDetailView.classList.remove('active');
       dashClassName.textContent = className;
       activeClassId = classIdMap[className];
       pageBody.classList.add('hidden');
       dashboardView.classList.add('active');
       topbarAuthBtn.textContent = 'Log out';
+      topbarAuthBtn.classList.add('is-logout');
       loadLeadershipIntoDash();
       loadFineIntoDash();
       watchDonations();
@@ -784,7 +978,7 @@
         dashViceInput.value = data.viceCaptain || '';
       } catch (err) {
         console.error(err);
-        dashLeadershipStatus.style.color = '#ff8080';
+        dashLeadershipStatus.style.color = '#d61a2c';
         dashLeadershipStatus.textContent = 'Could not load current leadership: ' + (err.code || err.message);
       }
     }
@@ -799,7 +993,7 @@
         fineAmountInput.value = amt || '';
       } catch (err) {
         console.error(err);
-        fineStatus.style.color = '#ff8080';
+        fineStatus.style.color = '#d61a2c';
         fineStatus.textContent = 'Could not load current amount: ' + (err.code || err.message);
       }
     }
@@ -809,48 +1003,13 @@
       if (!activeClassId) return;
       donationsUnsubscribe = onValue(ref(db, 'classDonations/' + activeClassId), (snap) => {
         const data = snap.exists() ? snap.val() : {};
-        renderDonationTable(data);
+        const { rowsHtml, total } = buildDonationRows(data);
+        donationTableBody.innerHTML = rowsHtml;
+        donationTotal.textContent = 'Rs. ' + formatRs(total);
       }, (err) => {
         console.error(err);
         donationStatus.textContent = 'Could not load donations: ' + (err.code || err.message);
       });
-    }
-
-    function renderDonationTable(data){
-      const entries = Object.entries(data || {});
-      donationTableBody.innerHTML = '';
-
-      if (entries.length === 0) {
-        donationTableBody.innerHTML = '<tr id="donationEmptyRow"><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">No donations recorded yet.</td></tr>';
-        donationTotal.textContent = 'Rs. 0';
-        return;
-      }
-
-      entries.sort((a, b) => (a[1].createdAt || 0) - (b[1].createdAt || 0));
-
-      let total = 0;
-      entries.forEach(([key, entry], idx) => {
-        const amt = Number(entry.amount) || 0;
-        total += amt;
-        const row = document.createElement('tr');
-        row.innerHTML =
-          '<td class="sn-col">' + (idx + 1) + '</td>' +
-          '<td>' + escapeHtml(entry.name || '') + '</td>' +
-          '<td class="amt-col">' + formatRs(amt) + '</td>';
-        donationTableBody.appendChild(row);
-      });
-
-      donationTotal.textContent = 'Rs. ' + formatRs(total);
-    }
-
-    function formatRs(n){
-      return Number(n || 0).toLocaleString('en-IN');
-    }
-
-    function escapeHtml(str){
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
     }
 
     function hideDashboard(){
@@ -859,6 +1018,7 @@
       localStorage.removeItem('durbar_active_class');
       activeClassId = null;
       topbarAuthBtn.textContent = 'Log in';
+      topbarAuthBtn.classList.remove('is-logout');
       if (donationsUnsubscribe) {
         donationsUnsubscribe();
         donationsUnsubscribe = null;
@@ -871,7 +1031,7 @@
       if (!activeClassId) return;
       const captainName = dashCaptainInput.value.trim();
       const viceName = dashViceInput.value.trim();
-      dashLeadershipStatus.style.color = '#ff8080';
+      dashLeadershipStatus.style.color = '#d61a2c';
       dashLeadershipStatus.textContent = '';
 
       if (!captainName && !viceName) {
@@ -887,7 +1047,7 @@
           captain: captainName,
           viceCaptain: viceName
         });
-        dashLeadershipStatus.style.color = '#7fe08a';
+        dashLeadershipStatus.style.color = '#1a4fd6';
         dashLeadershipStatus.textContent = 'Saved.';
       } catch (err) {
         console.error(err);
@@ -901,7 +1061,7 @@
     saveFineBtn.addEventListener('click', async () => {
       if (!activeClassId) return;
       const amt = Number(fineAmountInput.value);
-      fineStatus.style.color = '#ff8080';
+      fineStatus.style.color = '#d61a2c';
       fineStatus.textContent = '';
 
       if (fineAmountInput.value === '' || isNaN(amt) || amt < 0) {
@@ -915,7 +1075,7 @@
       try {
         await set(ref(db, 'classFine/' + activeClassId), { amount: amt });
         fineAmountDisplay.textContent = formatRs(amt);
-        fineStatus.style.color = '#7fe08a';
+        fineStatus.style.color = '#1a4fd6';
         fineStatus.textContent = 'Saved.';
       } catch (err) {
         console.error(err);
@@ -930,7 +1090,7 @@
       if (!activeClassId) return;
       const name = donorNameInput.value.trim();
       const amt = Number(donorAmountInput.value);
-      donationStatus.style.color = '#ff8080';
+      donationStatus.style.color = '#d61a2c';
       donationStatus.textContent = '';
 
       if (!name) {
@@ -954,7 +1114,7 @@
         });
         donorNameInput.value = '';
         donorAmountInput.value = '';
-        donationStatus.style.color = '#7fe08a';
+        donationStatus.style.color = '#1a4fd6';
         donationStatus.textContent = 'Added.';
       } catch (err) {
         console.error(err);
@@ -970,42 +1130,40 @@
       showDashboard(savedClass);
     }
 
-    // ---------- Live Captains & Vice Captains from Realtime Database ----------
-    function watchCaptains(){
-      const cards = document.querySelectorAll('#captainsGrid .captain-card');
+    // ---------- Home page: grand total + per-class breakdown (live) ----------
+    function watchSummary(){
+      const perClassDonationTotal = {};
+      const perClassFine = {};
 
-      cards.forEach(card => {
-        const classId = card.dataset.key;
-        const captainEl = card.querySelector('[data-captain]');
-        const viceEl = card.querySelector('[data-vice-captain]');
+      function recomputeGrandTotal(){
+        let grand = 0;
+        allClassIds.forEach(id => { grand += (perClassDonationTotal[id] || 0); });
+        grandTotalAmount.textContent = formatRs(grand);
+      }
 
-        onValue(ref(db, 'classLeadership/' + classId), (snap) => {
+      allClassIds.forEach(classId => {
+        const item = document.querySelector('.breakdown-item[data-key="' + classId + '"]');
+        const amtEl = item.querySelector('[data-b-amt]');
+        const fineEl = item.querySelector('[data-b-fine]');
+
+        onValue(ref(db, 'classDonations/' + classId), (snap) => {
           const data = snap.exists() ? snap.val() : {};
+          let total = 0;
+          Object.values(data).forEach(entry => { total += Number(entry.amount) || 0; });
+          perClassDonationTotal[classId] = total;
+          amtEl.textContent = 'Rs. ' + formatRs(total);
+          recomputeGrandTotal();
+        });
 
-          if (data.captain) {
-            captainEl.textContent = data.captain;
-            captainEl.classList.remove('empty');
-          } else {
-            captainEl.textContent = 'Not assigned';
-            captainEl.classList.add('empty');
-          }
-
-          if (data.viceCaptain) {
-            viceEl.textContent = data.viceCaptain;
-            viceEl.classList.remove('empty');
-          } else {
-            viceEl.textContent = 'Not assigned';
-            viceEl.classList.add('empty');
-          }
-        }, (err) => {
-          console.error(err);
-          captainEl.textContent = 'Error: ' + (err.code || err.message);
-          viceEl.textContent = 'Error';
+        onValue(ref(db, 'classFine/' + classId + '/amount'), (snap) => {
+          const amt = snap.exists() ? snap.val() : 0;
+          perClassFine[classId] = amt;
+          fineEl.textContent = 'Fine: Rs. ' + formatRs(amt);
         });
       });
     }
 
-    watchCaptains();
+    watchSummary();
   </script>
 
 </body>
