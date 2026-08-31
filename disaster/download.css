@@ -1,0 +1,363 @@
+  :root{
+    --a4-w:210mm;
+    --a4-h:297mm;
+    --a4-pad:16mm;
+  }
+
+  body{ background:var(--paper-dim); }
+
+  .no-print{}
+
+  /* ---------- Toolbar ---------- */
+  .dl-toolbar{
+    max-width:var(--a4-w);
+    margin:24px auto 0;
+    padding:0 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .dl-toolbar-info{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+  .dl-toolbar-info span{ display:block; }
+  #dlToolbarClassName{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1.15rem;
+    color:var(--ink);
+    overflow-wrap:anywhere;
+  }
+  .dl-toolbar-sub{ font-size:0.85rem; color:var(--ink-faint); }
+  .dl-toolbar-actions{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .dl-toolbar-actions .back-link{
+    font-size:0.9rem;
+    color:var(--ink-soft);
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .dl-toolbar-actions .back-link:hover{ color:var(--brick); }
+  .dl-download-all-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Karla', sans-serif;
+    font-weight:600;
+    font-size:0.92rem;
+    color:var(--white);
+    background:var(--ink);
+    border:none;
+    padding:12px 24px;
+    border-radius:4px;
+    cursor:pointer;
+    text-decoration:none;
+    transition:background 0.15s ease;
+  }
+  .dl-download-all-btn:hover{ background:var(--brick); }
+
+  .dl-empty-state{
+    max-width:var(--a4-w);
+    margin:60px auto;
+    padding:0 16px;
+    text-align:center;
+    color:var(--ink-faint);
+  }
+  .dl-empty-state p{ margin:0 0 18px; font-size:1rem; }
+
+  /* ---------- A4 page ---------- */
+  #dlPagesRoot{
+    display:flex;
+    flex-direction:row;
+    align-items:flex-start;
+    gap:24px;
+    padding:28px 16px 60px;
+    overflow-x:auto;
+    overflow-y:visible;
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x proximity;
+  }
+  .a4-page-wrap{
+    flex:0 0 auto;
+    display:flex;
+    justify-content:center;
+    scroll-snap-align:start;
+  }
+  .a4-page{
+    width:var(--a4-w);
+    min-height:var(--a4-h);
+    flex-shrink:0;
+    background:var(--white);
+    border:1px solid var(--line);
+    box-shadow:0 2px 14px rgba(28,35,33,0.1);
+    padding:var(--a4-pad);
+    display:flex;
+    flex-direction:column;
+    font-family:'Karla', sans-serif;
+    color:var(--ink);
+  }
+
+  .a4-dateline{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    font-size:0.92rem;
+    margin-bottom:14px;
+  }
+  .a4-dateline .lbl{ color:var(--ink-soft); }
+  .a4-dateline .fillline{
+    flex:1;
+    border-bottom:1px dotted var(--ink-faint);
+    max-width:220px;
+    height:1em;
+  }
+
+  .a4-masthead{
+    text-align:center;
+    padding-bottom:14px;
+    margin-bottom:14px;
+    border-bottom:2px solid var(--ink);
+  }
+  .a4-masthead .school-name{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:1.5rem;
+    color:var(--ink);
+    margin:0 0 4px;
+  }
+  .a4-masthead .school-loc{
+    font-size:0.88rem;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+  .a4-masthead .doc-title{
+    font-size:0.95rem;
+    font-weight:600;
+    color:var(--brick-dark);
+    margin:0;
+  }
+
+  .a4-classline{
+    display:flex;
+    justify-content:center;
+    gap:28px;
+    flex-wrap:wrap;
+    font-size:0.95rem;
+    font-weight:600;
+    margin-bottom:14px;
+  }
+  .a4-classline span{ color:var(--ink); }
+  .a4-classline .fillline{
+    display:inline-block;
+    border-bottom:1px dotted var(--ink-faint);
+    min-width:70px;
+    height:1em;
+    margin:0 4px;
+  }
+
+  .a4-note{
+    font-size:0.85rem;
+    line-height:1.6;
+    color:var(--ink-soft);
+    background:var(--paper-dim);
+    border-left:3px solid var(--brick);
+    padding:10px 16px;
+    margin-bottom:16px;
+  }
+
+  /* ---------- Continuation header (page 2+) ----------
+     Deliberately compact: no repeated masthead / school name /
+     note. Just enough to orient the reader that the table below
+     continues from the previous page. */
+  .a4-continuation{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:12px;
+    padding-bottom:10px;
+    margin-bottom:14px;
+    border-bottom:1px solid var(--line-strong);
+  }
+  .a4-continuation-class{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1.05rem;
+    color:var(--ink);
+  }
+  .a4-continuation-tag{
+    font-size:0.82rem;
+    color:var(--ink-faint);
+    font-style:italic;
+  }
+
+  .a4-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.88rem;
+    flex:1;
+  }
+  .a4-table th, .a4-table td{
+    border:1px solid var(--line-strong);
+    padding:8px 10px;
+    text-align:left;
+  }
+  .a4-table th{
+    background:var(--paper-dim);
+    font-weight:600;
+    font-size:0.8rem;
+    color:var(--ink-soft);
+  }
+  .a4-table td.sn-col, .a4-table th.sn-col{ width:44px; text-align:center; color:var(--ink-faint); }
+  .a4-table td.amt-col, .a4-table th.amt-col{ text-align:right; width:120px; }
+
+  .a4-page-footer{
+    margin-top:18px;
+    padding-top:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:0.78rem;
+    color:var(--ink-faint);
+    border-top:1px solid var(--line);
+  }
+
+  /* ---------- Final page: totals + fine + signatures ---------- */
+  .a4-totals{
+    margin-top:20px;
+  }
+  .a4-totals table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.92rem;
+  }
+  .a4-totals td{
+    padding:9px 10px;
+    border:1px solid var(--line-strong);
+  }
+  .a4-totals td.label{ color:var(--ink-soft); font-weight:600; }
+  .a4-totals td.value{ text-align:right; font-weight:700; color:var(--ink); width:150px; }
+  .a4-totals tr.grand td{ background:var(--ink); color:var(--paper); }
+  .a4-totals tr.grand td.label{ color:rgba(247,243,234,0.7); }
+  .a4-totals tr.grand td.value{ color:var(--paper); font-size:1.05rem; }
+
+  .a4-signatures{
+    margin-top:auto;
+    padding-top:56px;
+    display:flex;
+    justify-content:space-between;
+    gap:24px;
+  }
+  .a4-sig-block{
+    flex:1;
+    text-align:center;
+  }
+  .a4-sig-line{
+    border-top:1px solid var(--ink);
+    margin-bottom:8px;
+    height:1px;
+  }
+  .a4-sig-label{
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+
+  /* ---------- Print rules ---------- */
+  @media print{
+    .no-print{ display:none !important; }
+    body{ background:var(--white); }
+    #dlPagesRoot{
+      display:block;
+      height:auto;
+      min-height:0;
+      padding:0;
+      gap:0;
+      overflow:visible;
+    }
+    .a4-page-wrap{
+      display:block;
+      height:auto;
+      width:auto !important;
+      page-break-after:always;
+      break-after:page;
+    }
+    .a4-page-wrap:last-child{ page-break-after:auto; break-after:auto; }
+    .a4-page{
+      box-shadow:none;
+      border:none;
+      width:auto;
+      min-height:auto;
+      height:var(--a4-h);
+      transform:none !important;
+      margin:0 auto !important;
+    }
+    .a4-table{ page-break-inside:auto; }
+    .a4-table tr{ page-break-inside:avoid; break-inside:avoid; }
+    .a4-signatures{ page-break-inside:avoid; break-inside:avoid; }
+  }
+
+  @page{
+    size:A4;
+    margin:0;
+  }
+
+  /* ---------- Responsive preview (screen, not print) ----------
+     Pages sit in a horizontally scrollable row on both phone and
+     desktop — never stacked vertically. On phones (where an A4
+     page is much taller than the viewport), each page is scaled
+     down uniformly to fit the visible height so the whole sheet is
+     visible at once and the user swipes sideways between pages. */
+  #dlPagesRoot{
+    height:calc(100vh - 160px);
+    min-height:420px;
+  }
+  .a4-page-wrap{
+    height:100%;
+    align-items:center;
+  }
+  .a4-page{
+    height:var(--a4-h);
+    transform-origin:center center;
+  }
+
+  @media screen and (max-width:900px){
+    .dl-toolbar{ margin-top:16px; }
+    .dl-toolbar-actions{ width:100%; justify-content:space-between; }
+    #dlPagesRoot{
+      height:calc(100vh - 210px);
+      min-height:360px;
+      padding:16px 16px 24px;
+      gap:16px;
+    }
+  }
+
+  /* Scale factor keeps full A4 height visible within the scroll
+     row's height on smaller screens, so nothing gets cropped and
+     the layout stays horizontal instead of falling back to a tall
+     vertical stack. */
+  @media screen and (max-height:900px){
+    .a4-page{ transform:scale(0.85); }
+    .a4-page-wrap{ width:calc(var(--a4-w) * 0.85); }
+  }
+  @media screen and (max-height:700px){
+    .a4-page{ transform:scale(0.62); }
+    .a4-page-wrap{ width:calc(var(--a4-w) * 0.62); }
+  }
+  @media screen and (max-height:560px){
+    .a4-page{ transform:scale(0.46); }
+    .a4-page-wrap{ width:calc(var(--a4-w) * 0.46); }
+  }
+  @media screen and (max-height:420px){
+    .a4-page{ transform:scale(0.34); }
+    .a4-page-wrap{ width:calc(var(--a4-w) * 0.34); }
+  }
+
+  /* Scroll hint: a subtle affordance so users know more pages are
+     swipeable to the side when there's more than one page. */
+  #dlPagesRoot::-webkit-scrollbar{ height:8px; }
+  #dlPagesRoot::-webkit-scrollbar-track{ background:var(--paper-dim); }
+  #dlPagesRoot::-webkit-scrollbar-thumb{ background:var(--line-strong); border-radius:4px; }
