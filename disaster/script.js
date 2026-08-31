@@ -248,20 +248,35 @@ function initAuthWidgets(onLoginSuccess, onLogout){
 function initHomePage(){
   const pieChartWrap = document.getElementById('pieChartWrap');
   const grandTotalAmount = document.getElementById('grandTotalAmount');
+  const donateSubtotalEl = document.getElementById('donateSubtotal');
+  const fineSubtotalEl = document.getElementById('fineSubtotal');
 
   const auth = initAuthWidgets(null, () => {
     window.location.href = 'index.html';
   });
 
-  // ---------- Home page: grand total + pie chart (live) ----------
+  // ---------- Home page: grand total (donations + class fines) + pie chart (live) ----------
   function watchSummary(){
     const perClassDonationTotal = {};
+    const perClassFineTotal = {};
+    const perClassCombinedTotal = {};
 
     function recomputeGrandTotal(){
       let grand = 0;
-      allClassIds.forEach(id => { grand += (perClassDonationTotal[id] || 0); });
+      let donateGrand = 0;
+      let fineGrand = 0;
+      allClassIds.forEach(id => {
+        const d = perClassDonationTotal[id] || 0;
+        const f = perClassFineTotal[id] || 0;
+        perClassCombinedTotal[id] = d + f;
+        grand += d + f;
+        donateGrand += d;
+        fineGrand += f;
+      });
       grandTotalAmount.textContent = formatRs(grand);
-      renderPieChart(pieChartWrap, perClassDonationTotal);
+      if (donateSubtotalEl) donateSubtotalEl.textContent = 'रु. ' + formatRs(donateGrand);
+      if (fineSubtotalEl) fineSubtotalEl.textContent = 'रु. ' + formatRs(fineGrand);
+      renderPieChart(pieChartWrap, perClassCombinedTotal);
     }
 
     allClassIds.forEach(classId => {
@@ -270,6 +285,11 @@ function initHomePage(){
         let total = 0;
         Object.values(data).forEach(entry => { total += Number(entry.amount) || 0; });
         perClassDonationTotal[classId] = total;
+        recomputeGrandTotal();
+      });
+
+      onValue(ref(db, 'classFine/' + classId + '/amount'), (snap) => {
+        perClassFineTotal[classId] = snap.exists() ? (Number(snap.val()) || 0) : 0;
         recomputeGrandTotal();
       });
     });

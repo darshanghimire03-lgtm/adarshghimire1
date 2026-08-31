@@ -9,13 +9,13 @@
 <body>
 
   <div class="topbar">
-    <div class="brand" id="brandHome">
+    <a class="brand" href="index.html">
       <svg class="brand-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="20" cy="20" r="19" stroke="#1a4fd6" stroke-width="2"/>
-        <path d="M20 9 L20 31 M11 16 L29 16 M13 24 L27 24" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="19" stroke="#b5482f" stroke-width="2"/>
+        <path d="M20 9 L20 31 M11 16 L29 16 M13 24 L27 24" stroke="#f7f3ea" stroke-width="2" stroke-linecap="round"/>
       </svg>
       <div class="brand-name">दरबार विपद् राहत कोष</div>
-    </div>
+    </a>
     <div class="topbar-right">
       <button class="login-btn" type="button" id="topbarAuthBtn">लग इन</button>
     </div>
@@ -23,42 +23,95 @@
 
   <div class="page-body" id="pageBody">
     <main id="mainView">
-      <div class="kicker">प्रधानमन्त्री विपद् राहत कोष</div>
-      <h2>तपाईंको कक्षा कुन हो?</h2>
-      <p class="sub-line">आफ्नो कक्षाको दान हेर्न छान्नुहोस्, वा व्यवस्थापन गर्न क्याप्टेनको रूपमा लग इन गर्नुहोस्।</p>
 
-      <div class="summary-block card">
-        <div class="summary-label">कुल दान रकम</div>
-        <div class="summary-total"><span class="rs">रु.</span><span id="grandTotalAmount">0</span></div>
-        <div class="summary-note">सबै कक्षाहरूको संयुक्त दान तथा योगदान</div>
-        <div class="summary-actions">
-          <span class="summary-tag donate-tag">दान<span class="plus">+</span></span>
-          <span class="summary-tag contribution-tag">योगदान<span class="plus">+</span></span>
+      <div class="hero">
+        <div class="hero-date">
+          <span class="date-tag">२०८३/०५/१०</span>
+          <span class="date-line"></span>
+        </div>
+        <p class="chhanda">
+          पहाड रुन्छ, नदी बग्छ, माटो बग्छ बेहोरी,<br>
+          हामी बस्दैनौं चुप गरी, हात जोडौं यही घडी।
+        </p>
+        <h1>रसुवा स्तब्ध भयो, हामी अडिग रह्यौं</h1>
+        <p class="lede">
+          २०८३ साल भदौ १० गते नेपालका <span class="districts">रसुवा, चितवन लगायतका क्षेत्रहरू</span>मा आएको बाढी–पहिरोले ठूलो धन–जनको क्षति पुर्‍यायो। यो घटनाले दरबार हाई स्कूलका कक्षा ११ र १२ का हामी विद्यार्थीहरूलाई गहिरो गरी छोयो।
+        </p>
+        <p class="lede">
+          हामीले छलफल गरी सामूहिक निर्णय गर्‍यौं — आफ्नो कक्षामा उठाएको जरिवाना रकम र आ–आफ्नो सामर्थ्य अनुसारको व्यक्तिगत दान गरी, त्यो पीडितहरूको सहयोगमा पुर्‍याउने।
+        </p>
+        <div class="decision">
+          <strong>हाम्रो प्रतिबद्धता:</strong> प्रत्येक कक्षाको जरिवाना रकम र विद्यार्थीहरूले गरेको व्यक्तिगत दान — दुवै मिलाई, हामी QR मार्फत सिधै <strong>प्रधानमन्त्री विपद् राहत कोष</strong>मा पठाउनेछौं। यो प्रक्रिया पूर्ण रूपमा पारदर्शी राख्न नै यो पृष्ठ बनाइएको हो।
         </div>
       </div>
 
-      <div class="pie-block card">
-        <div class="pie-title">कक्षा अनुसार दान वितरण</div>
-        <div class="pie-wrap" id="pieChartWrap">
-          <div class="pie-empty">डेटा लोड हुँदैछ...</div>
+      <div class="section-label">
+        <span class="num">०१</span>
+        <span class="txt">हालसम्मको जम्मा योगदान</span>
+      </div>
+
+      <div class="summary-block">
+        <div class="summary-inner">
+          <div class="summary-label">कुल दान रकम</div>
+          <div class="summary-total"><span class="rs">रु.</span><span id="grandTotalAmount">0</span></div>
+          <div class="summary-note">सबै कक्षाहरूको जरिवाना रकम र व्यक्तिगत योगदान समेत</div>
+          <div class="summary-actions">
+            <span class="summary-tag donate-tag">व्यक्तिगत दान<span class="plus">+</span> <span id="donateSubtotal">रु. 0</span></span>
+            <span class="summary-tag contribution-tag">कक्षा जरिवाना<span class="plus">+</span> <span id="fineSubtotal">रु. 0</span></span>
+          </div>
         </div>
       </div>
 
-      <div class="class-options" role="group" aria-label="आफ्नो कक्षा छान्नुहोस्">
-        <a class="class-btn" href="class.html?c=class11A">Class 11 A</a>
-        <a class="class-btn" href="class.html?c=class11B">Class 11 B</a>
-        <a class="class-btn" href="class.html?c=class12A">Class 12 A</a>
-        <a class="class-btn" href="class.html?c=class12B">Class 12 B</a>
+      <div class="pie-block">
+        <div class="pie-inner card">
+          <div class="pie-title">कक्षा अनुसार वितरण</div>
+          <div class="pie-wrap" id="pieChartWrap">
+            <div class="pie-empty">डेटा लोड हुँदैछ...</div>
+          </div>
+        </div>
       </div>
+
+      <div class="section-label">
+        <span class="num">०२</span>
+        <span class="txt">प्रधानमन्त्री विपद् राहत कोषमा दान गर्नुहोस्</span>
+      </div>
+
+      <div class="qr-block">
+        <div class="qr-inner">
+          <div class="qr-image-wrap">
+            <img src="pmdrf-qr.png" alt="प्रधानमन्त्री विपद् राहत कोष QR कोड" onerror="this.parentElement.innerHTML='<div style=\'width:140px;height:140px;display:flex;align-items:center;justify-content:center;font-size:0.78rem;color:var(--ink-faint);text-align:center;padding:8px;\'>QR कोड यहाँ राख्नुहोस्</div>'">
+          </div>
+          <div class="qr-copy">
+            <div class="qr-kicker">सिधै दान गर्नुहोस्</div>
+            <h3>QR स्क्यान गरी योगदान दिनुहोस्</h3>
+            <p>हामीले उठाएको रकम यही QR मार्फत प्रधानमन्त्री विपद् राहत कोषमा पठाउँछौं। तपाईं पनि सिधै यहीबाट आफ्नो सहयोग पठाउन सक्नुहुन्छ।</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">
+        <span class="num">०३</span>
+        <span class="txt">कक्षा अनुसार विवरण हेर्नुहोस्</span>
+      </div>
+
+      <div class="class-picker">
+        <div class="class-options" role="group" aria-label="आफ्नो कक्षा छान्नुहोस्">
+          <a class="class-btn" href="class.html?c=class11A">Class 11 A</a>
+          <a class="class-btn" href="class.html?c=class11B">Class 11 B</a>
+          <a class="class-btn" href="class.html?c=class12A">Class 12 A</a>
+          <a class="class-btn" href="class.html?c=class12B">Class 12 B</a>
+        </div>
+      </div>
+
     </main>
   </div>
 
   <div class="bottom-note">
-    यो सबैको सहयोग हामी PM Disaster Relief Fund मा दान गर्दैछौं।
+    <p>यो सबैको सहयोग हामी प्रधानमन्त्री विपद् राहत कोषमा दान गर्दैछौं।</p>
   </div>
 
   <footer>
-    &copy; २०२६ दरबार विपद् राहत कोष। सर्वाधिकार सुरक्षित।
+    &copy; २०८३ दरबार विपद् राहत कोष। सर्वाधिकार सुरक्षित।
   </footer>
 
   <div class="overlay" id="loginOverlay">
