@@ -78,6 +78,58 @@
     transition:background 0.15s ease, transform 0.1s ease;
   }
   .login-btn:hover{ background:var(--brick); border-color:var(--brick); color:var(--white); }
+
+  .topbar-right{ display:flex; align-items:center; gap:10px; }
+
+  .donate-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:9px 18px;
+    border-radius:20px;
+    background:var(--brick);
+    border:1px solid var(--brick);
+    color:var(--white);
+    font-family:'Karla', sans-serif;
+    font-weight:700;
+    font-size:0.88rem;
+    text-decoration:none;
+    cursor:pointer;
+    transition:background 0.15s ease, transform 0.1s ease;
+  }
+  .donate-btn:hover{ background:var(--brick-dark); border-color:var(--brick-dark); }
+  .donate-btn:active{ transform:translateY(1px); }
+
+  /* ---------- QR display ---------- */
+  .qr-box{
+    width:220px;
+    height:220px;
+    margin:0 auto;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--paper-dim);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .qr-box img{ width:100%; height:100%; object-fit:contain; }
+  .qr-box .qr-placeholder{ color:var(--ink-faint); font-size:0.85rem; padding:16px; text-align:center; }
+
+  .qr-section{
+    max-width:640px;
+    margin:20px auto 0;
+    padding:24px;
+    text-align:center;
+  }
+  .qr-section h3{ margin:0 0 16px; font-size:1.1rem; color:var(--ink); }
+  .qr-section-links{ margin-top:16px; }
+
+  .class-btn.is-selected{
+    border-color:var(--brick);
+    background:var(--brick-tint);
+  }
+  .class-btn.is-selected:after{ color:var(--brick); }
   .login-btn:active{ transform:translateY(1px); }
   .login-btn.is-logout{ background:transparent; color:var(--paper); border-color:rgba(247,243,234,0.4); }
   .login-btn.is-logout:hover{ background:rgba(247,243,234,0.1); border-color:var(--paper); color:var(--paper); }
@@ -318,6 +370,7 @@
   .class-btn:hover:after{ color:var(--brick); }
   .class-btn:active{ transform:translateY(1px); }
   .class-btn:focus-visible{ outline:2px solid var(--monsoon); outline-offset:2px; }
+  button.class-btn{ width:100%; text-align:left; }
 
   /* ---------- Bottom note ---------- */
   .bottom-note{

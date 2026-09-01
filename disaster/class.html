@@ -119,6 +119,7 @@
     </div>
     <button class="drawer-item" type="button" id="drawerChangeCaptainBtn">क्याप्टेनको नाम परिवर्तन गर्नुहोस्</button>
     <button class="drawer-item" type="button" id="drawerEditFineBtn">कक्षा जरिवाना सम्पादन गर्नुहोस्</button>
+    <button class="drawer-item" type="button" id="drawerAddQrBtn">QR थप्नुहोस्</button>
     <button class="drawer-item drawer-item-danger" type="button" id="drawerLogoutBtn">लग आउट</button>
   </div>
 
@@ -147,6 +148,25 @@
       <input class="field" type="number" min="0" step="1" id="fineAmountInput" placeholder="रकम प्रविष्ट गर्नुहोस्">
       <button class="submit-btn" type="button" id="saveFineBtn">रकम सुरक्षित गर्नुहोस्</button>
       <div class="error-msg" id="fineStatus" style="color:var(--ink-soft);"></div>
+    </div>
+  </div>
+
+  <!-- ---------- Popup: Add / Update Class QR ---------- -->
+  <div class="overlay" id="qrPopup">
+    <div class="modal card">
+      <button class="modal-close" id="closeQrPopupBtn" aria-label="बन्द गर्नुहोस्">&times;</button>
+      <h3>कक्षाको QR थप्नुहोस्</h3>
+      <p class="sub">दाताहरूले स्क्यान गर्नसक्ने आफ्नो भुक्तानी QR छवि अपलोड गर्नुहोस्।</p>
+
+      <div class="qr-box" id="qrCurrentPreview" style="margin-bottom:18px;">
+        <div class="qr-placeholder">लोड हुँदैछ...</div>
+      </div>
+
+      <label class="field-label" for="qrFileInput">नयाँ QR छवि छान्नुहोस्</label>
+      <input class="field" type="file" id="qrFileInput" accept="image/*">
+
+      <button class="submit-btn" type="button" id="saveQrBtn">QR सुरक्षित गर्नुहोस्</button>
+      <div class="error-msg" id="qrStatus"></div>
     </div>
   </div>
 

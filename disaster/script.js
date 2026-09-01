@@ -14,6 +14,23 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// ImgBB API key — used to upload class captain QR images
+const IMGBB_API_KEY = "303993ee7899893174e5ea35aa54d996";
+
+async function uploadImageToImgBB(file){
+  const formData = new FormData();
+  formData.append('image', file);
+  const res = await fetch('https://api.imgbb.com/1/upload?key=' + IMGBB_API_KEY, {
+    method: 'POST',
+    body: formData
+  });
+  const json = await res.json();
+  if (!json.success) {
+    throw new Error((json.error && json.error.message) || 'ImgBB अपलोड असफल भयो।');
+  }
+  return json.data.url;
+}
+
 const classIdMap = {
   "Class 11 A": "class11A",
   "Class 11 B": "class11B",
@@ -255,6 +272,46 @@ function initHomePage(){
     window.location.href = 'index.html';
   });
 
+  // ---------- Home page: class picker QR reveal ----------
+  const classQrSection = document.getElementById('classQrSection');
+  const classQrBox = document.getElementById('classQrBox');
+  const classQrTitle = document.getElementById('classQrTitle');
+  const classQrDetailLink = document.getElementById('classQrDetailLink');
+  const classButtons = document.querySelectorAll('.class-picker [data-class-id]');
+
+  if (classButtons.length && classQrSection && classQrBox) {
+    classButtons.forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const classId = btn.dataset.classId;
+        const className = classNameMap[classId];
+
+        classButtons.forEach(b => b.classList.remove('is-selected'));
+        btn.classList.add('is-selected');
+
+        classQrSection.style.display = 'block';
+        classQrTitle.textContent = className + ' — क्याप्टेनको QR';
+        classQrBox.innerHTML = '<div class="qr-placeholder">लोड हुँदैछ...</div>';
+        if (classQrDetailLink) {
+          classQrDetailLink.innerHTML = '<a class="back-link" href="class.html?c=' + classId + '">' + escapeHtml(className) + 'को पूर्ण विवरण हेर्नुहोस् &rarr;</a>';
+        }
+        classQrSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        try {
+          const snap = await get(ref(db, 'classQR/' + classId + '/url'));
+          if (snap.exists() && snap.val()) {
+            classQrBox.innerHTML = '<img src="' + snap.val() + '" alt="' + escapeHtml(className) + ' QR">';
+          } else {
+            classQrBox.innerHTML = '<div class="qr-placeholder">यस कक्षाका क्याप्टेनले अझै QR थपेका छैनन्।</div>';
+          }
+        } catch (err) {
+          console.error(err);
+          classQrBox.innerHTML = '<div class="qr-placeholder">QR लोड गर्न सकिएन।</div>';
+        }
+      });
+    });
+  }
+
   // ---------- Home page: grand total (donations + class fines) + pie chart (live) ----------
   function watchSummary(){
     const perClassDonationTotal = {};
@@ -298,6 +355,44 @@ function initHomePage(){
   watchSummary();
 }
 
+// ---------- Payment page (payment.html) ----------
+function initPaymentPage(){
+  initAuthWidgets(null, () => {
+    window.location.href = 'payment.html';
+  });
+
+  const classQrBox = document.getElementById('classQrBox');
+  const classQrPlaceholder = document.getElementById('classQrPlaceholder');
+  const classButtons = document.querySelectorAll('.class-picker [data-class-id]');
+
+  if (classButtons.length && classQrBox) {
+    classButtons.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const classId = btn.dataset.classId;
+        const className = classNameMap[classId];
+
+        classButtons.forEach(b => b.classList.remove('is-selected'));
+        btn.classList.add('is-selected');
+
+        classQrBox.style.display = 'flex';
+        classQrBox.innerHTML = '<div class="qr-placeholder">लोड हुँदैछ...</div>';
+
+        try {
+          const snap = await get(ref(db, 'classQR/' + classId + '/url'));
+          if (snap.exists() && snap.val()) {
+            classQrBox.innerHTML = '<img src="' + snap.val() + '" alt="' + escapeHtml(className) + ' QR">';
+          } else {
+            classQrBox.innerHTML = '<div class="qr-placeholder">' + escapeHtml(className) + 'का क्याप्टेनले अझै QR थपेका छैनन्।</div>';
+          }
+        } catch (err) {
+          console.error(err);
+          classQrBox.innerHTML = '<div class="qr-placeholder">QR लोड गर्न सकिएन।</div>';
+        }
+      });
+    });
+  }
+}
+
 // ---------- Class page (class.html) ----------
 function initClassPage(){
   const params = new URLSearchParams(window.location.search);
@@ -313,7 +408,15 @@ function initClassPage(){
   const closeDrawerBtn = document.getElementById('closeDrawerBtn');
   const drawerChangeCaptainBtn = document.getElementById('drawerChangeCaptainBtn');
   const drawerEditFineBtn = document.getElementById('drawerEditFineBtn');
+  const drawerAddQrBtn = document.getElementById('drawerAddQrBtn');
   const drawerLogoutBtn = document.getElementById('drawerLogoutBtn');
+
+  const qrPopup = document.getElementById('qrPopup');
+  const closeQrPopupBtn = document.getElementById('closeQrPopupBtn');
+  const qrCurrentPreview = document.getElementById('qrCurrentPreview');
+  const qrFileInput = document.getElementById('qrFileInput');
+  const saveQrBtn = document.getElementById('saveQrBtn');
+  const qrStatus = document.getElementById('qrStatus');
 
   const captainPopup = document.getElementById('captainPopup');
   const closeCaptainPopupBtn = document.getElementById('closeCaptainPopupBtn');
@@ -438,6 +541,23 @@ function initClassPage(){
     }
   }
 
+  async function loadQrIntoDash(activeClassId){
+    if (!activeClassId) return;
+    qrStatus.textContent = '';
+    qrCurrentPreview.innerHTML = '<div class="qr-placeholder">लोड हुँदैछ...</div>';
+    try {
+      const snap = await get(ref(db, 'classQR/' + activeClassId + '/url'));
+      if (snap.exists() && snap.val()) {
+        qrCurrentPreview.innerHTML = '<img src="' + snap.val() + '" alt="हालको QR">';
+      } else {
+        qrCurrentPreview.innerHTML = '<div class="qr-placeholder">अझै कुनै QR थपिएको छैन।</div>';
+      }
+    } catch (err) {
+      console.error(err);
+      qrCurrentPreview.innerHTML = '<div class="qr-placeholder">QR लोड गर्न सकिएन।</div>';
+    }
+  }
+
   // ---------- Auth wiring ----------
   const auth = initAuthWidgets(
     (classId, className) => {
@@ -488,6 +608,54 @@ function initClassPage(){
   });
   closeFinePopupBtn.addEventListener('click', () => closePopup(finePopup));
   finePopup.addEventListener('click', (e) => { if (e.target === finePopup) closePopup(finePopup); });
+
+  drawerAddQrBtn.addEventListener('click', () => {
+    closeDrawer();
+    qrFileInput.value = '';
+    qrStatus.textContent = '';
+    loadQrIntoDash(auth.getActiveClassId());
+    openPopup(qrPopup);
+  });
+  closeQrPopupBtn.addEventListener('click', () => closePopup(qrPopup));
+  qrPopup.addEventListener('click', (e) => { if (e.target === qrPopup) closePopup(qrPopup); });
+
+  saveQrBtn.addEventListener('click', async () => {
+    const activeClassId = auth.getActiveClassId();
+    if (!activeClassId) return;
+    qrStatus.style.color = '#d61a2c';
+    qrStatus.textContent = '';
+
+    const file = qrFileInput.files && qrFileInput.files[0];
+    if (!file) {
+      qrStatus.textContent = 'कृपया QR छवि फाइल छान्नुहोस्।';
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      qrStatus.textContent = 'कृपया मान्य छवि फाइल छान्नुहोस्।';
+      return;
+    }
+
+    saveQrBtn.disabled = true;
+    saveQrBtn.textContent = 'अपलोड हुँदैछ...';
+
+    try {
+      const imageUrl = await uploadImageToImgBB(file);
+      await set(ref(db, 'classQR/' + activeClassId), {
+        url: imageUrl,
+        updatedAt: Date.now()
+      });
+      qrStatus.style.color = '#1a4fd6';
+      qrStatus.textContent = 'QR सफलतापूर्वक थपियो।';
+      qrCurrentPreview.innerHTML = '<img src="' + imageUrl + '" alt="हालको QR">';
+      qrFileInput.value = '';
+    } catch (err) {
+      console.error(err);
+      qrStatus.textContent = 'अपलोड असफल: ' + (err.message || 'unknown error');
+    } finally {
+      saveQrBtn.disabled = false;
+      saveQrBtn.textContent = 'QR सुरक्षित गर्नुहोस्';
+    }
+  });
 
   drawerLogoutBtn.addEventListener('click', () => {
     closeDrawer();
@@ -703,4 +871,6 @@ if (document.getElementById('pieChartWrap')) {
   initHomePage();
 } else if (document.getElementById('classDetailView')) {
   initClassPage();
+} else if (document.getElementById('classQrBox') && document.getElementById('pmQrBox')) {
+  initPaymentPage();
 }
