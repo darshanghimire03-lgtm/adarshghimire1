@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Linux 100 Commands</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f6f8;
+    color:#171717;
+}
+
+header{
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:28px 18px;
+}
+
+header h1{
+    margin:0 0 8px;
+    font-size:30px;
+}
+
+header p{
+    margin:0;
+    color:#bbb;
+}
+
+.search{
+    max-width:900px;
+    margin:20px auto;
+    padding:0 16px;
+}
+
+.search input{
+    width:100%;
+    padding:14px 16px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    font-size:16px;
+    outline:none;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:0 16px 35px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:14px;
+}
+
+.card{
+    background:white;
+    border:1px solid #e5e5e5;
+    border-radius:14px;
+    padding:16px;
+    box-shadow:0 2px 8px #00000008;
+}
+
+.number{
+    color:#999;
+    font-size:12px;
+    margin-bottom:7px;
+}
+
+.top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.command{
+    font-family:monospace;
+    font-size:17px;
+    font-weight:bold;
+    word-break:break-word;
+}
+
+.copy{
+    border:none;
+    background:#111;
+    color:white;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.copy:hover{
+    opacity:.8;
+}
+
+.work{
+    color:#555;
+    font-size:14px;
+    line-height:1.5;
+    margin-top:10px;
+}
+
+.empty{
+    display:none;
+    text-align:center;
+    padding:30px;
+    color:#777;
+}
+
+footer{
+    text-align:center;
+    padding:25px;
+    color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🐧 Linux 100 Commands</h1>
+    <p>Linux command cheat sheet with one-click copy</p>
+</header>
+
+<div class="search">
+    <input
+        type="text"
+        id="search"
+        placeholder="Search command or description..."
+    >
+</div>
+
+<main class="container">
+
+    <div class="grid" id="commandList"></div>
+
+    <div class="empty" id="empty">
+        No commands found.
+    </div>
+
+</main>
+
+<footer>
+    Linux 100 Commands Cheat Sheet
+</footer>
+
+<script>
+
+const commands = [
+
+["pwd","Print the current working directory."],
+
+["ls","List files and directories."],
+
+["ls -l","List files with detailed information."],
+
+["ls -a","Show hidden files and directories."],
+
+["ls -lh","Show detailed files with human-readable sizes."],
+
+["cd","Go to your home directory."],
+
+["cd ..","Move to the parent directory."],
+
+["cd -","Return to the previous directory."],
+
+["mkdir folder","Create a new directory."],
+
+["mkdir -p a/b","Create nested directories."],
+
+["rmdir folder","Remove an empty directory."],
+
+["touch file.txt","Create an empty file."],
+
+["cp file1 file2","Copy a file."],
+
+["cp -r dir1 dir2","Copy a directory and its contents."],
+
+["mv old new","Move or rename a file."],
+
+["rm file.txt","Delete a file."],
+
+["rm -r folder","Delete a directory and its contents."],
+
+["cat file.txt","Display file contents."],
+
+["less file.txt","Read a file page by page."],
+
+["more file.txt","Display a file one page at a time."],
+
+["head file.txt","Show the first 10 lines."],
+
+["tail file.txt","Show the last 10 lines."],
+
+["tail -f log.txt","Watch new lines added to a file."],
+
+["wc file.txt","Count lines, words and bytes."],
+
+["sort file.txt","Sort lines of text."],
+
+["uniq file.txt","Remove repeated adjacent lines."],
+
+["cut -d: -f1 file","Extract selected fields."],
+
+["tr 'a-z' 'A-Z'","Translate characters."],
+
+["echo Hello","Print text in the terminal."],
+
+["printf 'Hello\\n'","Print formatted text."],
+
+["nano file.txt","Open a file using Nano editor."],
+
+["vim file.txt","Open a file using Vim."],
+
+["clear","Clear the terminal screen."],
+
+["history","Show previously used commands."],
+
+["whoami","Show the current username."],
+
+["id","Show user and group information."],
+
+["hostname","Show the computer hostname."],
+
+["uname -a","Show Linux kernel information."],
+
+["date","Show current date and time."],
+
+["cal","Display a calendar."],
+
+["uptime","Show system uptime."],
+
+["free -h","Show RAM and swap usage."],
+
+["df -h","Show disk space usage."],
+
+["du -sh folder","Show the size of a folder."],
+
+["lsblk","List storage devices."],
+
+["mount","Show mounted filesystems."],
+
+["umount /mnt","Unmount a filesystem."],
+
+["ps aux","Show running processes."],
+
+["top","Monitor running processes."],
+
+["htop","Interactive process monitor."],
+
+["kill PID","Stop a process using its PID."],
+
+["kill -9 PID","Forcefully stop a process."],
+
+["pkill name","Kill processes by name."],
+
+["jobs","Show shell background jobs."],
+
+["bg","Resume a stopped job in background."],
+
+["fg","Bring a background job to foreground."],
+
+["which command","Show the location of a command."],
+
+["whereis command","Find binary, source and manual locations."],
+
+["man command","Open the manual for a command."],
+
+["command --help","Show command help."],
+
+["sudo command","Run a command with administrator privileges."],
+
+["su -","Switch to another user."],
+
+["chmod +x script.sh","Make a script executable."],
+
+["chmod 755 file","Set file permissions."],
+
+["chown user file","Change file ownership."],
+
+["chgrp group file","Change file group ownership."],
+
+["passwd","Change your password."],
+
+["groups","Show your user groups."],
+
+["apt update","Update package lists on Debian/Ubuntu."],
+
+["apt upgrade","Upgrade installed packages."],
+
+["apt install package","Install a package."],
+
+["apt remove package","Remove a package."],
+
+["apt search package","Search for packages."],
+
+["apt autoremove","Remove unused packages."],
+
+["dnf install package","Install a package on Fedora/RHEL."],
+
+["pacman -S package","Install a package on Arch Linux."],
+
+["systemctl status service","Show service status."],
+
+["systemctl start service","Start a service."],
+
+["systemctl stop service","Stop a service."],
+
+["systemctl restart service","Restart a service."],
+
+["systemctl enable service","Enable a service at boot."],
+
+["ip addr","Show network interfaces and IP addresses."],
+
+["ping google.com","Test network connectivity."],
+
+["curl https://example.com","Make an HTTP request."],
+
+["wget https://example.com/file","Download a file."],
+
+["ss -tulpn","Show listening ports and network sockets."],
+
+["ssh user@host","Connect to a remote computer using SSH."],
+
+["scp file user@host:/path","Copy files over SSH."],
+
+["tar -czf archive.tar.gz folder","Create a compressed TAR archive."],
+
+["tar -xzf archive.tar.gz","Extract a TAR.GZ archive."],
+
+["zip -r archive.zip folder","Create a ZIP archive."],
+
+["unzip archive.zip","Extract a ZIP archive."],
+
+["grep 'text' file","Search for text in a file."],
+
+["grep -r 'text' .","Search recursively for text."],
+
+["find . -name '*.txt'","Find files by name."],
+
+["locate filename","Search the indexed file database."],
+
+["diff file1 file2","Compare two files."],
+
+["ln -s target link","Create a symbolic link."],
+
+["env","Display environment variables."],
+
+["export NAME=value","Create an environment variable."],
+
+["alias ll='ls -la'","Create a command shortcut."],
+
+["exit","Exit the current terminal session."]
+
+];
+
+const list = document.getElementById("commandList");
+const search = document.getElementById("search");
+const empty = document.getElementById("empty");
+
+
+function showCommands(filter=""){
+
+    list.innerHTML="";
+
+    const query = filter.toLowerCase().trim();
+
+    const filtered = commands.filter(item => {
+
+        return (
+            item[0].toLowerCase().includes(query) ||
+            item[1].toLowerCase().includes(query)
+        );
+
+    });
+
+
+    filtered.forEach((item,index)=>{
+
+        const card = document.createElement("div");
+
+        card.className="card";
+
+        card.innerHTML=`
+
+            <div class="number">
+                #${commands.indexOf(item)+1}
+            </div>
+
+            <div class="top">
+
+                <div class="command"></div>
+
+                <button class="copy">
+                    Copy
+                </button>
+
+            </div>
+
+            <div class="work"></div>
+
+        `;
+
+
+        card.querySelector(".command").textContent=item[0];
+
+        card.querySelector(".work").textContent=item[1];
+
+
+        card.querySelector(".copy").addEventListener("click",async()=>{
+
+            try{
+
+                await navigator.clipboard.writeText(item[0]);
+
+            }catch(error){
+
+                const textarea=document.createElement("textarea");
+
+                textarea.value=item[0];
+
+                document.body.appendChild(textarea);
+
+                textarea.select();
+
+                document.execCommand("copy");
+
+                textarea.remove();
+
+            }
+
+
+            const button=card.querySelector(".copy");
+
+            button.textContent="Copied!";
+
+            setTimeout(()=>{
+
+                button.textContent="Copy";
+
+            },1000);
+
+        });
+
+
+        list.appendChild(card);
+
+    });
+
+
+    if(filtered.length===0){
+
+        empty.style.display="block";
+
+    }else{
+
+        empty.style.display="none";
+
+    }
+
+}
+
+
+search.addEventListener("input",()=>{
+
+    showCommands(search.value);
+
+});
+
+
+showCommands();
+
+</script>
+
+</body>
+</html>
