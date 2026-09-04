@@ -14,23 +14,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// ImgBB API key — used to upload class captain QR images
-const IMGBB_API_KEY = "303993ee7899893174e5ea35aa54d996";
-
-async function uploadImageToImgBB(file){
-  const formData = new FormData();
-  formData.append('image', file);
-  const res = await fetch('https://api.imgbb.com/1/upload?key=' + IMGBB_API_KEY, {
-    method: 'POST',
-    body: formData
-  });
-  const json = await res.json();
-  if (!json.success) {
-    throw new Error((json.error && json.error.message) || 'ImgBB अपलोड असफल भयो।');
-  }
-  return json.data.url;
-}
-
 const classIdMap = {
   "Class 11 A": "class11A",
   "Class 11 B": "class11B"
@@ -78,61 +61,12 @@ function buildDonationRows(data, withActions){
   return { rowsHtml, total };
 }
 
-const pieColors = ['#1a4fd6', '#d61a2c', '#1fa35c', '#e0a020'];
-
-function renderPieChart(wrapEl, perClassTotal){
+function renderClassPriceList(wrapEl, perClassTotal){
   if (!wrapEl) return;
-  const parts = allClassIds.map((id, i) => ({
-    id,
-    name: classNameMap[id],
-    amount: perClassTotal[id] || 0,
-    color: pieColors[i % pieColors.length]
-  }));
-  const grand = parts.reduce((s, p) => s + p.amount, 0);
-
-  if (grand <= 0) {
-    wrapEl.innerHTML = '<div class="pie-empty">अहिलेसम्म कुनै दान दर्ता भएको छैन।</div>';
-    return;
-  }
-
-  const cx = 100, cy = 100, r = 90;
-  let startAngle = -90;
-  let pathsSvg = '';
-
-  parts.forEach(p => {
-    if (p.amount <= 0) return;
-    const fraction = p.amount / grand;
-    const endAngle = startAngle + fraction * 360;
-    const largeArc = (endAngle - startAngle) > 180 ? 1 : 0;
-
-    const startRad = (Math.PI / 180) * startAngle;
-    const endRad = (Math.PI / 180) * endAngle;
-    const x1 = cx + r * Math.cos(startRad);
-    const y1 = cy + r * Math.sin(startRad);
-    const x2 = cx + r * Math.cos(endRad);
-    const y2 = cy + r * Math.sin(endRad);
-
-    if (fraction >= 0.9999) {
-      pathsSvg += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + p.color + '"></circle>';
-    } else {
-      pathsSvg += '<path d="M' + cx + ',' + cy + ' L' + x1.toFixed(2) + ',' + y1.toFixed(2) +
-        ' A' + r + ',' + r + ' 0 ' + largeArc + ' 1 ' + x2.toFixed(2) + ',' + y2.toFixed(2) + ' Z" fill="' + p.color + '"></path>';
-    }
-    startAngle = endAngle;
-  });
-
-  const svgHtml = '<svg class="pie-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">' + pathsSvg + '</svg>';
-
-  const legendHtml = '<div class="pie-legend">' + parts.map(p => {
-    const pct = grand > 0 ? Math.round((p.amount / grand) * 100) : 0;
-    return '<div class="pie-legend-item">' +
-      '<span class="pie-swatch" style="background:' + p.color + '"></span>' +
-      '<span><span class="pie-legend-name">' + escapeHtml(p.name) + '</span><br>' +
-      '<span class="pie-legend-amt">रु. ' + formatRs(p.amount) + ' (' + pct + '%)</span></span>' +
-      '</div>';
-  }).join('') + '</div>';
-
-  wrapEl.innerHTML = svgHtml + legendHtml;
+  wrapEl.innerHTML = allClassIds.map(id => {
+    return '<span class="summary-tag">' + escapeHtml(classNameMap[id]) +
+      '<span class="plus">+</span> रु. ' + formatRs(perClassTotal[id] || 0) + '</span>';
+  }).join('');
 }
 
 // ---------- Shared: topbar login button + login modal ----------
@@ -157,10 +91,6 @@ function initAuthWidgets(onLoginSuccess, onLogout){
     } else {
       topbarAuthBtn.textContent = 'लग इन';
       topbarAuthBtn.classList.remove('is-logout');
-    }
-    const dashMenuBtn = document.getElementById('dashMenuBtn');
-    if (dashMenuBtn) {
-      dashMenuBtn.classList.toggle('visible', isLoggedIn());
     }
   }
   refreshAuthBtn();
@@ -259,56 +189,14 @@ function initAuthWidgets(onLoginSuccess, onLogout){
 
 // ---------- Home page (index.html) ----------
 function initHomePage(){
-  const pieChartWrap = document.getElementById('pieChartWrap');
+  const classPriceList = document.getElementById('classPriceList');
   const grandTotalAmount = document.getElementById('grandTotalAmount');
-  const donateSubtotalEl = document.getElementById('donateSubtotal');
-  const fineSubtotalEl = document.getElementById('fineSubtotal');
 
   const auth = initAuthWidgets(null, () => {
     window.location.href = 'index.html';
   });
 
-  // ---------- Home page: class picker QR reveal ----------
-  const classQrSection = document.getElementById('classQrSection');
-  const classQrBox = document.getElementById('classQrBox');
-  const classQrTitle = document.getElementById('classQrTitle');
-  const classQrDetailLink = document.getElementById('classQrDetailLink');
-  const classButtons = document.querySelectorAll('.class-picker [data-class-id]');
-
-  if (classButtons.length && classQrSection && classQrBox) {
-    classButtons.forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const classId = btn.dataset.classId;
-        const className = classNameMap[classId];
-
-        classButtons.forEach(b => b.classList.remove('is-selected'));
-        btn.classList.add('is-selected');
-
-        classQrSection.style.display = 'block';
-        classQrTitle.textContent = className + ' — क्याप्टेनको QR';
-        classQrBox.innerHTML = '<div class="qr-placeholder">लोड हुँदैछ...</div>';
-        if (classQrDetailLink) {
-          classQrDetailLink.innerHTML = '<a class="back-link" href="class.html?c=' + classId + '">' + escapeHtml(className) + 'को पूर्ण विवरण हेर्नुहोस् &rarr;</a>';
-        }
-        classQrSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-        try {
-          const snap = await get(ref(db, 'classQR/' + classId + '/url'));
-          if (snap.exists() && snap.val()) {
-            classQrBox.innerHTML = '<img src="' + snap.val() + '" alt="' + escapeHtml(className) + ' QR">';
-          } else {
-            classQrBox.innerHTML = '<div class="qr-placeholder">यस कक्षाका क्याप्टेनले अझै QR थपेका छैनन्।</div>';
-          }
-        } catch (err) {
-          console.error(err);
-          classQrBox.innerHTML = '<div class="qr-placeholder">QR लोड गर्न सकिएन।</div>';
-        }
-      });
-    });
-  }
-
-  // ---------- Home page: grand total (donations + class fines) + pie chart (live) ----------
+  // ---------- Home page: grand total (donations + class fines) + class price list (live) ----------
   function watchSummary(){
     const perClassDonationTotal = {};
     const perClassFineTotal = {};
@@ -316,20 +204,14 @@ function initHomePage(){
 
     function recomputeGrandTotal(){
       let grand = 0;
-      let donateGrand = 0;
-      let fineGrand = 0;
       allClassIds.forEach(id => {
         const d = perClassDonationTotal[id] || 0;
         const f = perClassFineTotal[id] || 0;
         perClassCombinedTotal[id] = d + f;
         grand += d + f;
-        donateGrand += d;
-        fineGrand += f;
       });
       grandTotalAmount.textContent = formatRs(grand);
-      if (donateSubtotalEl) donateSubtotalEl.textContent = 'रु. ' + formatRs(donateGrand);
-      if (fineSubtotalEl) fineSubtotalEl.textContent = 'रु. ' + formatRs(fineGrand);
-      renderPieChart(pieChartWrap, perClassCombinedTotal);
+      renderClassPriceList(classPriceList, perClassCombinedTotal);
     }
 
     allClassIds.forEach(classId => {
@@ -349,51 +231,6 @@ function initHomePage(){
   }
 
   watchSummary();
-
-  // ---------- Bottom nav: profile button reuses login/logout, class button opens sheet ----------
-  const bottomNavProfile = document.getElementById('bottomNavProfile');
-  const bottomNavProfileLabel = document.getElementById('bottomNavProfileLabel');
-  const bottomNavClass = document.getElementById('bottomNavClass');
-  const classNavOverlay = document.getElementById('classNavOverlay');
-  const closeClassNavBtn = document.getElementById('closeClassNavBtn');
-
-  function refreshBottomNavProfile(){
-    if (bottomNavProfileLabel) {
-      bottomNavProfileLabel.textContent = auth.isLoggedIn() ? 'लग आउट' : 'प्रोफाइल';
-    }
-    if (bottomNavProfile) {
-      bottomNavProfile.classList.toggle('is-active', auth.isLoggedIn());
-    }
-  }
-  refreshBottomNavProfile();
-
-  if (bottomNavProfile) {
-    bottomNavProfile.addEventListener('click', () => {
-      document.getElementById('topbarAuthBtn').click();
-      setTimeout(refreshBottomNavProfile, 50);
-    });
-  }
-
-  if (bottomNavClass && classNavOverlay) {
-    bottomNavClass.addEventListener('click', () => {
-      classNavOverlay.classList.add('active');
-      bottomNavClass.classList.add('is-active');
-    });
-  }
-  if (closeClassNavBtn && classNavOverlay) {
-    closeClassNavBtn.addEventListener('click', () => {
-      classNavOverlay.classList.remove('active');
-      bottomNavClass.classList.remove('is-active');
-    });
-  }
-  if (classNavOverlay) {
-    classNavOverlay.addEventListener('click', (e) => {
-      if (e.target === classNavOverlay) {
-        classNavOverlay.classList.remove('active');
-        bottomNavClass.classList.remove('is-active');
-      }
-    });
-  }
 }
 
 // ---------- Class page (class.html) ----------
@@ -405,34 +242,11 @@ function initClassPage(){
   const dashboardView = document.getElementById('dashboardView');
   const dashClassName = document.getElementById('dashClassName');
 
-  const dashMenuBtn = document.getElementById('dashMenuBtn');
-  const drawerOverlay = document.getElementById('drawerOverlay');
-  const dashDrawer = document.getElementById('dashDrawer');
-  const closeDrawerBtn = document.getElementById('closeDrawerBtn');
-  const drawerChangeCaptainBtn = document.getElementById('drawerChangeCaptainBtn');
-  const drawerEditFineBtn = document.getElementById('drawerEditFineBtn');
-  const drawerAddQrBtn = document.getElementById('drawerAddQrBtn');
-  const drawerLogoutBtn = document.getElementById('drawerLogoutBtn');
-
-  const qrPopup = document.getElementById('qrPopup');
-  const closeQrPopupBtn = document.getElementById('closeQrPopupBtn');
-  const qrCurrentPreview = document.getElementById('qrCurrentPreview');
-  const qrFileInput = document.getElementById('qrFileInput');
-  const saveQrBtn = document.getElementById('saveQrBtn');
-  const qrStatus = document.getElementById('qrStatus');
-
-  const captainPopup = document.getElementById('captainPopup');
-  const closeCaptainPopupBtn = document.getElementById('closeCaptainPopupBtn');
-  const dashCaptainInput = document.getElementById('dashCaptainInput');
-  const dashViceInput = document.getElementById('dashViceInput');
-  const dashSaveLeadershipBtn = document.getElementById('dashSaveLeadershipBtn');
-  const dashLeadershipStatus = document.getElementById('dashLeadershipStatus');
-
-  const finePopup = document.getElementById('finePopup');
-  const closeFinePopupBtn = document.getElementById('closeFinePopupBtn');
-  const fineAmountInput = document.getElementById('fineAmountInput');
-  const saveFineBtn = document.getElementById('saveFineBtn');
-  const fineStatus = document.getElementById('fineStatus');
+  const downloadListBtn = document.getElementById('downloadListBtn');
+  const downloadableList = document.getElementById('downloadableList');
+  const dlClassName = document.getElementById('dlClassName');
+  const dlFineAmount = document.getElementById('dlFineAmount');
+  const dlDonationTotal = document.getElementById('dlDonationTotal');
 
   const openAddDonorBtn = document.getElementById('openAddDonorBtn');
   const addDonorPopup = document.getElementById('addDonorPopup');
@@ -473,6 +287,7 @@ function initClassPage(){
     dashboardView.classList.remove('active');
     classDetailView.classList.add('active');
     detailClassName.textContent = className;
+    if (dlClassName) dlClassName.textContent = className;
 
     clearDetailListeners();
 
@@ -482,10 +297,12 @@ function initClassPage(){
       detailDonationTableBody.innerHTML = rowsHtml;
       detailDonationTableTotal.textContent = 'रु. ' + formatRs(total);
       detailDonationTotal.textContent = 'रु. ' + formatRs(total);
+      if (dlDonationTotal) dlDonationTotal.textContent = 'रु. ' + formatRs(total);
     });
     const unsubFine = onValue(ref(db, 'classFine/' + classId + '/amount'), (snap) => {
       const amt = snap.exists() ? snap.val() : 0;
       detailFineAmount.textContent = 'रु. ' + formatRs(amt);
+      if (dlFineAmount) dlFineAmount.textContent = 'रु. ' + formatRs(amt);
     });
 
     detailUnsubscribes.push(unsubDonations, unsubFine);
@@ -515,52 +332,6 @@ function initClassPage(){
     watchDonations(activeClassId);
   }
 
-  async function loadLeadershipIntoDash(activeClassId){
-    if (!activeClassId) return;
-    dashLeadershipStatus.textContent = '';
-    try {
-      const snap = await get(ref(db, 'classLeadership/' + activeClassId));
-      const data = snap.exists() ? snap.val() : {};
-      dashCaptainInput.value = data.captain || '';
-      dashViceInput.value = data.viceCaptain || '';
-    } catch (err) {
-      console.error(err);
-      dashLeadershipStatus.style.color = '#d61a2c';
-      dashLeadershipStatus.textContent = 'हालको नेतृत्व लोड गर्न सकिएन: ' + (err.code || err.message);
-    }
-  }
-
-  async function loadFineIntoDash(activeClassId){
-    if (!activeClassId) return;
-    fineStatus.textContent = '';
-    try {
-      const snap = await get(ref(db, 'classFine/' + activeClassId + '/amount'));
-      const amt = snap.exists() ? snap.val() : 0;
-      fineAmountInput.value = amt || '';
-    } catch (err) {
-      console.error(err);
-      fineStatus.style.color = '#d61a2c';
-      fineStatus.textContent = 'हालको रकम लोड गर्न सकिएन: ' + (err.code || err.message);
-    }
-  }
-
-  async function loadQrIntoDash(activeClassId){
-    if (!activeClassId) return;
-    qrStatus.textContent = '';
-    qrCurrentPreview.innerHTML = '<div class="qr-placeholder">लोड हुँदैछ...</div>';
-    try {
-      const snap = await get(ref(db, 'classQR/' + activeClassId + '/url'));
-      if (snap.exists() && snap.val()) {
-        qrCurrentPreview.innerHTML = '<img src="' + snap.val() + '" alt="हालको QR">';
-      } else {
-        qrCurrentPreview.innerHTML = '<div class="qr-placeholder">अझै कुनै QR थपिएको छैन।</div>';
-      }
-    } catch (err) {
-      console.error(err);
-      qrCurrentPreview.innerHTML = '<div class="qr-placeholder">QR लोड गर्न सकिएन।</div>';
-    }
-  }
-
   // ---------- Auth wiring ----------
   const auth = initAuthWidgets(
     (classId, className) => {
@@ -570,7 +341,6 @@ function initClassPage(){
     () => {
       // Logout: go back to public detail view of the URL class, or home
       if (donationsUnsubscribe) { donationsUnsubscribe(); donationsUnsubscribe = null; }
-      closeDrawer();
       if (urlClassId && classNameMap[urlClassId]) {
         showPublicDetail(urlClassId, classNameMap[urlClassId]);
       } else {
@@ -579,91 +349,40 @@ function initClassPage(){
     }
   );
 
-  // ---------- Slide-in menu drawer ----------
-  function openDrawer(){
-    drawerOverlay.classList.add('active');
-    dashDrawer.classList.add('open');
-  }
-  function closeDrawer(){
-    drawerOverlay.classList.remove('active');
-    dashDrawer.classList.remove('open');
-  }
-  if (dashMenuBtn) dashMenuBtn.addEventListener('click', openDrawer);
-  if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeDrawer);
-  if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
-
   // ---------- Popup helpers ----------
   function openPopup(el){ el.classList.add('active'); }
   function closePopup(el){ el.classList.remove('active'); }
 
-  drawerChangeCaptainBtn.addEventListener('click', () => {
-    closeDrawer();
-    loadLeadershipIntoDash(auth.getActiveClassId());
-    openPopup(captainPopup);
-  });
-  closeCaptainPopupBtn.addEventListener('click', () => closePopup(captainPopup));
-  captainPopup.addEventListener('click', (e) => { if (e.target === captainPopup) closePopup(captainPopup); });
-
-  drawerEditFineBtn.addEventListener('click', () => {
-    closeDrawer();
-    loadFineIntoDash(auth.getActiveClassId());
-    openPopup(finePopup);
-  });
-  closeFinePopupBtn.addEventListener('click', () => closePopup(finePopup));
-  finePopup.addEventListener('click', (e) => { if (e.target === finePopup) closePopup(finePopup); });
-
-  drawerAddQrBtn.addEventListener('click', () => {
-    closeDrawer();
-    qrFileInput.value = '';
-    qrStatus.textContent = '';
-    loadQrIntoDash(auth.getActiveClassId());
-    openPopup(qrPopup);
-  });
-  closeQrPopupBtn.addEventListener('click', () => closePopup(qrPopup));
-  qrPopup.addEventListener('click', (e) => { if (e.target === qrPopup) closePopup(qrPopup); });
-
-  saveQrBtn.addEventListener('click', async () => {
-    const activeClassId = auth.getActiveClassId();
-    if (!activeClassId) return;
-    qrStatus.style.color = '#d61a2c';
-    qrStatus.textContent = '';
-
-    const file = qrFileInput.files && qrFileInput.files[0];
-    if (!file) {
-      qrStatus.textContent = 'कृपया QR छवि फाइल छान्नुहोस्।';
-      return;
-    }
-    if (!file.type.startsWith('image/')) {
-      qrStatus.textContent = 'कृपया मान्य छवि फाइल छान्नुहोस्।';
-      return;
-    }
-
-    saveQrBtn.disabled = true;
-    saveQrBtn.textContent = 'अपलोड हुँदैछ...';
-
-    try {
-      const imageUrl = await uploadImageToImgBB(file);
-      await set(ref(db, 'classQR/' + activeClassId), {
-        url: imageUrl,
-        updatedAt: Date.now()
-      });
-      qrStatus.style.color = '#1a4fd6';
-      qrStatus.textContent = 'QR सफलतापूर्वक थपियो।';
-      qrCurrentPreview.innerHTML = '<img src="' + imageUrl + '" alt="हालको QR">';
-      qrFileInput.value = '';
-    } catch (err) {
-      console.error(err);
-      qrStatus.textContent = 'अपलोड असफल: ' + (err.message || 'unknown error');
-    } finally {
-      saveQrBtn.disabled = false;
-      saveQrBtn.textContent = 'QR सुरक्षित गर्नुहोस्';
-    }
-  });
-
-  drawerLogoutBtn.addEventListener('click', () => {
-    closeDrawer();
-    document.getElementById('topbarAuthBtn').click();
-  });
+  // ---------- Download donor list as A4-sized PNG ----------
+  if (downloadListBtn && downloadableList) {
+    downloadListBtn.addEventListener('click', async () => {
+      if (typeof html2canvas === 'undefined') {
+        alert('डाउनलोड उपकरण लोड हुन सकेन। कृपया पेज रिफ्रेस गरी फेरि प्रयास गर्नुहोस्।');
+        return;
+      }
+      const originalText = downloadListBtn.textContent;
+      downloadListBtn.disabled = true;
+      downloadListBtn.textContent = 'तयार गर्दै...';
+      try {
+        const canvas = await html2canvas(downloadableList, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          useCORS: true
+        });
+        const link = document.createElement('a');
+        const className = (dlClassName && dlClassName.textContent || 'class').trim().replace(/\s+/g, '_');
+        link.download = 'donor-list-' + className + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (err) {
+        console.error(err);
+        alert('सूची डाउनलोड गर्न असफल भयो।');
+      } finally {
+        downloadListBtn.disabled = false;
+        downloadListBtn.textContent = originalText;
+      }
+    });
+  }
 
   openAddDonorBtn.addEventListener('click', () => {
     donorNameInput.value = '';
@@ -673,66 +392,6 @@ function initClassPage(){
   });
   closeAddDonorPopupBtn.addEventListener('click', () => closePopup(addDonorPopup));
   addDonorPopup.addEventListener('click', (e) => { if (e.target === addDonorPopup) closePopup(addDonorPopup); });
-
-  dashSaveLeadershipBtn.addEventListener('click', async () => {
-    const activeClassId = auth.getActiveClassId();
-    if (!activeClassId) return;
-    const captainName = dashCaptainInput.value.trim();
-    const viceName = dashViceInput.value.trim();
-    dashLeadershipStatus.style.color = '#d61a2c';
-    dashLeadershipStatus.textContent = '';
-
-    if (!captainName && !viceName) {
-      dashLeadershipStatus.textContent = 'सुरक्षित गर्नु अघि कम्तिमा एउटा नाम राख्नुहोस्।';
-      return;
-    }
-
-    dashSaveLeadershipBtn.disabled = true;
-    dashSaveLeadershipBtn.textContent = 'सुरक्षित गर्दै...';
-
-    try {
-      await set(ref(db, 'classLeadership/' + activeClassId), {
-        captain: captainName,
-        viceCaptain: viceName
-      });
-      dashLeadershipStatus.style.color = '#1a4fd6';
-      dashLeadershipStatus.textContent = 'सुरक्षित भयो।';
-    } catch (err) {
-      console.error(err);
-      dashLeadershipStatus.textContent = 'सुरक्षित गर्न असफल: ' + (err.code || err.message || 'unknown error');
-    } finally {
-      dashSaveLeadershipBtn.disabled = false;
-      dashSaveLeadershipBtn.textContent = 'नेतृत्व सुरक्षित गर्नुहोस्';
-    }
-  });
-
-  saveFineBtn.addEventListener('click', async () => {
-    const activeClassId = auth.getActiveClassId();
-    if (!activeClassId) return;
-    const amt = Number(fineAmountInput.value);
-    fineStatus.style.color = '#d61a2c';
-    fineStatus.textContent = '';
-
-    if (fineAmountInput.value === '' || isNaN(amt) || amt < 0) {
-      fineStatus.textContent = 'मान्य रकम प्रविष्ट गर्नुहोस्।';
-      return;
-    }
-
-    saveFineBtn.disabled = true;
-    saveFineBtn.textContent = 'सुरक्षित गर्दै...';
-
-    try {
-      await set(ref(db, 'classFine/' + activeClassId), { amount: amt });
-      fineStatus.style.color = '#1a4fd6';
-      fineStatus.textContent = 'सुरक्षित भयो।';
-    } catch (err) {
-      console.error(err);
-      fineStatus.textContent = 'सुरक्षित गर्न असफल: ' + (err.code || err.message || 'unknown error');
-    } finally {
-      saveFineBtn.disabled = false;
-      saveFineBtn.textContent = 'रकम सुरक्षित गर्नुहोस्';
-    }
-  });
 
   addDonationBtn.addEventListener('click', async () => {
     const activeClassId = auth.getActiveClassId();
@@ -870,7 +529,7 @@ function initClassPage(){
 }
 
 // ---------- Page router ----------
-if (document.getElementById('pieChartWrap')) {
+if (document.getElementById('classPriceList')) {
   initHomePage();
 } else if (document.getElementById('classDetailView')) {
   initClassPage();

@@ -56,18 +56,8 @@
           <div class="summary-label">कुल दान रकम</div>
           <div class="summary-total"><span class="rs">रु.</span><span id="grandTotalAmount">0</span></div>
           <div class="summary-note">सबै कक्षाहरूको जरिवाना रकम र व्यक्तिगत योगदान समेत</div>
-          <div class="summary-actions">
-            <span class="summary-tag donate-tag">व्यक्तिगत दान<span class="plus">+</span> <span id="donateSubtotal">रु. 0</span></span>
-            <span class="summary-tag contribution-tag">कक्षा जरिवाना<span class="plus">+</span> <span id="fineSubtotal">रु. 0</span></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="pie-block">
-        <div class="pie-inner card">
-          <div class="pie-title">कक्षा अनुसार वितरण</div>
-          <div class="pie-wrap" id="pieChartWrap">
-            <div class="pie-empty">डेटा लोड हुँदैछ...</div>
+          <div class="summary-actions" id="classPriceList">
+            <span class="summary-tag">डेटा लोड हुँदैछ...</span>
           </div>
         </div>
       </div>
@@ -79,17 +69,9 @@
 
       <div class="class-picker">
         <div class="class-options" role="group" aria-label="आफ्नो कक्षा छान्नुहोस्">
-          <button class="class-btn" type="button" data-class-id="class11A">Class 11 A</button>
-          <button class="class-btn" type="button" data-class-id="class11B">Class 11 B</button>
+          <a class="class-btn" href="class.html?c=class11A">Class 11 A</a>
+          <a class="class-btn" href="class.html?c=class11B">Class 11 B</a>
         </div>
-      </div>
-
-      <div class="qr-section card" id="classQrSection" style="display:none;">
-        <h3 id="classQrTitle">कक्षाको QR</h3>
-        <div class="qr-box" id="classQrBox">
-          <div class="qr-placeholder">लोड हुँदैछ...</div>
-        </div>
-        <div class="qr-section-links" id="classQrDetailLink"></div>
       </div>
 
     </main>
@@ -130,43 +112,5 @@
   <!-- Firebase SDK -->
   <script type="module" src="script.js"></script>
 
-  <!-- ---------- Bottom navigation ---------- -->
-  <nav class="bottom-nav" id="bottomNav" aria-label="मुख्य नेभिगेसन">
-    <a class="bottom-nav-item is-active" href="index.html" data-nav="home">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 11.5L12 4l9 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span>होम</span>
-    </a>
-    <button class="bottom-nav-item" type="button" id="bottomNavClass" data-nav="class">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H12v16H5.5A1.5 1.5 0 0 1 4 18.5v-13Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-        <path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H12v16h6.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-        <path d="M7 8h2M7 11h2M15 8h2M15 11h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-      <span>कक्षा</span>
-    </button>
-    <button class="bottom-nav-item" type="button" id="bottomNavProfile" data-nav="profile">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="8.5" r="3.5" stroke="currentColor" stroke-width="1.8"/>
-        <path d="M4.5 20c1.3-3.6 4.3-5.5 7.5-5.5s6.2 1.9 7.5 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-      <span id="bottomNavProfileLabel">प्रोफाइल</span>
-    </button>
-  </nav>
-
-  <!-- ---------- Class picker sheet (opened from bottom nav) ---------- -->
-  <div class="overlay" id="classNavOverlay">
-    <div class="modal card">
-      <button class="modal-close" id="closeClassNavBtn" aria-label="बन्द गर्नुहोस्">&times;</button>
-      <h3>कक्षा छान्नुहोस्</h3>
-      <p class="sub">विवरण हेर्न आफ्नो कक्षा छान्नुहोस्।</p>
-      <div class="class-options nav-class-options" role="group" aria-label="कक्षा छान्नुहोस्">
-        <a class="class-btn" href="class.html?c=class11A">Class 11 A</a>
-        <a class="class-btn" href="class.html?c=class11B">Class 11 B</a>
-      </div>
-    </div>
-  </div>
 </body>
 </html>

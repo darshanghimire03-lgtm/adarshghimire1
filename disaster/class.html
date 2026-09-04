@@ -17,7 +17,6 @@
       <div class="brand-name">दरबार विपद् राहत कोष</div>
     </a>
     <div class="topbar-right">
-      <button class="topbar-menu-btn" type="button" id="dashMenuBtn" aria-label="मेनु खोल्नुहोस्">&#9776;</button>
       <button class="login-btn" type="button" id="topbarAuthBtn">लग इन</button>
     </div>
   </div>
@@ -44,27 +43,49 @@
     </div>
 
     <div class="detail-section card">
-      <h3>दाताहरू</h3>
-      <p class="desc">यस कक्षाबाट राहत कोषमा योगदान गर्ने विद्यार्थीहरू।</p>
-      <div class="donation-table-wrap">
-        <table class="donation-table">
-          <thead>
-            <tr>
-              <th class="sn-col">क्र.सं.</th>
-              <th>विद्यार्थीको नाम</th>
-              <th class="amt-col">दान (रु.)</th>
-            </tr>
-          </thead>
-          <tbody id="detailDonationTableBody">
-            <tr><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">अहिलेसम्म कुनै दान दर्ता भएको छैन।</td></tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2">जम्मा</td>
-              <td class="amt-col" id="detailDonationTableTotal">रु. 0</td>
-            </tr>
-          </tfoot>
-        </table>
+      <div class="dash-list-header">
+        <div>
+          <h3>दाताहरू</h3>
+          <p class="desc">यस कक्षाबाट राहत कोषमा योगदान गर्ने विद्यार्थीहरू।</p>
+        </div>
+        <button class="btn-add" type="button" id="downloadListBtn">&#8681; Download List</button>
+      </div>
+
+      <div id="downloadableList">
+        <div class="dl-header">
+          <div class="pmdrf">प्रधानमन्त्री विपद् राहत कोष</div>
+          <h2 id="dlClassName">Class 11 A</h2>
+        </div>
+        <div class="dl-summary-row">
+          <div class="dl-summary-item">
+            <span class="dl-summary-label">कक्षा जरिवाना योगदान</span>
+            <span class="dl-summary-value" id="dlFineAmount">रु. 0</span>
+          </div>
+          <div class="dl-summary-item">
+            <span class="dl-summary-label">कुल दान</span>
+            <span class="dl-summary-value" id="dlDonationTotal">रु. 0</span>
+          </div>
+        </div>
+        <div class="donation-table-wrap">
+          <table class="donation-table">
+            <thead>
+              <tr>
+                <th class="sn-col">क्र.सं.</th>
+                <th>विद्यार्थीको नाम</th>
+                <th class="amt-col">दान (रु.)</th>
+              </tr>
+            </thead>
+            <tbody id="detailDonationTableBody">
+              <tr><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">अहिलेसम्म कुनै दान दर्ता भएको छैन।</td></tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2">जम्मा</td>
+                <td class="amt-col" id="detailDonationTableTotal">रु. 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -107,66 +128,6 @@
           </tfoot>
         </table>
       </div>
-    </div>
-  </div>
-
-  <!-- ---------- Slide-in dashboard menu ---------- -->
-  <div class="drawer-overlay" id="drawerOverlay"></div>
-  <div class="drawer" id="dashDrawer">
-    <div class="drawer-header">
-      <span>मेनु</span>
-      <button class="modal-close" id="closeDrawerBtn" aria-label="मेनु बन्द गर्नुहोस्">&times;</button>
-    </div>
-    <button class="drawer-item" type="button" id="drawerChangeCaptainBtn">क्याप्टेनको नाम परिवर्तन गर्नुहोस्</button>
-    <button class="drawer-item" type="button" id="drawerEditFineBtn">कक्षा जरिवाना सम्पादन गर्नुहोस्</button>
-    <button class="drawer-item" type="button" id="drawerAddQrBtn">QR थप्नुहोस्</button>
-    <button class="drawer-item drawer-item-danger" type="button" id="drawerLogoutBtn">लग आउट</button>
-  </div>
-
-  <!-- ---------- Popup: Change Captain's name ---------- -->
-  <div class="overlay" id="captainPopup">
-    <div class="modal card">
-      <button class="modal-close" id="closeCaptainPopupBtn" aria-label="बन्द गर्नुहोस्">&times;</button>
-      <h3>कक्षा नेतृत्व</h3>
-      <p class="sub">आफ्नो कक्षाको क्याप्टेन र उप क्याप्टेन तोक्नुहोस्।</p>
-      <label class="field-label" for="dashCaptainInput">क्याप्टेनको नाम</label>
-      <input class="field" type="text" id="dashCaptainInput" placeholder="क्याप्टेनको नाम">
-      <label class="field-label" for="dashViceInput">उप क्याप्टेनको नाम</label>
-      <input class="field" type="text" id="dashViceInput" placeholder="उप क्याप्टेनको नाम">
-      <button class="submit-btn" type="button" id="dashSaveLeadershipBtn">नेतृत्व सुरक्षित गर्नुहोस्</button>
-      <div class="error-msg" id="dashLeadershipStatus" style="color:var(--ink-soft);"></div>
-    </div>
-  </div>
-
-  <!-- ---------- Popup: Edit class fine ---------- -->
-  <div class="overlay" id="finePopup">
-    <div class="modal card">
-      <button class="modal-close" id="closeFinePopupBtn" aria-label="बन्द गर्नुहोस्">&times;</button>
-      <h3>कक्षा जरिवाना योगदान</h3>
-      <p class="sub">तपाईंको कक्षाले योगदान गर्ने निर्णय गरेको कुल रकम।</p>
-      <label class="field-label" for="fineAmountInput">रकम (रु.)</label>
-      <input class="field" type="number" min="0" step="1" id="fineAmountInput" placeholder="रकम प्रविष्ट गर्नुहोस्">
-      <button class="submit-btn" type="button" id="saveFineBtn">रकम सुरक्षित गर्नुहोस्</button>
-      <div class="error-msg" id="fineStatus" style="color:var(--ink-soft);"></div>
-    </div>
-  </div>
-
-  <!-- ---------- Popup: Add / Update Class QR ---------- -->
-  <div class="overlay" id="qrPopup">
-    <div class="modal card">
-      <button class="modal-close" id="closeQrPopupBtn" aria-label="बन्द गर्नुहोस्">&times;</button>
-      <h3>कक्षाको QR थप्नुहोस्</h3>
-      <p class="sub">दाताहरूले स्क्यान गर्नसक्ने आफ्नो भुक्तानी QR छवि अपलोड गर्नुहोस्।</p>
-
-      <div class="qr-box" id="qrCurrentPreview" style="margin-bottom:18px;">
-        <div class="qr-placeholder">लोड हुँदैछ...</div>
-      </div>
-
-      <label class="field-label" for="qrFileInput">नयाँ QR छवि छान्नुहोस्</label>
-      <input class="field" type="file" id="qrFileInput" accept="image/*">
-
-      <button class="submit-btn" type="button" id="saveQrBtn">QR सुरक्षित गर्नुहोस्</button>
-      <div class="error-msg" id="qrStatus"></div>
     </div>
   </div>
 
@@ -238,6 +199,8 @@
     &copy; २०२६ दरबार विपद् राहत कोष। सर्वाधिकार सुरक्षित।
   </footer>
 
+  <!-- html2canvas for Download List (PNG) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <!-- Firebase SDK -->
   <script type="module" src="script.js"></script>
 </body>
