@@ -29,6 +29,7 @@
     color:var(--ink);
     font-family:'Karla', sans-serif;
     background:var(--paper);
+    padding-bottom:env(safe-area-inset-bottom);
   }
 
   h1,h2,h3,.display{ font-family:'Fraunces', serif; }
@@ -396,6 +397,79 @@
     color:var(--ink-faint);
   }
 
+  /* ---------- Bottom navigation ---------- */
+  .bottom-nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:40;
+    display:flex;
+    align-items:stretch;
+    justify-content:space-around;
+    background:var(--ink);
+    border-top:1px solid var(--brick);
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom));
+    box-shadow:0 -6px 18px rgba(0,0,0,0.18);
+  }
+  .bottom-nav-item{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    padding:8px 4px 6px;
+    background:none;
+    border:none;
+    color:var(--paper-dim);
+    opacity:0.62;
+    font-family:'Karla', sans-serif;
+    font-size:0.68rem;
+    font-weight:600;
+    letter-spacing:0.01em;
+    text-decoration:none;
+    cursor:pointer;
+    border-radius:8px;
+    transition:opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .bottom-nav-item svg{
+    width:22px;
+    height:22px;
+    flex-shrink:0;
+  }
+  .bottom-nav-item:hover{
+    opacity:0.85;
+    background:rgba(247,243,234,0.06);
+  }
+  .bottom-nav-item:focus-visible{
+    outline:2px solid var(--monsoon);
+    outline-offset:2px;
+  }
+  .bottom-nav-item.is-active{
+    opacity:1;
+    color:var(--paper);
+  }
+  .bottom-nav-item.is-active svg{
+    color:var(--brick);
+  }
+  #bottomNavProfile.is-active svg{
+    color:var(--moss);
+  }
+
+  .nav-class-options{
+    margin-top:8px;
+  }
+  .nav-class-options .class-btn{
+    text-decoration:none;
+    display:block;
+  }
+
+  /* Ensure page content clears the fixed bottom nav */
+  .page-body{ padding-bottom:32px; }
+  .class-detail{ padding-bottom:100px; }
+
   /* ---------- Login modal ---------- */
   .overlay{
     position:fixed;
@@ -725,8 +799,24 @@
     .pie-inner{ padding:26px 22px 28px; }
     .class-options{ grid-template-columns:1fr; }
     .detail-stats{ grid-template-columns:1fr; }
-    .class-detail{ padding:0 16px 80px; }
+    .class-detail{ padding:0 16px 100px; }
     .bottom-note{ margin:44px auto 8px; padding:0 18px; }
+    .bottom-nav-item span{ font-size:0.64rem; }
+    .bottom-nav-item svg{ width:20px; height:20px; }
+  }
+
+  @media (min-width:641px){
+    .bottom-nav{
+      max-width:480px;
+      left:50%;
+      right:auto;
+      transform:translateX(-50%);
+      bottom:16px;
+      border:1px solid var(--brick);
+      border-radius:16px;
+      padding:8px 10px;
+    }
+    body{ padding-bottom:96px; }
   }
 
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }

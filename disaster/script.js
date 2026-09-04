@@ -33,15 +33,11 @@ async function uploadImageToImgBB(file){
 
 const classIdMap = {
   "Class 11 A": "class11A",
-  "Class 11 B": "class11B",
-  "Class 12 A": "class12A",
-  "Class 12 B": "class12B"
+  "Class 11 B": "class11B"
 };
 const classNameMap = {
   class11A: "Class 11 A",
-  class11B: "Class 11 B",
-  class12A: "Class 12 A",
-  class12B: "Class 12 B"
+  class11B: "Class 11 B"
 };
 const allClassIds = Object.keys(classNameMap);
 
@@ -353,42 +349,49 @@ function initHomePage(){
   }
 
   watchSummary();
-}
 
-// ---------- Payment page (payment.html) ----------
-function initPaymentPage(){
-  initAuthWidgets(null, () => {
-    window.location.href = 'payment.html';
-  });
+  // ---------- Bottom nav: profile button reuses login/logout, class button opens sheet ----------
+  const bottomNavProfile = document.getElementById('bottomNavProfile');
+  const bottomNavProfileLabel = document.getElementById('bottomNavProfileLabel');
+  const bottomNavClass = document.getElementById('bottomNavClass');
+  const classNavOverlay = document.getElementById('classNavOverlay');
+  const closeClassNavBtn = document.getElementById('closeClassNavBtn');
 
-  const classQrBox = document.getElementById('classQrBox');
-  const classQrPlaceholder = document.getElementById('classQrPlaceholder');
-  const classButtons = document.querySelectorAll('.class-picker [data-class-id]');
+  function refreshBottomNavProfile(){
+    if (bottomNavProfileLabel) {
+      bottomNavProfileLabel.textContent = auth.isLoggedIn() ? 'लग आउट' : 'प्रोफाइल';
+    }
+    if (bottomNavProfile) {
+      bottomNavProfile.classList.toggle('is-active', auth.isLoggedIn());
+    }
+  }
+  refreshBottomNavProfile();
 
-  if (classButtons.length && classQrBox) {
-    classButtons.forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const classId = btn.dataset.classId;
-        const className = classNameMap[classId];
+  if (bottomNavProfile) {
+    bottomNavProfile.addEventListener('click', () => {
+      document.getElementById('topbarAuthBtn').click();
+      setTimeout(refreshBottomNavProfile, 50);
+    });
+  }
 
-        classButtons.forEach(b => b.classList.remove('is-selected'));
-        btn.classList.add('is-selected');
-
-        classQrBox.style.display = 'flex';
-        classQrBox.innerHTML = '<div class="qr-placeholder">लोड हुँदैछ...</div>';
-
-        try {
-          const snap = await get(ref(db, 'classQR/' + classId + '/url'));
-          if (snap.exists() && snap.val()) {
-            classQrBox.innerHTML = '<img src="' + snap.val() + '" alt="' + escapeHtml(className) + ' QR">';
-          } else {
-            classQrBox.innerHTML = '<div class="qr-placeholder">' + escapeHtml(className) + 'का क्याप्टेनले अझै QR थपेका छैनन्।</div>';
-          }
-        } catch (err) {
-          console.error(err);
-          classQrBox.innerHTML = '<div class="qr-placeholder">QR लोड गर्न सकिएन।</div>';
-        }
-      });
+  if (bottomNavClass && classNavOverlay) {
+    bottomNavClass.addEventListener('click', () => {
+      classNavOverlay.classList.add('active');
+      bottomNavClass.classList.add('is-active');
+    });
+  }
+  if (closeClassNavBtn && classNavOverlay) {
+    closeClassNavBtn.addEventListener('click', () => {
+      classNavOverlay.classList.remove('active');
+      bottomNavClass.classList.remove('is-active');
+    });
+  }
+  if (classNavOverlay) {
+    classNavOverlay.addEventListener('click', (e) => {
+      if (e.target === classNavOverlay) {
+        classNavOverlay.classList.remove('active');
+        bottomNavClass.classList.remove('is-active');
+      }
     });
   }
 }
@@ -871,6 +874,4 @@ if (document.getElementById('pieChartWrap')) {
   initHomePage();
 } else if (document.getElementById('classDetailView')) {
   initClassPage();
-} else if (document.getElementById('classQrBox') && document.getElementById('pmQrBox')) {
-  initPaymentPage();
 }
