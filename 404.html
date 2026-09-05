@@ -198,6 +198,7 @@
 (function () {
   var FIREBASE_DB_URL = "https://darbarhigh-4c642-default-rtdb.firebaseio.com";
   var APP_HOST = "adarshghimire1.com.np";
+  var hasLoadedOnce = false;
 
   function getShortIdFromUrl() {
     var path = window.location.pathname;
@@ -254,28 +255,13 @@
   els.openAppBtn.setAttribute("href", deepLink);
   els.openAppBtn.addEventListener("click", function (e) {
     e.preventDefault();
-    attemptOpenApp();
-  });
-
-  function attemptOpenApp() {
-    var start = Date.now();
-    var fallbackTimer = setTimeout(function () {
-      if (document.hidden) return;
-      var elapsed = Date.now() - start;
-      if (elapsed < 3000) {
+    window.location.href = deepLink;
+    setTimeout(function () {
+      if (!document.hidden) {
         els.getAppNote.style.display = "block";
       }
     }, 1500);
-
-    document.addEventListener("visibilitychange", function onVis() {
-      if (document.hidden) {
-        clearTimeout(fallbackTimer);
-        document.removeEventListener("visibilitychange", onVis);
-      }
-    });
-
-    window.location.href = deepLink;
-  }
+  });
 
   function fetchShort(id) {
     var url = FIREBASE_DB_URL + "/shorts/" + encodeURIComponent(id) + ".json";
@@ -303,55 +289,60 @@
     }).catch(function () {});
   }
 
-  showCenterState("Loading short…", "", true);
+  function loadShort() {
+    if (hasLoadedOnce) return;
+    hasLoadedOnce = true;
 
-  fetchShort(shortId).then(function (data) {
-    if (!data) {
-      showCenterState("Short not found", "This short may have been removed.", false);
-      return;
-    }
+    showCenterState("Loading short…", "", true);
 
-    hideCenterState();
+    fetchShort(shortId).then(function (data) {
+      if (!data) {
+        showCenterState("Short not found", "This short may have been removed.", false);
+        return;
+      }
 
-    els.title.textContent = data.title || "";
-    els.subject.textContent = data.relatedSubject || "";
-    els.video.src = data.videoUrl || "";
+      hideCenterState();
 
-    incrementViews(shortId, data.views);
+      els.title.textContent = data.title || "";
+      els.subject.textContent = data.relatedSubject || "";
+      els.video.src = data.videoUrl || "";
 
-    els.video.play().catch(function () {
-      els.video.muted = true;
-      els.video.play().catch(function () {});
-    });
+      incrementViews(shortId, data.views);
 
-    els.video.addEventListener("click", function () {
-      els.video.muted = !els.video.muted;
-      if (!els.video.muted) {
-        els.muteHint.classList.remove("show");
-      } else {
-        els.muteHint.textContent = "Tap to unmute";
+      els.video.play().catch(function () {
+        els.video.muted = true;
+        els.video.play().catch(function () {});
+      });
+
+      els.video.addEventListener("click", function () {
+        els.video.muted = !els.video.muted;
+        if (!els.video.muted) {
+          els.muteHint.classList.remove("show");
+        } else {
+          els.muteHint.textContent = "Tap to unmute";
+          els.muteHint.classList.add("show");
+          setTimeout(function () { els.muteHint.classList.remove("show"); }, 1200);
+        }
+      });
+
+      if (els.video.muted) {
         els.muteHint.classList.add("show");
-        setTimeout(function () { els.muteHint.classList.remove("show"); }, 1200);
+        setTimeout(function () { els.muteHint.classList.remove("show"); }, 1600);
       }
+
+      fetchUploader(data.uploaderUid).then(function (user) {
+        if (user && user.fullName) {
+          els.subject.textContent = (data.relatedSubject ? data.relatedSubject + " · " : "") + user.fullName;
+        }
+      });
+
+      document.title = (data.title || "Durbar Short") + " — Durbar";
+    }).catch(function () {
+      showCenterState("Couldn't load this short", "Check your connection and try again.", false);
     });
+  }
 
-    if (els.video.muted) {
-      els.muteHint.classList.add("show");
-      setTimeout(function () { els.muteHint.classList.remove("show"); }, 1600);
-    }
-
-    fetchUploader(data.uploaderUid).then(function (user) {
-      if (user && user.fullName) {
-        els.subject.textContent = (data.relatedSubject ? data.relatedSubject + " · " : "") + user.fullName;
-      }
-    });
-
-    document.title = (data.title || "Durbar Short") + " — Durbar";
-
-    setTimeout(attemptOpenApp, 400);
-  }).catch(function () {
-    showCenterState("Couldn't load this short", "Check your connection and try again.", false);
-  });
+  loadShort();
 })();
 </script>
 
