@@ -3,60 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Durbar Short</title>
+
+    <meta name="description" content="Watch this short on Durbar">
+
     <meta property="og:title" content="Watch this short on Durbar">
+    <meta property="og:description" content="Watch this short on Durbar.">
     <meta property="og:type" content="video.other">
+    <meta property="og:url" id="ogUrl" content="">
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            font-family: -apple-system, Roboto, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Arial, sans-serif;
             background: #0a0a0a;
             color: #fff;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
             text-align: center;
             padding: 24px;
-            box-sizing: border-box;
         }
+
         .card {
-            max-width: 360px;
+            width: 100%;
+            max-width: 380px;
         }
-        .card h1 {
-            font-size: 20px;
-            margin-bottom: 12px;
+
+        .logo {
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
+            margin: 0 auto 20px;
+            background: #1E3A8A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: 800;
         }
-        .card p {
-            color: #b0b0b0;
+
+        h1 {
+            font-size: 22px;
+            margin: 0 0 10px;
+        }
+
+        p {
+            color: #aaa;
             font-size: 14px;
-            margin-bottom: 24px;
+            line-height: 1.5;
+            margin: 0 0 24px;
         }
+
         .btn {
             display: inline-block;
             background: #1E3A8A;
             color: #fff;
             text-decoration: none;
-            padding: 12px 28px;
+            padding: 13px 28px;
             border-radius: 24px;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 15px;
+        }
+
+        .btn:active {
+            transform: scale(.97);
         }
     </style>
 </head>
+
 <body>
-    <div class="card">
-        <h1>Open this short in Durbar</h1>
-        <p>This link opens directly in the Durbar app if it's installed on your device.</p>
-        <a class="btn" id="openAppBtn" href="#">Open in Durbar</a>
-    </div>
 
-    <script>
-        var shortId = window.location.pathname.split('/').filter(Boolean).pop();
-        var appLink = 'https://adarshghimire1.com.np/durbar/shorts/' + shortId;
-        document.getElementById('openAppBtn').setAttribute('href', appLink);
+<div class="card">
 
-        window.location.href = appLink;
-    </script>
+    <div class="logo">D</div>
+
+    <h1>Watch this Short</h1>
+
+    <p>
+        This Short is available on Durbar.
+        Open it in the Durbar app or continue on the website.
+    </p>
+
+    <a class="btn" id="openAppBtn" href="#">
+        Open in Durbar
+    </a>
+
+</div>
+
+<script>
+    // Get the current URL
+    const currentUrl = window.location.href;
+
+    // Get the Short ID
+    const parts = window.location.pathname
+        .split("/")
+        .filter(Boolean);
+
+    const shortId = parts[parts.length - 1];
+
+    // The same URL is used for Android App Links
+    const appLink =
+        "https://adarshghimire1.com.np/durbar/shorts/" + shortId;
+
+    // Set button link
+    document.getElementById("openAppBtn").href = appLink;
+
+    // Set Open Graph URL
+    document.getElementById("ogUrl").content = currentUrl;
+
+    /*
+     * IMPORTANT:
+     *
+     * Do NOT automatically redirect here.
+     *
+     * Android App Links will open Durbar automatically
+     * when Durbar is installed and the domain is verified.
+     *
+     * If Durbar is NOT installed, the browser stays on
+     * this website and displays this page.
+     */
+</script>
+
 </body>
 </html>
