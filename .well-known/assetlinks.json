@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.doroi.plus2",
+      "sha256_cert_fingerprints": [
+        "C9:C9:5A:40:3F:D3:77:EA:C4:F0:58:11:AC:96:65:32:75:3E:A3:25:3F:E8:6E:AC:CE:74:6D:E4:E1:E7:D7:62"
+      ]
+    }
+  }
+]
