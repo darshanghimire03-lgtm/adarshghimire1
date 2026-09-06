@@ -52,42 +52,66 @@
         <button class="btn-add" type="button" id="downloadListBtn">&#8681; Download List</button>
       </div>
 
-      <div id="downloadableList">
-        <div class="dl-header">
-          <div class="pmdrf">प्रधानमन्त्री विपद् राहत कोष</div>
-          <h2 id="dlClassName">Class 11 A</h2>
-        </div>
-        <div class="dl-summary-row">
-          <div class="dl-summary-item">
-            <span class="dl-summary-label">कक्षा जरिवाना योगदान</span>
-            <span class="dl-summary-value" id="dlFineAmount">रु. 0</span>
-          </div>
-          <div class="dl-summary-item">
-            <span class="dl-summary-label">कुल दान</span>
-            <span class="dl-summary-value" id="dlDonationTotal">रु. 0</span>
-          </div>
-        </div>
-        <div class="donation-table-wrap">
-          <table class="donation-table">
-            <thead>
-              <tr>
-                <th class="sn-col">क्र.सं.</th>
-                <th>विद्यार्थीको नाम</th>
-                <th class="amt-col">दान (रु.)</th>
-              </tr>
-            </thead>
-            <tbody id="detailDonationTableBody">
-              <tr><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">अहिलेसम्म कुनै दान दर्ता भएको छैन।</td></tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="2">जम्मा</td>
-                <td class="amt-col" id="detailDonationTableTotal">रु. 0</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+      <div class="donation-table-wrap">
+        <table class="donation-table">
+          <thead>
+            <tr>
+              <th class="sn-col">क्र.सं.</th>
+              <th>विद्यार्थीको नाम</th>
+              <th class="amt-col">दान (रु.)</th>
+            </tr>
+          </thead>
+          <tbody id="detailDonationTableBody">
+            <tr><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">अहिलेसम्म कुनै दान दर्ता भएको छैन।</td></tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">जम्मा</td>
+              <td class="amt-col" id="detailDonationTableTotal">रु. 0</td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
+    </div>
+  </div>
+
+  <!-- ---------- Hidden A4 document used only for PNG export (never shown on page) ---------- -->
+  <div id="downloadableList">
+    <div class="dl-school">Durbar High School</div>
+    <div class="dl-header">
+      <div class="pmdrf">प्रधानमन्त्री विपद् राहत कोष</div>
+      <h2 id="dlClassName">Class 11 A</h2>
+    </div>
+    <p class="dl-note" id="dlNote">दरबार उच्च माध्यमिक विद्यालय, कक्षा ११ अ का विद्यार्थीहरूबाट प्रधानमन्त्री विपद् राहत कोषमा प्राप्त योगदानको विवरण।</p>
+    <div class="dl-summary-row">
+      <div class="dl-summary-item">
+        <span class="dl-summary-label">कक्षा जरिवाना योगदान</span>
+        <span class="dl-summary-value" id="dlFineAmount">रु. 0</span>
+      </div>
+      <div class="dl-summary-item">
+        <span class="dl-summary-label">कुल दान</span>
+        <span class="dl-summary-value" id="dlDonationTotal">रु. 0</span>
+      </div>
+    </div>
+    <div class="donation-table-wrap">
+      <table class="donation-table dl-table">
+        <thead>
+          <tr>
+            <th class="sn-col">क्र.सं.</th>
+            <th>विद्यार्थीको नाम</th>
+            <th class="amt-col">दान (रु.)</th>
+          </tr>
+        </thead>
+        <tbody id="dlDonationTableBody">
+          <tr><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">अहिलेसम्म कुनै दान दर्ता भएको छैन।</td></tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2">जम्मा</td>
+            <td class="amt-col" id="dlDonationTableTotal">रु. 0</td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   </div>
 

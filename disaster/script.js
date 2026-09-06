@@ -245,8 +245,14 @@ function initClassPage(){
   const downloadListBtn = document.getElementById('downloadListBtn');
   const downloadableList = document.getElementById('downloadableList');
   const dlClassName = document.getElementById('dlClassName');
+  const dlNote = document.getElementById('dlNote');
   const dlFineAmount = document.getElementById('dlFineAmount');
   const dlDonationTotal = document.getElementById('dlDonationTotal');
+  const dlDonationTableBody = document.getElementById('dlDonationTableBody');
+  const dlDonationTableTotal = document.getElementById('dlDonationTableTotal');
+
+  let latestDonationData = {};
+  let latestFineAmount = 0;
 
   const openAddDonorBtn = document.getElementById('openAddDonorBtn');
   const addDonorPopup = document.getElementById('addDonorPopup');
@@ -293,17 +299,27 @@ function initClassPage(){
 
     const unsubDonations = onValue(ref(db, 'classDonations/' + classId), (snap) => {
       const data = snap.exists() ? snap.val() : {};
+      latestDonationData = data;
       const { rowsHtml, total } = buildDonationRows(data);
       detailDonationTableBody.innerHTML = rowsHtml;
       detailDonationTableTotal.textContent = 'रु. ' + formatRs(total);
       detailDonationTotal.textContent = 'रु. ' + formatRs(total);
       if (dlDonationTotal) dlDonationTotal.textContent = 'रु. ' + formatRs(total);
+      if (dlDonationTableBody) {
+        const full = buildDonationRows(data);
+        dlDonationTableBody.innerHTML = full.rowsHtml;
+        if (dlDonationTableTotal) dlDonationTableTotal.textContent = 'रु. ' + formatRs(full.total);
+      }
     });
     const unsubFine = onValue(ref(db, 'classFine/' + classId + '/amount'), (snap) => {
       const amt = snap.exists() ? snap.val() : 0;
+      latestFineAmount = amt;
       detailFineAmount.textContent = 'रु. ' + formatRs(amt);
       if (dlFineAmount) dlFineAmount.textContent = 'रु. ' + formatRs(amt);
     });
+    if (dlNote) {
+      dlNote.textContent = 'दरबार उच्च माध्यमिक विद्यालय, ' + className + ' का विद्यार्थीहरूबाट प्रधानमन्त्री विपद् राहत कोषमा प्राप्त योगदानको विवरण।';
+    }
 
     detailUnsubscribes.push(unsubDonations, unsubFine);
   }
@@ -353,7 +369,7 @@ function initClassPage(){
   function openPopup(el){ el.classList.add('active'); }
   function closePopup(el){ el.classList.remove('active'); }
 
-  // ---------- Download donor list as A4-sized PNG ----------
+  // ---------- Download donor list as an A4-sized PNG document (never shown on the page itself) ----------
   if (downloadListBtn && downloadableList) {
     downloadListBtn.addEventListener('click', async () => {
       if (typeof html2canvas === 'undefined') {
@@ -363,11 +379,26 @@ function initClassPage(){
       const originalText = downloadListBtn.textContent;
       downloadListBtn.disabled = true;
       downloadListBtn.textContent = 'तयार गर्दै...';
+
+      // Refresh the hidden document with the FULL current donor list right before capture
+      const full = buildDonationRows(latestDonationData);
+      if (dlDonationTableBody) dlDonationTableBody.innerHTML = full.rowsHtml;
+      if (dlDonationTableTotal) dlDonationTableTotal.textContent = 'रु. ' + formatRs(full.total);
+      if (dlDonationTotal) dlDonationTotal.textContent = 'रु. ' + formatRs(full.total);
+      if (dlFineAmount) dlFineAmount.textContent = 'रु. ' + formatRs(latestFineAmount);
+
+      // The A4 sheet stays positioned just off the visible viewport (not display:none,
+      // so html2canvas can still lay it out and render it) — the user never sees it on the page.
       try {
+        await new Promise(r => requestAnimationFrame(r));
         const canvas = await html2canvas(downloadableList, {
           backgroundColor: '#ffffff',
           scale: 2,
-          useCORS: true
+          useCORS: true,
+          width: 794,
+          height: 1123,
+          windowWidth: 794,
+          windowHeight: 1123
         });
         const link = document.createElement('a');
         const className = (dlClassName && dlClassName.textContent || 'class').trim().replace(/\s+/g, '_');
