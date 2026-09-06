@@ -74,6 +74,8 @@ function buildDonationRowsTwoColumn(data){
       '<td class="amt-col">' + formatRs(amt) + '</td></tr>';
   };
 
+  const emptyMsg = '<tr><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">अहिलेसम्म कुनै दान दर्ता भएको छैन।</td></tr>';
+
   const half = Math.ceil(entries.length / 2);
   const leftEntries = entries.slice(0, half);
   const rightEntries = entries.slice(half);
@@ -82,8 +84,12 @@ function buildDonationRowsTwoColumn(data){
   let rightHtml = rightEntries.map((e, i) => rowHtml(e, i + half)).join('');
 
   if (entries.length === 0) {
-    leftHtml = '<tr><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">अहिलेसम्म कुनै दान दर्ता भएको छैन।</td></tr>';
+    // No donations at all: show the message once, on the left; right stays fully empty.
+    leftHtml = emptyMsg;
+    rightHtml = '';
   }
+  // If there ARE donations but they all fit on the left (rightEntries empty),
+  // rightHtml is simply '' — no stray "no donations" message on that side.
 
   return { leftHtml, rightHtml, total };
 }

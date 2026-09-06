@@ -666,6 +666,10 @@
   }
   .dl-col{ flex:1; min-width:0; }
   .dl-col .donation-table-wrap{ overflow:visible; }
+  /* When a column's tbody is empty (odd donor count), hide that column's table entirely
+     instead of showing a lonely header row floating next to the other column. */
+  .dl-col table.dl-table tbody:empty{ display:none; }
+  .dl-col table.dl-table:has(tbody:empty) thead{ display:none; }
 
   .dl-total-row{
     display:flex;
