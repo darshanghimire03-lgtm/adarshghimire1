@@ -61,6 +61,33 @@ function buildDonationRows(data, withActions){
   return { rowsHtml, total };
 }
 
+function buildDonationRowsTwoColumn(data){
+  const entries = Object.entries(data || {});
+  entries.sort((a, b) => (a[1].createdAt || 0) - (b[1].createdAt || 0));
+  let total = 0;
+  entries.forEach(([, entry]) => { total += Number(entry.amount) || 0; });
+
+  const rowHtml = ([, entry], idx) => {
+    const amt = Number(entry.amount) || 0;
+    return '<tr><td class="sn-col">' + (idx + 1) + '</td>' +
+      '<td>' + escapeHtml(entry.name || '') + '</td>' +
+      '<td class="amt-col">' + formatRs(amt) + '</td></tr>';
+  };
+
+  const half = Math.ceil(entries.length / 2);
+  const leftEntries = entries.slice(0, half);
+  const rightEntries = entries.slice(half);
+
+  let leftHtml = leftEntries.map((e, i) => rowHtml(e, i)).join('');
+  let rightHtml = rightEntries.map((e, i) => rowHtml(e, i + half)).join('');
+
+  if (entries.length === 0) {
+    leftHtml = '<tr><td colspan="3" style="text-align:center; color:var(--ink-faint); padding:20px;">अहिलेसम्म कुनै दान दर्ता भएको छैन।</td></tr>';
+  }
+
+  return { leftHtml, rightHtml, total };
+}
+
 function renderClassPriceList(wrapEl, perClassTotal){
   if (!wrapEl) return;
   wrapEl.innerHTML = allClassIds.map(id => {
@@ -248,7 +275,8 @@ function initClassPage(){
   const dlNote = document.getElementById('dlNote');
   const dlFineAmount = document.getElementById('dlFineAmount');
   const dlDonationTotal = document.getElementById('dlDonationTotal');
-  const dlDonationTableBody = document.getElementById('dlDonationTableBody');
+  const dlDonationTableBodyLeft = document.getElementById('dlDonationTableBodyLeft');
+  const dlDonationTableBodyRight = document.getElementById('dlDonationTableBodyRight');
   const dlDonationTableTotal = document.getElementById('dlDonationTableTotal');
 
   let latestDonationData = {};
@@ -305,9 +333,10 @@ function initClassPage(){
       detailDonationTableTotal.textContent = 'रु. ' + formatRs(total);
       detailDonationTotal.textContent = 'रु. ' + formatRs(total);
       if (dlDonationTotal) dlDonationTotal.textContent = 'रु. ' + formatRs(total);
-      if (dlDonationTableBody) {
-        const full = buildDonationRows(data);
-        dlDonationTableBody.innerHTML = full.rowsHtml;
+      if (dlDonationTableBodyLeft) {
+        const full = buildDonationRowsTwoColumn(data);
+        dlDonationTableBodyLeft.innerHTML = full.leftHtml;
+        if (dlDonationTableBodyRight) dlDonationTableBodyRight.innerHTML = full.rightHtml;
         if (dlDonationTableTotal) dlDonationTableTotal.textContent = 'रु. ' + formatRs(full.total);
       }
     });
@@ -381,8 +410,9 @@ function initClassPage(){
       downloadListBtn.textContent = 'तयार गर्दै...';
 
       // Refresh the hidden document with the FULL current donor list right before capture
-      const full = buildDonationRows(latestDonationData);
-      if (dlDonationTableBody) dlDonationTableBody.innerHTML = full.rowsHtml;
+      const full = buildDonationRowsTwoColumn(latestDonationData);
+      if (dlDonationTableBodyLeft) dlDonationTableBodyLeft.innerHTML = full.leftHtml;
+      if (dlDonationTableBodyRight) dlDonationTableBodyRight.innerHTML = full.rightHtml;
       if (dlDonationTableTotal) dlDonationTableTotal.textContent = 'रु. ' + formatRs(full.total);
       if (dlDonationTotal) dlDonationTotal.textContent = 'रु. ' + formatRs(full.total);
       if (dlFineAmount) dlFineAmount.textContent = 'रु. ' + formatRs(latestFineAmount);

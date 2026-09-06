@@ -646,27 +646,37 @@
     font-size:0.82rem;
     color:var(--ink-soft);
     line-height:1.5;
-    max-width:560px;
-    margin:0 auto 22px;
+    max-width:640px;
+    margin:0 auto 14px;
   }
-  .dl-summary-row{
+  .dl-note-figures{
     display:flex;
-    gap:14px;
-    margin-bottom:26px;
+    justify-content:center;
+    gap:36px;
+    margin-bottom:22px;
+    font-size:0.85rem;
   }
-  .dl-summary-item{
+  .dl-note-figures strong{ color:var(--ink); font-weight:700; }
+
+  /* Two-column donor list: left half / right half of the sheet */
+  .dl-columns{
     flex:1;
     display:flex;
-    flex-direction:column;
-    gap:4px;
-    padding:14px 16px;
-    background:var(--paper-dim);
-    border:1px solid var(--line);
-    border-radius:6px;
+    gap:28px;
   }
-  .dl-summary-label{ font-size:0.75rem; color:var(--ink-faint); font-weight:600; }
-  .dl-summary-value{ font-family:'Fraunces', serif; font-size:1.25rem; font-weight:600; color:var(--ink); }
-  #downloadableList .donation-table-wrap{ flex:1; overflow:visible; }
+  .dl-col{ flex:1; min-width:0; }
+  .dl-col .donation-table-wrap{ overflow:visible; }
+
+  .dl-total-row{
+    display:flex;
+    justify-content:space-between;
+    padding:12px 10px 0;
+    margin-top:14px;
+    border-top:2px solid var(--line-strong);
+    font-weight:700;
+    font-size:0.9rem;
+    color:var(--ink);
+  }
 
   /* Document-style student names: small, lowercase-styled, letter-spaced like a printed record */
   table.dl-table td:nth-child(2){
@@ -680,9 +690,10 @@
     text-transform:uppercase;
   }
   table.dl-table th, table.dl-table td{
-    padding:9px 10px;
-    font-size:0.82rem;
+    padding:8px 8px;
+    font-size:0.8rem;
   }
+  table.dl-table td.sn-col, table.dl-table th.sn-col{ width:34px; }
 
   @media (max-width:640px){
     .topbar{ padding:14px 18px; }
