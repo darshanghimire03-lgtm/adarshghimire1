@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Shorts — Durbar</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, Roboto, "Segoe UI", sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    /* ===== TOP BAR ===== */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar .title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar .title i {
+      color: #f59e0b;
+    }
+
+    .topbar .back-btn {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .topbar .back-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* ===== SHORTS FEED ===== */
+    .shorts-feed {
+      height: 100vh;
+      width: 100vw;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .shorts-feed::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ===== SHORT ITEM ===== */
+    .short-item {
+      height: 100vh;
+      width: 100vw;
+      scroll-snap-align: start;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .short-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    /* ===== SOUND TOGGLE BUTTON ===== */
+    .sound-toggle {
+      position: absolute;
+      top: 80px;
+      right: 16px;
+      z-index: 15;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .sound-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .sound-toggle.muted {
+      opacity: 0.6;
+    }
+
+    /* ===== SHORT OVERLAY ===== */
+    .short-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 40px 20px 30px 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .short-overlay .short-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .short-overlay .short-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      flex-wrap: wrap;
+    }
+
+    .short-overlay .short-meta .subject-tag {
+      background: rgba(46, 115, 242, 0.3);
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #8ab4f8;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .short-overlay .short-meta .views {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .short-overlay .short-meta .views i {
+      font-size: 12px;
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    .short-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      z-index: 20;
+    }
+
+    .short-progress .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1e4b7a, #4a8ab5);
+      width: 0%;
+      transition: width 0.1s linear;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* ===== RIGHT SIDE ACTIONS ===== */
+    .short-actions {
+      position: absolute;
+      right: 16px;
+      bottom: 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      z-index: 15;
+    }
+
+    .short-actions .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 11px;
+      font-weight: 500;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .short-actions .action-btn:hover {
+      color: #fff;
+      transform: scale(1.1);
+    }
+
+    .short-actions .action-btn i {
+      font-size: 26px;
+      display: block;
+    }
+
+    .short-actions .action-btn .count {
+      font-size: 10px;
+    }
+
+    /* ===== SHORT NUMBER ===== */
+    .short-number {
+      position: absolute;
+      top: 70px;
+      left: 16px;
+      z-index: 15;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* ===== LOADING STATE ===== */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: rgba(255, 255, 255, 0.5);
+      gap: 16px;
+    }
+
+    .loading-state .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #4a8ab5;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: rgba(255, 255, 255, 0.5);
+      gap: 12px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      opacity: 0.3;
+    }
+
+    .empty-state h3 {
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+    }
+
+    /* ===== BOTTOM SHEET ===== */
+    .bottom-sheet-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .bottom-sheet-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .bottom-sheet {
+      background: #1a1a2e;
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 500px;
+      padding: 20px 24px 30px 24px;
+      animation: slideUp 0.3s ease;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .bottom-sheet .sheet-handle {
+      width: 40px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      margin: 0 auto 16px auto;
+    }
+
+    .bottom-sheet .sheet-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .bottom-sheet .sheet-subtitle {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .bottom-sheet .share-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bottom-sheet .share-option {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .bottom-sheet .share-option:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(4px);
+    }
+
+    .bottom-sheet .share-option .option-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .bottom-sheet .share-option .option-icon.copy {
+      background: rgba(46, 115, 242, 0.2);
+      color: #4a8ab5;
+    }
+
+    .bottom-sheet .share-option .option-icon.download {
+      background: rgba(46, 204, 113, 0.2);
+      color: #2ecc71;
+    }
+
+    .bottom-sheet .share-option .option-icon.whatsapp {
+      background: rgba(37, 211, 102, 0.2);
+      color: #25d366;
+    }
+
+    .bottom-sheet .share-option .option-icon.share {
+      background: rgba(241, 196, 15, 0.2);
+      color: #f1c40f;
+    }
+
+    .bottom-sheet .share-option .option-label {
+      flex: 1;
+    }
+
+    .bottom-sheet .share-option .option-desc {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 400;
+    }
+
+    .bottom-sheet .sheet-close-btn {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: none;
+      border-radius: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .bottom-sheet .sheet-close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      z-index: 200;
+      display: none;
+      animation: fadeIn 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      .short-overlay .short-title {
+        font-size: 15px;
+      }
+      .short-overlay .short-meta {
+        font-size: 11px;
+        gap: 8px;
+      }
+      .short-actions {
+        right: 12px;
+        bottom: 100px;
+        gap: 14px;
+      }
+      .short-actions .action-btn i {
+        font-size: 22px;
+      }
+      .short-number {
+        top: 60px;
+        font-size: 10px;
+        padding: 3px 10px;
+      }
+      .sound-toggle {
+        top: 72px;
+        right: 12px;
+        width: 38px;
+        height: 38px;
+        font-size: 15px;
+      }
+      .bottom-sheet {
+        padding: 16px 16px 24px 16px;
+      }
+      .bottom-sheet .share-option {
+        padding: 12px 14px;
+        font-size: 14px;
+      }
+      .bottom-sheet .share-option .option-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 17px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .short-overlay {
+        padding: 30px 14px 20px 14px;
+      }
+      .short-overlay .short-title {
+        font-size: 13px;
+      }
+      .short-actions {
+        right: 10px;
+        bottom: 80px;
+        gap: 12px;
+      }
+      .short-actions .action-btn i {
+        font-size: 18px;
+      }
+      .sound-toggle {
+        top: 64px;
+        right: 10px;
+        width: 34px;
+        height: 34px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== TOP BAR ===== -->
+<div class="topbar">
+  <div class="title">
+    <i class="fas fa-bolt"></i> Shorts
+  </div>
+  <button class="back-btn" onclick="goBack()">
+    <i class="fas fa-arrow-left"></i> Back
+  </button>
+</div>
+
+<!-- ===== SHORTS FEED ===== -->
+<div class="shorts-feed" id="shortsFeed">
+  <div class="loading-state" id="loadingState">
+    <div class="spinner"></div>
+    <span>Loading shorts…</span>
+  </div>
+</div>
+
+<!-- ===== BOTTOM SHEET ===== -->
+<div class="bottom-sheet-overlay" id="bottomSheetOverlay" onclick="closeBottomSheet(event)">
+  <div class="bottom-sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Share Short</div>
+    <div class="sheet-subtitle" id="sheetSubtitle">Share this video with others</div>
+    
+    <div class="share-options">
+      <button class="share-option" onclick="copyLink()">
+        <span class="option-icon copy"><i class="fas fa-link"></i></span>
+        <span class="option-label">
+          Copy Link
+          <div class="option-desc">Copy shareable link</div>
+        </span>
+      </button>
+      
+      <button class="share-option" onclick="downloadVideo()">
+        <span class="option-icon download"><i class="fas fa-download"></i></span>
+        <span class="option-label">
+          Download Video
+          <div class="option-desc">Save to your device</div>
+        </span>
+      </button>
+      
+      <button class="share-option" onclick="shareWhatsApp()">
+        <span class="option-icon whatsapp"><i class="fab fa-whatsapp"></i></span>
+        <span class="option-label">
+          WhatsApp
+          <div class="option-desc">Share via WhatsApp</div>
+        </span>
+      </button>
+      
+      <button class="share-option" onclick="shareNative()">
+        <span class="option-icon share"><i class="fas fa-share-alt"></i></span>
+        <span class="option-label">
+          Share
+          <div class="option-desc">Share using other apps</div>
+        </span>
+      </button>
+    </div>
+    
+    <button class="sheet-close-btn" onclick="closeBottomSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+
+<script>
+  (function() {
+    'use strict';
+
+    // ===== FIREBASE CONFIG =====
+    var firebaseConfig = {
+      apiKey: "AIzaSyCyrQUpOlHrY3t7GtxFXD5zCweKtYYX5wI",
+      databaseURL: "https://darbarhigh-4c642-default-rtdb.firebaseio.com",
+      projectId: "darbarhigh-4c642"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.database();
+
+    // ===== DOM REFERENCES =====
+    var feed = document.getElementById('shortsFeed');
+    var loadingState = document.getElementById('loadingState');
+    var bottomSheetOverlay = document.getElementById('bottomSheetOverlay');
+    var sheetSubtitle = document.getElementById('sheetSubtitle');
+    var toast = document.getElementById('toast');
+
+    // ===== STATE =====
+    var currentShortId = null;
+    var currentShortTitle = '';
+    var currentVideoUrl = '';
+
+    // ===== HELPER FUNCTIONS =====
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.innerText = str == null ? '' : str;
+      return div.innerHTML;
+    }
+
+    function formatViews(n) {
+      n = n || 0;
+      if (n >= 1000000) { return (n / 1000000).toFixed(1) + 'M'; }
+      if (n >= 1000) { return (n / 1000).toFixed(1) + 'K'; }
+      return n.toString();
+    }
+
+    function getSubjectColor(subject) {
+      var colors = {
+        'Economics': '#2e7d32',
+        'Account': '#1565c0',
+        'Computer Science': '#6a1b9a',
+        'English': '#c62828',
+        'Nepali': '#e65100'
+      };
+      return colors[subject] || '#4a8ab5';
+    }
+
+    // ===== TOAST =====
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(function() {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // ===== SHARE FUNCTIONS =====
+    function getShortUrl(shortId) {
+      return 'https://adarshghimire1.com.np/shorts/' + shortId;
+    }
+
+    window.copyLink = function() {
+      var url = getShortUrl(currentShortId);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+          showToast('✅ Link copied to clipboard!');
+          closeBottomSheet();
+        }).catch(function() {
+          copyFallback(url);
+        });
+      } else {
+        copyFallback(url);
+      }
+    };
+
+    function copyFallback(text) {
+      var textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast('✅ Link copied to clipboard!');
+        closeBottomSheet();
+      } catch (err) {
+        showToast('❌ Failed to copy link');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    window.downloadVideo = function() {
+      if (currentVideoUrl) {
+        var link = document.createElement('a');
+        link.href = currentVideoUrl;
+        link.download = 'short_' + currentShortId + '.mp4';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('⬇️ Downloading video...');
+        closeBottomSheet();
+      } else {
+        showToast('❌ No video available to download');
+      }
+    };
+
+    window.shareWhatsApp = function() {
+      var url = getShortUrl(currentShortId);
+      var text = '📱 Check out this short: ' + currentShortTitle + '\n\n' + url;
+      var encodedText = encodeURIComponent(text);
+      var whatsappUrl = 'https://api.whatsapp.com/send?text=' + encodedText;
+      window.open(whatsappUrl, '_blank');
+      closeBottomSheet();
+    };
+
+    window.shareNative = function() {
+      var url = getShortUrl(currentShortId);
+      var text = '📱 Check out this short: ' + currentShortTitle + '\n\n' + url;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: currentShortTitle || 'Durbar Short',
+          text: text,
+          url: url
+        }).catch(function() {});
+        closeBottomSheet();
+      } else {
+        copyLink();
+      }
+    };
+
+    // ===== OPEN BOTTOM SHEET =====
+    function openBottomSheet(shortId, title, videoUrl) {
+      currentShortId = shortId;
+      currentShortTitle = title || 'Untitled';
+      currentVideoUrl = videoUrl || '';
+      
+      sheetSubtitle.textContent = 'Share: ' + currentShortTitle;
+      bottomSheetOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    window.closeBottomSheet = function(event) {
+      if (event && event.target !== event.currentTarget) return;
+      bottomSheetOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    };
+
+    // ===== SOUND TOGGLE =====
+    function toggleSound(video, button) {
+      if (video.muted) {
+        video.muted = false;
+        button.classList.remove('muted');
+        button.innerHTML = '<i class="fas fa-volume-up"></i>';
+        showToast('🔊 Sound on');
+      } else {
+        video.muted = true;
+        button.classList.add('muted');
+        button.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        showToast('🔇 Sound off');
+      }
+    }
+
+    // ===== RENDER SHORTS =====
+    function renderShorts(shorts) {
+      if (loadingState) {
+        loadingState.remove();
+      }
+
+      if (!shorts || shorts.length === 0) {
+        feed.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-video"></i>
+            <h3>No shorts available</h3>
+            <p>Check back later for new content.</p>
+          </div>
+        `;
+        return;
+      }
+
+      feed.innerHTML = '';
+
+      shorts.forEach(function(short, index) {
+        var item = document.createElement('div');
+        item.className = 'short-item';
+        item.dataset.index = index;
+
+        var title = escapeHtml(short.title || 'Untitled');
+        var subject = escapeHtml(short.relatedSubject || '');
+        var views = formatViews(short.views);
+        var subjectColor = getSubjectColor(short.relatedSubject);
+
+        var videoHtml = short.videoUrl ? 
+          `<video src="${escapeHtml(short.videoUrl)}" preload="metadata" playsinline></video>` :
+          `<div style="width:100%;height:100%;background:linear-gradient(145deg,#1a1a2e,#16213e);display:flex;align-items:center;justify-content:center;font-size:64px;color:rgba(255,255,255,0.1);">
+            <i class="fas fa-film"></i>
+          </div>`;
+
+        item.innerHTML = `
+          <div class="short-progress">
+            <div class="progress-fill" style="width:${((index + 1) / shorts.length) * 100}%"></div>
+          </div>
+          <div class="short-number">
+            <i class="fas fa-bolt"></i> ${index + 1}/${shorts.length}
+          </div>
+          ${videoHtml}
+          <button class="sound-toggle muted" onclick="toggleSound(this.parentElement.querySelector('video'), this)">
+            <i class="fas fa-volume-mute"></i>
+          </button>
+          <div class="short-overlay">
+            <div class="short-title">${title}</div>
+            <div class="short-meta">
+              <span class="subject-tag" style="border-color:${subjectColor};">${subject || 'General'}</span>
+              <span class="views"><i class="fas fa-eye"></i> ${views}</span>
+              <span>•</span>
+              <span>${timeAgo(short.uploadedDate)}</span>
+            </div>
+          </div>
+          <div class="short-actions">
+            <button class="action-btn" onclick="openBottomSheet('${short.shortId}', '${title.replace(/'/g, "\\'")}', '${escapeHtml(short.videoUrl || '')}')">
+              <i class="fas fa-share-alt"></i>
+              <span class="count">Share</span>
+            </button>
+          </div>
+        `;
+
+        var video = item.querySelector('video');
+        var soundBtn = item.querySelector('.sound-toggle');
+        
+        if (video) {
+          // Start muted by default
+          video.muted = true;
+          
+          // Click to toggle play/pause
+          video.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (this.paused) {
+              this.play().catch(function() {});
+            } else {
+              this.pause();
+            }
+          });
+
+          // When video starts playing, try to unmute if user has interacted
+          video.addEventListener('play', function() {
+            // Check if user has previously unmuted
+            if (!soundBtn.classList.contains('muted')) {
+              this.muted = false;
+            }
+          });
+
+          // Handle audio context for iOS
+          if (typeof AudioContext !== 'undefined') {
+            var audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') {
+              document.addEventListener('click', function resumeAudio() {
+                audioCtx.resume();
+                document.removeEventListener('click', resumeAudio);
+              }, { once: true });
+            }
+          }
+        }
+
+        feed.appendChild(item);
+      });
+
+      setupAutoplay();
+    }
+
+    // ===== TIME AGO =====
+    function timeAgo(ts) {
+      if (!ts) { return ''; }
+      var diff = Math.floor((Date.now() - ts) / 1000);
+      if (diff < 60) { return 'Just now'; }
+      if (diff < 3600) { return Math.floor(diff / 60) + 'm ago'; }
+      if (diff < 86400) { return Math.floor(diff / 3600) + 'h ago'; }
+      if (diff < 604800) { return Math.floor(diff / 86400) + 'd ago'; }
+      if (diff < 2592000) { return Math.floor(diff / 604800) + 'w ago'; }
+      var d = new Date(ts);
+      return d.toLocaleDateString();
+    }
+
+    // ===== AUTOPLAY SETUP =====
+    function setupAutoplay() {
+      var videos = feed.querySelectorAll('video');
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          var video = entry.target;
+          var item = video.closest('.short-item');
+          var soundBtn = item ? item.querySelector('.sound-toggle') : null;
+          
+          if (entry.isIntersecting) {
+            // Play the video
+            video.play().catch(function() {});
+            
+            // Check if sound was previously on
+            if (soundBtn && !soundBtn.classList.contains('muted')) {
+              video.muted = false;
+            } else if (soundBtn) {
+              video.muted = true;
+            }
+            
+            // Pause all other videos
+            document.querySelectorAll('video').forEach(function(v) {
+              if (v !== video) {
+                v.pause();
+              }
+            });
+          } else {
+            video.pause();
+          }
+        });
+      }, {
+        threshold: 0.5
+      });
+
+      videos.forEach(function(video) {
+        observer.observe(video);
+        video.load();
+      });
+    }
+
+    // ===== KEYBOARD NAVIGATION =====
+    document.addEventListener('keydown', function(e) {
+      if (bottomSheetOverlay.classList.contains('active')) {
+        if (e.key === 'Escape') {
+          closeBottomSheet();
+        }
+        return;
+      }
+
+      var items = feed.querySelectorAll('.short-item');
+      var currentIndex = -1;
+
+      items.forEach(function(item, index) {
+        var rect = item.getBoundingClientRect();
+        if (rect.top >= -50 && rect.top < window.innerHeight / 2) {
+          currentIndex = index;
+        }
+      });
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (currentIndex < items.length - 1) {
+          items[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+        }
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (currentIndex > 0) {
+          items[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    });
+
+    // ===== GO BACK =====
+    window.goBack = function() {
+      if (document.referrer && document.referrer.includes(window.location.hostname)) {
+        window.history.back();
+      } else {
+        window.location.href = 'index.html';
+      }
+    };
+
+    // ===== LOAD SHORTS FROM FIREBASE =====
+    function loadShorts() {
+      db.ref('shorts').on('value', function(snapshot) {
+        var raw = snapshot.val();
+        if (!raw) {
+          renderShorts([]);
+          return;
+        }
+
+        var shorts = Object.keys(raw).map(function(key) {
+          var s = raw[key];
+          s.shortId = key;
+          return s;
+        });
+
+        shorts.sort(function(a, b) {
+          return (b.uploadedDate || 0) - (a.uploadedDate || 0);
+        });
+
+        renderShorts(shorts);
+      }, function(error) {
+        feed.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Could not load shorts</h3>
+            <p>Please try again later.</p>
+          </div>
+        `;
+      });
+    }
+
+    // ===== AUDIO CONTEXT UNLOCK FOR IOS =====
+    function unlockAudio() {
+      // Create a silent audio context to unlock audio on iOS
+      var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().then(function() {
+          console.log('AudioContext resumed');
+        }).catch(function(err) {
+          console.log('AudioContext resume failed:', err);
+        });
+      }
+      
+      // Also try to play a silent buffer
+      try {
+        var buffer = audioCtx.createBuffer(1, 1, 22050);
+        var source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioCtx.destination);
+        source.start(0);
+        source.stop(0.001);
+      } catch(e) {
+        console.log('Silent buffer play failed:', e);
+      }
+    }
+
+    // Try to unlock audio on user interaction
+    document.addEventListener('click', unlockAudio, { once: true });
+    document.addEventListener('touchstart', unlockAudio, { once: true });
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', function() {
+      loadShorts();
+      
+      // Try to unlock audio on load
+      setTimeout(unlockAudio, 1000);
+    });
+
+  })();
+</script>
+
+</body>
+</html>
