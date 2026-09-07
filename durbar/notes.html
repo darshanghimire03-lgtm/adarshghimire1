@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Durbar - Notes</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f0f4fa;
+      color: #0b1b33;
+      padding: 2rem 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #1e4b7a;
+      text-decoration: none;
+      background: #e9eef4;
+      padding: 0.4rem 1.2rem 0.4rem 1rem;
+      border-radius: 40px;
+      transition: all 0.2s;
+      margin-bottom: 1.5rem;
+    }
+    .back-link:hover {
+      background: #d0dceb;
+      color: #0a2a4a;
+      transform: translateX(-3px);
+    }
+    .back-link i {
+      font-size: 0.9rem;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      border-bottom: 2px solid rgba(0, 40, 80, 0.06);
+      padding-bottom: 1.2rem;
+    }
+
+    .page-header h1 {
+      font-weight: 700;
+      font-size: 2.2rem;
+      letter-spacing: -0.02em;
+      color: #0b2a4a;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .page-header h1 .unit-badge {
+      font-weight: 400;
+      font-size: 0.85rem;
+      color: #42648d;
+      background: #e2eaf3;
+      padding: 0.15rem 1rem;
+      border-radius: 30px;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .note-count {
+      background: #dce5f0;
+      border-radius: 30px;
+      padding: 0.15rem 1.2rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #1f4770;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .note-count i {
+      font-size: 0.8rem;
+    }
+
+    .coming-soon-card {
+      background: white;
+      border-radius: 28px;
+      padding: 4rem 2rem;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+      border: 1px solid #e5edf5;
+    }
+    .coming-soon-card i {
+      font-size: 3rem;
+      color: #8aaac9;
+      margin-bottom: 1rem;
+    }
+    .coming-soon-card h2 {
+      font-weight: 500;
+      font-size: 1.8rem;
+      color: #3b5b7c;
+      margin-bottom: 0.5rem;
+    }
+    .coming-soon-card p {
+      color: #6d7f94;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .note-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 16px rgba(0, 20, 40, 0.03);
+      border: 1px solid #e6edf6;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      height: fit-content;
+    }
+    .note-card:hover {
+      border-color: #b8cfe3;
+      box-shadow: 0 12px 32px rgba(0, 30, 60, 0.07);
+      transform: translateY(-3px);
+    }
+
+    .note-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .note-number {
+      background: #eef4fa;
+      color: #4b6f92;
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      min-width: 28px;
+      text-align: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .note-title {
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.01em;
+      color: #0d2b47;
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .note-description {
+      color: #3d5a78;
+      font-size: 0.92rem;
+      padding: 0.5rem 0 0.8rem 0;
+      border-bottom: 1px solid #eef4fa;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .media-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 0.25rem 0 0.25rem 0;
+    }
+
+    .media-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .media-label {
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #5a7d9e;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .media-label i {
+      font-size: 0.8rem;
+      width: 1.1rem;
+      color: #4b7aa0;
+    }
+
+    /* ===== PHOTO COLLAGE STYLES ===== */
+    .photo-collage {
+      display: grid;
+      gap: 4px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #eef4fa;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .photo-collage:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .photo-collage .collage-item {
+      position: relative;
+      overflow: hidden;
+      background: #dce8f2;
+      min-height: 120px;
+    }
+
+    .photo-collage .collage-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+      display: block;
+    }
+
+    .photo-collage .collage-item:hover img {
+      transform: scale(1.05);
+    }
+
+    /* Collage Layouts */
+    .photo-collage.layout-1 {
+      grid-template-columns: 1fr;
+    }
+    .photo-collage.layout-1 .collage-item {
+      min-height: 200px;
+    }
+
+    .photo-collage.layout-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+    .photo-collage.layout-2 .collage-item {
+      min-height: 160px;
+    }
+
+    .photo-collage.layout-3 {
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+    .photo-collage.layout-3 .collage-item:first-child {
+      grid-row: 1 / 3;
+      min-height: 240px;
+    }
+    .photo-collage.layout-3 .collage-item:not(:first-child) {
+      min-height: 118px;
+    }
+
+    .photo-collage.layout-4 {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+    .photo-collage.layout-4 .collage-item {
+      min-height: 140px;
+    }
+
+    .photo-collage.layout-5 {
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto auto;
+    }
+    .photo-collage.layout-5 .collage-item:first-child {
+      grid-column: 1 / 3;
+      grid-row: 1 / 2;
+      min-height: 160px;
+    }
+    .photo-collage.layout-5 .collage-item:not(:first-child) {
+      min-height: 100px;
+    }
+
+    .photo-collage .photo-count-overlay {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .photo-collage .photo-count-overlay i {
+      font-size: 0.65rem;
+    }
+
+    .photo-collage .view-all-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 1.2rem;
+      backdrop-filter: blur(2px);
+      gap: 0.5rem;
+    }
+
+    .photo-collage .view-all-overlay i {
+      font-size: 1.4rem;
+    }
+
+    /* PDF Card Styles */
+    .pdf-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.6rem;
+    }
+
+    .pdf-card {
+      background: linear-gradient(135deg, #f8fcff 0%, #eef6fe 100%);
+      border-radius: 16px;
+      padding: 0.8rem 1rem;
+      border: 1px solid #dce8f5;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+    }
+    .pdf-card:hover {
+      border-color: #8ab0d3;
+      background: linear-gradient(135deg, #f5faff 0%, #e3effb 100%);
+      box-shadow: 0 4px 12px rgba(50, 100, 160, 0.08);
+      transform: translateX(3px);
+    }
+
+    .pdf-icon-wrapper {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.3rem;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .pdf-icon-wrapper.pdf {
+      color: #d44c4c;
+      background: #fff0f0;
+    }
+    .pdf-icon-wrapper.word {
+      color: #2b5797;
+      background: #e8f0fe;
+    }
+    .pdf-icon-wrapper.file {
+      color: #6b8aa8;
+      background: #f0f5fa;
+    }
+
+    .pdf-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .pdf-info .pdf-name {
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #0d2b47;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.2s;
+    }
+    .pdf-card:hover .pdf-info .pdf-name {
+      color: #1a5c8a;
+    }
+    .pdf-info .pdf-meta {
+      font-size: 0.7rem;
+      color: #6a89a8;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 0.1rem;
+    }
+    .pdf-info .pdf-meta .dot {
+      color: #b8cee3;
+    }
+    .pdf-info .pdf-meta .badge {
+      background: #e4eefa;
+      padding: 0.05rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #4b6f92;
+    }
+
+    .pdf-open-icon {
+      color: #6a8aa8;
+      font-size: 0.9rem;
+      opacity: 0.5;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .pdf-card:hover .pdf-open-icon {
+      opacity: 1;
+      color: #1a5c8a;
+      transform: translateX(2px);
+    }
+
+    /* YouTube Cards */
+    .yt-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .yt-card {
+      background: #f1f7fe;
+      border-radius: 16px;
+      padding: 0.5rem 0.8rem 0.5rem 0.5rem;
+      border: 1px solid #d6e4f0;
+      transition: all 0.2s;
+      flex: 1;
+      min-width: 140px;
+      max-width: 220px;
+    }
+    .yt-card:hover {
+      border-color: #8ab0d3;
+      background: #ecf4fd;
+      transform: scale(1.02);
+    }
+    .yt-card a {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      text-decoration: none;
+      color: #003b6b;
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+    .yt-card img {
+      width: 80px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid white;
+      background: #b7cfe3;
+      flex-shrink: 0;
+    }
+    .yt-badge {
+      background: #003b6b;
+      color: white;
+      font-weight: 600;
+      font-size: 0.55rem;
+      padding: 0.1rem 0.6rem;
+      border-radius: 30px;
+      letter-spacing: 0.03em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .yt-badge i {
+      font-size: 0.5rem;
+    }
+    .yt-card .yt-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+      min-width: 0;
+    }
+    .yt-card .yt-info .yt-label {
+      font-size: 0.65rem;
+      color: #5a7d9e;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 1rem; }
+      .page-header h1 { font-size: 1.7rem; }
+      .notes-grid { grid-template-columns: 1fr; }
+      
+      .photo-collage.layout-1 .collage-item { min-height: 160px; }
+      .photo-collage.layout-2 .collage-item { min-height: 130px; }
+      .photo-collage.layout-3 .collage-item:first-child { min-height: 180px; }
+      .photo-collage.layout-3 .collage-item:not(:first-child) { min-height: 90px; }
+      .photo-collage.layout-4 .collage-item { min-height: 110px; }
+      .photo-collage.layout-5 .collage-item:first-child { min-height: 130px; }
+      .photo-collage.layout-5 .collage-item:not(:first-child) { min-height: 80px; }
+      
+      .yt-card { max-width: 100%; }
+      .yt-card img { width: 70px; height: 44px; }
+    }
+
+    @media (max-width: 480px) {
+      .pdf-card { flex-wrap: wrap; padding: 0.7rem; }
+      .pdf-info .pdf-name { white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+
+<a id="backLink" class="back-link"><i class="fas fa-arrow-left"></i> Back to Units</a>
+
+<div class="page-header">
+  <h1 id="unitName">Unit <span class="unit-badge"><i class="far fa-file-alt"></i> Notes</span></h1>
+  <span id="noteCounter" class="note-count"><i class="far fa-copy"></i> 0 notes</span>
+</div>
+
+<div id="comingSoon" class="coming-soon-card" style="display: none;">
+  <i class="far fa-folder-open"></i>
+  <h2>No notes yet</h2>
+  <p>This unit is still empty. Check back later for new content.</p>
+</div>
+
+<div id="notesList" class="notes-grid"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  (function() {
+    "use strict";
+
+    // --- Helper Functions ---
+    function extensionOf(name) {
+      const dot = name.lastIndexOf(".");
+      if (dot === -1 || dot === name.length - 1) return "";
+      return name.substring(dot + 1).toLowerCase();
+    }
+
+    function getFileType(name) {
+      const ext = extensionOf(name);
+      if (ext === "pdf") return "pdf";
+      if (ext === "doc" || ext === "docx") return "word";
+      return "file";
+    }
+
+    function getFileIcon(type) {
+      if (type === "pdf") return '<i class="fas fa-file-pdf"></i>';
+      if (type === "word") return '<i class="fas fa-file-word"></i>';
+      return '<i class="fas fa-file-alt"></i>';
+    }
+
+    function getFileColor(type) {
+      if (type === "pdf") return "pdf";
+      if (type === "word") return "word";
+      return "file";
+    }
+
+    function cleanTitle(name) {
+      const ext = extensionOf(name);
+      if (!ext) return name;
+      if (name.endsWith("." + ext)) return name.slice(0, -(ext.length + 1));
+      const upper = ext.toUpperCase();
+      if (name.endsWith("." + upper)) return name.slice(0, -(upper.length + 1));
+      return name;
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes <= 0) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      let size = bytes;
+      let unitIndex = 0;
+      while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex++;
+      }
+      return unitIndex === 0 ? Math.trunc(size) + " " + units[unitIndex]
+                             : size.toFixed(1) + " " + units[unitIndex];
+    }
+
+    function getFileLabel(name) {
+      const ext = extensionOf(name);
+      if (ext === "pdf") return "PDF";
+      if (ext === "doc" || ext === "docx") return "DOC";
+      return "FILE";
+    }
+
+    const YT_ID_PATTERN = /(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    function extractVideoId(url) {
+      const m = YT_ID_PATTERN.exec(url || "");
+      return m ? m[1] : null;
+    }
+    function youtubeThumbUrl(videoId) {
+      return "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
+    }
+
+    // --- DOM References ---
+    const listEl = document.getElementById("notesList");
+    const comingSoonEl = document.getElementById("comingSoon");
+    const unitNameEl = document.getElementById("unitName");
+    const noteCounter = document.getElementById("noteCounter");
+    const backLink = document.getElementById("backLink");
+
+    // --- Get Query Parameters ---
+    const unitId = qs("unitId") || "";
+    let unitName = qs("unitName") ? decodeURIComponent(qs("unitName")) : "Unit";
+    const subjectName = qs("subjectName") ? decodeURIComponent(qs("subjectName")) : "";
+    const subjectKey = qs("subjectKey") || sanitizeKey(subjectName.toLowerCase().replaceAll(" ", "_"));
+
+    // --- Update UI ---
+    unitNameEl.innerHTML = unitName + ' <span class="unit-badge"><i class="far fa-file-alt"></i> Notes</span>';
+    document.title = "Durbar · " + unitName;
+
+    backLink.href = "unit.html?subjectName=" + encodeURIComponent(subjectName) +
+                    "&subjectKey=" + encodeURIComponent(subjectKey);
+
+    // --- PHOTO COLLAGE RENDERER ---
+    function renderPhotoCollage(container, photos, noteId, position) {
+      if (!photos || photos.length === 0) return;
+
+      const count = photos.length;
+      let layoutClass = 'layout-1';
+      if (count === 2) layoutClass = 'layout-2';
+      else if (count === 3) layoutClass = 'layout-3';
+      else if (count === 4) layoutClass = 'layout-4';
+      else if (count >= 5) layoutClass = 'layout-5';
+
+      const collage = document.createElement('div');
+      collage.className = 'photo-collage ' + layoutClass;
+
+      // Build URL for photo.html
+      const photoUrls = photos.map(p => encodeURIComponent(p.url)).join('||');
+      const photoPageUrl = 'photo.html?photos=' + photoUrls + 
+                          '&note=' + encodeURIComponent(noteId || '') +
+                          '&position=' + position;
+
+      collage.addEventListener('click', function() {
+        window.location.href = photoPageUrl;
+      });
+
+      // Determine how many to show
+      const displayCount = Math.min(count, 5);
+      const remaining = count - 5;
+
+      for (let i = 0; i < displayCount; i++) {
+        const item = document.createElement('div');
+        item.className = 'collage-item';
+        const img = document.createElement('img');
+        img.src = photos[i].url;
+        img.alt = 'Photo ' + (i + 1);
+        img.loading = 'lazy';
+        item.appendChild(img);
+
+        // If this is the last visible item and there are more photos
+        if (i === 4 && remaining > 0) {
+          const overlay = document.createElement('div');
+          overlay.className = 'view-all-overlay';
+          overlay.innerHTML = '<i class="fas fa-plus-circle"></i> ' + remaining + ' more';
+          item.appendChild(overlay);
+          item.style.position = 'relative';
+        }
+
+        collage.appendChild(item);
+      }
+
+      // Add photo count badge
+      const badge = document.createElement('div');
+      badge.className = 'photo-count-overlay';
+      badge.innerHTML = '<i class="fas fa-camera"></i> ' + count + ' photos';
+      collage.appendChild(badge);
+
+      container.appendChild(collage);
+    }
+
+    // --- PDF RENDERER ---
+    function renderPdfs(container, pdfs) {
+      if (!pdfs || pdfs.length === 0) return;
+      const grid = document.createElement("div");
+      grid.className = "pdf-grid";
+
+      pdfs.forEach(pdf => {
+        const rawName = pdf.name || "document.pdf";
+        const type = getFileType(rawName);
+        const colorClass = getFileColor(type);
+        const iconHtml = getFileIcon(type);
+        const sizeText = pdf.sizeBytes > 0 ? formatFileSize(pdf.sizeBytes) : null;
+        const label = getFileLabel(rawName);
+        const cleanName = cleanTitle(rawName);
+
+        const card = document.createElement("div");
+        card.className = "pdf-card";
+
+        card.addEventListener("click", function(e) {
+          e.stopPropagation();
+          const viewerUrl = "pdf.html?url=" + encodeURIComponent(pdf.url) +
+                            "&name=" + encodeURIComponent(rawName) +
+                            "&size=" + encodeURIComponent(sizeText || "—") +
+                            "&return=" + encodeURIComponent(window.location.pathname + window.location.search);
+          window.location.href = viewerUrl;
+        });
+
+        const iconWrapper = document.createElement("div");
+        iconWrapper.className = "pdf-icon-wrapper " + colorClass;
+        iconWrapper.innerHTML = iconHtml;
+
+        const info = document.createElement("div");
+        info.className = "pdf-info";
+
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "pdf-name";
+        nameSpan.textContent = cleanName;
+
+        const meta = document.createElement("div");
+        meta.className = "pdf-meta";
+        if (sizeText) {
+          const sizeSpan = document.createElement("span");
+          sizeSpan.textContent = sizeText;
+          meta.appendChild(sizeSpan);
+          const dot = document.createElement("span");
+          dot.className = "dot";
+          dot.textContent = "•";
+          meta.appendChild(dot);
+        }
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = label;
+        meta.appendChild(badge);
+
+        info.appendChild(nameSpan);
+        info.appendChild(meta);
+
+        const openIcon = document.createElement("span");
+        openIcon.className = "pdf-open-icon";
+        openIcon.innerHTML = '<i class="fas fa-eye"></i>';
+
+        card.appendChild(iconWrapper);
+        card.appendChild(info);
+        card.appendChild(openIcon);
+        grid.appendChild(card);
+      });
+      container.appendChild(grid);
+    }
+
+    // --- YOUTUBE RENDERER ---
+    function renderYoutubeLinks(container, links) {
+      if (!links || links.length === 0) return;
+      const grid = document.createElement("div");
+      grid.className = "yt-grid";
+
+      links.forEach(yt => {
+        const videoId = yt.videoId || extractVideoId(yt.url) || "";
+        const badge = yt.videoNumber > 0 ? ("VIDEO " + yt.videoNumber) : "VIDEO";
+
+        const card = document.createElement("div");
+        card.className = "yt-card";
+
+        const a = document.createElement("a");
+        a.href = videoId ? ("https://www.youtube.com/watch?v=" + videoId) : yt.url;
+        a.target = "_blank";
+
+        if (videoId) {
+          const img = document.createElement("img");
+          img.src = youtubeThumbUrl(videoId);
+          img.alt = "youtube thumbnail";
+          img.loading = "lazy";
+          a.appendChild(img);
+        }
+
+        const info = document.createElement("div");
+        info.className = "yt-info";
+
+        const label = document.createElement("span");
+        label.className = "yt-badge";
+        label.innerHTML = '<i class="fas fa-play"></i> ' + badge;
+
+        const title = document.createElement("span");
+        title.style.fontSize = "0.75rem";
+        title.style.color = "#3d5a78";
+        title.textContent = "Watch video";
+
+        info.appendChild(label);
+        info.appendChild(title);
+        a.appendChild(info);
+        card.appendChild(a);
+        grid.appendChild(card);
+      });
+      container.appendChild(grid);
+    }
+
+    // --- NOTE RENDERER ---
+    function renderNote(note, position) {
+      const card = document.createElement("div");
+      card.className = "note-card";
+
+      const header = document.createElement("div");
+      header.className = "note-header";
+
+      const num = document.createElement("span");
+      num.className = "note-number";
+      num.textContent = position + 1;
+
+      const title = document.createElement("div");
+      title.className = "note-title";
+      title.textContent = note.title || "Untitled";
+
+      header.appendChild(num);
+      header.appendChild(title);
+      card.appendChild(header);
+
+      if (note.description && note.description.trim() !== "") {
+        const desc = document.createElement("div");
+        desc.className = "note-description";
+        desc.textContent = note.description;
+        card.appendChild(desc);
+      }
+
+      const mediaSection = document.createElement("div");
+      mediaSection.className = "media-section";
+
+      // Photos - Now in collage format
+      if (note.photos && note.photos.length > 0) {
+        const group = document.createElement("div");
+        group.className = "media-group";
+        const label = document.createElement("span");
+        label.className = "media-label";
+        label.innerHTML = '<i class="fas fa-images"></i> Photos';
+        group.appendChild(label);
+        renderPhotoCollage(group, note.photos, note.id, position);
+        mediaSection.appendChild(group);
+      }
+
+      // YouTube
+      if (note.youtubeLinks && note.youtubeLinks.length > 0) {
+        const group = document.createElement("div");
+        group.className = "media-group";
+        const label = document.createElement("span");
+        label.className = "media-label";
+        label.innerHTML = '<i class="fas fa-video"></i> Videos';
+        group.appendChild(label);
+        renderYoutubeLinks(group, note.youtubeLinks);
+        mediaSection.appendChild(group);
+      }
+
+      // PDFs
+      if (note.pdfs && note.pdfs.length > 0) {
+        const group = document.createElement("div");
+        group.className = "media-group";
+        const label = document.createElement("span");
+        label.className = "media-label";
+        label.innerHTML = '<i class="fas fa-file-pdf"></i> Documents';
+        group.appendChild(label);
+        renderPdfs(group, note.pdfs);
+        mediaSection.appendChild(group);
+      }
+
+      if (mediaSection.children.length > 0) {
+        card.appendChild(mediaSection);
+      }
+
+      return card;
+    }
+
+    function updateEmptyState(hasNotes) {
+      listEl.style.display = hasNotes ? "" : "none";
+      comingSoonEl.style.display = hasNotes ? "none" : "";
+      noteCounter.innerHTML = hasNotes ? '<i class="far fa-copy"></i> ' + listEl.children.length + ' notes' : '<i class="far fa-copy"></i> 0 notes';
+    }
+
+    // --- Load Data from Firebase ---
+    notesRef(subjectKey, unitId).once("value")
+      .then(snapshot => {
+        const notes = [];
+        snapshot.forEach(child => {
+          const noteData = child.val();
+          noteData.id = child.key;
+          notes.push(noteData);
+        });
+        notes.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+
+        listEl.innerHTML = "";
+        if (notes.length === 0) {
+          updateEmptyState(false);
+          return;
+        }
+
+        notes.forEach((note, position) => {
+          listEl.appendChild(renderNote(note, position));
+        });
+        updateEmptyState(true);
+      })
+      .catch(err => {
+        console.error("loadNotes cancelled: " + err.message);
+        updateEmptyState(false);
+      });
+
+  })();
+</script>
+
+</body>
+</html>

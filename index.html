@@ -1,85 +1,878 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="favicon.png">
-<title>Doroi- Software's </title>
-<style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f5f4f0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #1a1a1a;
-    padding: 24px;
-  }
-  .card {
-    text-align: center;
-    max-width: 380px;
-  }
-  .icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: #faeeda;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 28px;
-  }
-  h1 {
-    font-size: 24px;
-    font-weight: 600;
-    margin: 0 0 12px;
-  }
-  p {
-    color: #5f5e5a;
-    line-height: 1.6;
-    margin: 0 0 24px;
-    font-size: 15px;
-  }
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #ffffff;
-    border: 1px solid #e2e0d8;
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-size: 13px;
-    color: #5f5e5a;
-    margin-bottom: 24px;
-  }
-  button {
-    background: #1a1a1a;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #333;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
+  <title>Doroi · software</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f7fc;
+      color: #0b1a2e;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      max-width: 1340px;
+      margin: 0 auto;
+      padding: 1.2rem 1.5rem 2.5rem;
+      width: 100%;
+      flex: 1;
+    }
+    /* ===== TOP BAR ===== */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem 1.5rem;
+      background: white;
+      padding: 0.6rem 1.8rem;
+      border-radius: 60px;
+      box-shadow: 0 8px 24px rgba(0,20,40,0.04);
+      margin-bottom: 2rem;
+      border: 1px solid #eef2f8;
+    }
+    .brand-drawer {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .brand-drawer img {
+      height: 40px;
+      width: auto;
+      display: block;
+      border-radius: 10px;
+    }
+    .brand-drawer h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(145deg, #0b1a2e, #1e3a6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-left: 0.1rem;
+    }
+    .brand-drawer span {
+      font-weight: 400;
+      color: #4b5b6e;
+      font-size: 0.85rem;
+      background: #eef2f6;
+      padding: 0.15rem 1rem;
+      border-radius: 40px;
+      -webkit-text-fill-color: #1f2a3f;
+      margin-left: 0.2rem;
+    }
+    .menu-desktop {
+      display: flex;
+      align-items: center;
+      gap: 1.8rem;
+    }
+    .menu-desktop a {
+      text-decoration: none;
+      color: #1f334a;
+      font-weight: 500;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: 0.15s;
+      border-bottom: 2px solid transparent;
+      padding-bottom: 0.2rem;
+    }
+    .menu-desktop a i {
+      color: #2563eb;
+      font-size: 1rem;
+    }
+    .menu-desktop a:hover {
+      color: #0b1a2e;
+      border-bottom-color: #2563eb;
+    }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: #0b1a2e;
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
+    }
+    /* ===== DRAWER ===== */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.25);
+      z-index: 999;
+      backdrop-filter: blur(2px);
+    }
+    .drawer-overlay.active { display: block; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: -340px;
+      width: 320px;
+      max-width: 80vw;
+      height: 100%;
+      background: white;
+      box-shadow: -6px 0 30px rgba(0,0,0,0.08);
+      z-index: 1000;
+      padding: 2rem 1.8rem;
+      transition: right 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      border-left: 1px solid #e6edf6;
+    }
+    .drawer.open { right: 0; }
+    .drawer-close {
+      align-self: flex-end;
+      background: #f1f5fb;
+      border: none;
+      font-size: 1.6rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 40px;
+      cursor: pointer;
+      color: #1f334a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.1s;
+    }
+    .drawer-close:hover { background: #e2e9f2; }
+    .drawer-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #0b1a2e;
+    }
+    .drawer-brand img {
+      height: 34px;
+      width: auto;
+      border-radius: 8px;
+    }
+    .drawer-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 1.3rem;
+      margin-top: 0.5rem;
+    }
+    .drawer-nav a {
+      text-decoration: none;
+      color: #1f334a;
+      font-weight: 500;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      padding: 0.5rem 0.2rem;
+      border-bottom: 1px solid #ecf0f6;
+      transition: 0.1s;
+    }
+    .drawer-nav a i { width: 1.8rem; color: #2563eb; font-size: 1.2rem; }
+    .drawer-nav a:hover { color: #0b1a2e; padding-left: 0.4rem; }
+    .drawer-social {
+      margin-top: auto;
+      display: flex;
+      gap: 1.2rem;
+      font-size: 1.4rem;
+      color: #2c3e58;
+      padding-top: 1.2rem;
+      border-top: 1px solid #e9edf4;
+    }
+    .drawer-social i { cursor: default; opacity: 0.6; transition: 0.1s; }
+    .drawer-social i:hover { opacity: 1; color: #2563eb; }
+    /* ===== MAIN CONTENT ===== */
+    .page-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #0b1a2e;
+    }
+    .page-sub {
+      color: #4b5b6e;
+      font-size: 1.1rem;
+      margin-bottom: 2.5rem;
+      border-left: 4px solid #2563eb;
+      padding-left: 1rem;
+    }
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+    @media (max-width: 820px) {
+      .section-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .topbar { border-radius: 40px; padding: 0.6rem 1.2rem; }
+      .menu-desktop { display: none; }
+      .menu-toggle { display: block; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0.8rem 0.8rem 2rem; }
+      .brand-drawer h1 { font-size: 1.4rem; }
+      .brand-drawer span { font-size: 0.7rem; padding: 0.1rem 0.7rem; }
+      .brand-drawer img { height: 32px; }
+      .drawer { width: 280px; }
+      .page-title { font-size: 1.5rem; }
+    }
+    /* ===== CARDS ===== */
+    .section-card {
+      background: white;
+      border-radius: 2rem;
+      padding: 1.8rem 2rem;
+      border: 1px solid #dfe8f2;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.02);
+    }
+    .section-card h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+      color: #0b1a2e;
+    }
+    .section-card h2 i { color: #2563eb; }
+    .card-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    .card-item {
+      background: #f8fafd;
+      border-radius: 18px;
+      padding: 0.8rem 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #e2e9f2;
+      transition: 0.15s;
+    }
+    .card-item:hover {
+      background: white;
+      border-color: #b6c9e2;
+      box-shadow: 0 6px 14px rgba(0,20,50,0.04);
+    }
+    .card-item .left {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      overflow: hidden;
+      flex: 1;
+    }
+    .card-item .left i {
+      font-size: 1.3rem;
+      color: #2563eb;
+      width: 2rem;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .card-item .left .info {
+      display: flex;
+      flex-direction: column;
+    }
+    .card-item .left .info .name {
+      font-weight: 600;
+      color: #1a2b3f;
+      font-size: 0.95rem;
+    }
+    .card-item .left .info .desc {
+      font-size: 0.75rem;
+      color: #7087a4;
+    }
+    .card-item .action-btn {
+      background: #eef2f8;
+      padding: 0.3rem 1.2rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #1f3a6b;
+      text-decoration: none;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      flex-shrink: 0;
+    }
+    .card-item .action-btn i { font-size: 0.7rem; }
+    .card-item .action-btn:hover {
+      background: #2563eb;
+      color: white;
+    }
+    .card-item .action-btn.download {
+      background: #dbeafe;
+      color: #1e3a6b;
+    }
+    .card-item .action-btn.download:hover {
+      background: #2563eb;
+      color: white;
+    }
+    .badge {
+      font-size: 0.65rem;
+      background: #d1fae5;
+      color: #0b5e3a;
+      padding: 0.15rem 0.6rem;
+      border-radius: 40px;
+      font-weight: 600;
+      margin-left: 0.3rem;
+      flex-shrink: 0;
+    }
+    .badge.ios { background: #e0e7ff; color: #1e3a6b; }
+    .badge.android { background: #d1fae5; color: #0b5e3a; }
+    .badge.web { background: #fef3c7; color: #92400e; }
+    /* ===== PREVIEW MODAL ===== */
+    .preview-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 2000;
+      backdrop-filter: blur(6px);
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+    .preview-overlay.active {
+      display: flex;
+    }
+    .preview-modal {
+      background: white;
+      border-radius: 2rem;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+    }
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e9edf4;
+    }
+    .preview-header .preview-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .preview-header .preview-title i {
+      color: #2563eb;
+    }
+    .preview-close {
+      background: #f1f5fb;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 40px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: 0.15s;
+      color: #1f334a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .preview-close:hover {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .preview-body {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      background: #f4f7fc;
+      min-height: 400px;
+    }
+    .preview-body iframe {
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+      border: none;
+    }
+    .preview-body .preview-loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #7087a4;
+      font-size: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .preview-body .preview-loading i {
+      font-size: 2.5rem;
+      color: #2563eb;
+    }
+    .preview-footer {
+      padding: 0.8rem 1.5rem;
+      border-top: 1px solid #e9edf4;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+      background: #fafcff;
+    }
+    .preview-footer .btn-visit {
+      background: #0b1a2e;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .preview-footer .btn-visit:hover {
+      background: #1f3a6b;
+      transform: scale(0.96);
+    }
+    .preview-footer .btn-visit i {
+      font-size: 0.8rem;
+    }
+    .social-preview {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .social-preview i {
+      font-size: 1.8rem;
+      color: #2c3e58;
+      opacity: 0.5;
+      transition: 0.1s;
+    }
+    .social-preview i:hover { opacity: 1; color: #2563eb; }
+    .phone-show {
+      font-size: 0.9rem;
+      color: #1f3a5e;
+      margin-top: 0.6rem;
+    }
+    .phone-show i { margin-right: 6px; color: #2563eb; }
+    .footer-note {
+      margin-top: 2.5rem;
+      text-align: center;
+      color: #7087a4;
+      font-size: 0.85rem;
+      border-top: 1px solid #e9edf4;
+      padding-top: 1.5rem;
+    }
+    .footer-note i { color: #2563eb; }
+    .website-clickable {
+      cursor: pointer;
+    }
+    .website-clickable:hover .left .info .name {
+      color: #2563eb;
+    }
+    /* Toast notification for download */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0b1a2e;
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      gap: 0.8rem;
+      animation: slideUp 0.3s ease;
+    }
+    .toast i {
+      color: #60a5fa;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+  </style>
 </head>
 <body>
-  <div class="card">
-    <div class="icon">🛠️</div>
-    <h1>We'll be right back</h1>
-    <p>This site is currently down for scheduled maintenance. We're working to improve things and expect to be back online shortly.</p>
-    <div class="badge">⏱ Expected back: shortly</div>
-    <div>
-      <button onclick="window.location.reload()">Check again</button>
+<div class="container">
+  <!-- ===== TOPBAR ===== -->
+  <div class="topbar">
+    <div class="brand-drawer">
+      <img src="favicon.png" alt="Doroi logo" />
+      <h1>doroi <span>software</span></h1>
+    </div>
+    <div class="menu-desktop">
+      <a href="#apps"><i class="fas fa-th"></i> our apps</a>
+      <a href="#websites"><i class="fas fa-globe"></i> our websites</a>
+      <a href="#"><i class="fas fa-envelope"></i> contact</a>
+    </div>
+    <button class="menu-toggle" id="menuToggle" aria-label="open menu">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+
+  <!-- ===== DRAWER ===== -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer" id="drawer">
+    <button class="drawer-close" id="drawerClose"><i class="fas fa-xmark"></i></button>
+    <div class="drawer-brand">
+      <img src="favicon.png" alt="logo" /> doroi
+    </div>
+    <div class="drawer-nav">
+      <a href="#apps"><i class="fas fa-th"></i> our apps</a>
+      <a href="#websites"><i class="fas fa-globe"></i> our websites</a>
+      <a href="#"><i class="fas fa-envelope"></i> contact</a>
+    </div>
+    <div class="drawer-social">
+      <i class="fab fa-github"></i>
+      <i class="fab fa-linkedin-in"></i>
+      <i class="fab fa-x-twitter"></i>
+      <i class="fab fa-youtube"></i>
+    </div>
+    <div style="font-size:0.8rem; color:#4d657e; margin-top:0.5rem;">
+      <i class="fas fa-phone-alt"></i> +1 (555) 247-8080
     </div>
   </div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="page-title">Explore our ecosystem</div>
+  <div class="page-sub">Discover our apps and websites — all built with ❤️ by Doroi</div>
+
+  <div class="section-grid">
+    <!-- APPS SECTION -->
+    <div class="section-card" id="apps">
+      <h2><i class="fas fa-th"></i> our apps</h2>
+      <div class="card-grid">
+        <div class="card-item">
+          <div class="left">
+            <i class="fas fa-store"></i>
+            <div class="info">
+              <span class="name">Doroi Store</span>
+              <span class="desc">Your digital marketplace</span>
+            </div>
+          </div>
+          <button class="action-btn download" data-app="Doroi Store" data-file="doroi-store.apk">
+            <i class="fas fa-download"></i> Download
+          </button>
+        </div>
+        <div class="card-item">
+          <div class="left">
+            <i class="fas fa-landmark"></i>
+            <div class="info">
+              <span class="name">Durbar</span>
+              <span class="desc">Explore the heritage</span>
+            </div>
+          </div>
+          <button class="action-btn download" data-app="Durbar" data-file="durbar.apk">
+            <i class="fas fa-download"></i> Download
+          </button>
+        </div>
+        <div class="card-item">
+          <div class="left">
+            <i class="fas fa-music"></i>
+            <div class="info">
+              <span class="name">Dusic</span>
+              <span class="desc">Stream & discover music</span>
+            </div>
+          </div>
+          <button class="action-btn download" data-app="Dusic" data-file="dusic.apk">
+            <i class="fas fa-download"></i> Download
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEBSITES SECTION -->
+    <div class="section-card" id="websites">
+      <h2><i class="fas fa-globe"></i> our websites</h2>
+      <div class="card-grid">
+        <div class="card-item website-clickable" data-url="https://adarshghimire1.com.np/durbar/">
+          <div class="left">
+            <i class="fas fa-landmark"></i>
+            <div class="info">
+              <span class="name">Durbar</span>
+              <span class="desc">Explore the heritage</span>
+            </div>
+          </div>
+          <span class="action-btn" style="pointer-events:none;"><i class="fas fa-eye"></i> Preview</span>
+        </div>
+        <div class="card-item website-clickable" data-url="https://adarshghimire1.com.np/shortcuts/">
+          <div class="left">
+            <i class="fas fa-link"></i>
+            <div class="info">
+              <span class="name">Shortcuts</span>
+              <span class="desc">Quick links & tools</span>
+            </div>
+          </div>
+          <span class="action-btn" style="pointer-events:none;"><i class="fas fa-eye"></i> Preview</span>
+        </div>
+        <div class="card-item website-clickable" data-url="https://adarshghimire1.com.np/darshanghimire/">
+          <div class="left">
+            <i class="fas fa-user-astronaut"></i>
+            <div class="info">
+              <span class="name">Darshan Ghimire</span>
+              <span class="desc">Personal portfolio</span>
+            </div>
+          </div>
+          <span class="action-btn" style="pointer-events:none;"><i class="fas fa-eye"></i> Preview</span>
+        </div>
+        <div class="card-item website-clickable" data-url="#">
+          <div class="left">
+            <i class="fas fa-code"></i>
+            <div class="info">
+              <span class="name">Dev Portal</span>
+              <span class="desc">Developer resources</span>
+            </div>
+          </div>
+          <span class="action-btn" style="pointer-events:none;"><i class="fas fa-eye"></i> Preview</span>
+        </div>
+        <div class="card-item website-clickable" data-url="#">
+          <div class="left">
+            <i class="fas fa-chart-line"></i>
+            <div class="info">
+              <span class="name">Analytics Dashboard</span>
+              <span class="desc">Real-time metrics</span>
+            </div>
+          </div>
+          <span class="action-btn" style="pointer-events:none;"><i class="fas fa-eye"></i> Preview</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social & Contact -->
+  <div style="margin-top: 2.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; background: white; padding: 1.2rem 2rem; border-radius: 2rem; border: 1px solid #e9edf4;">
+    <div>
+      <p style="font-weight:600; color:#1f334a;"><i class="fab fa-connectdevelop"></i> connect with us</p>
+      <div class="social-preview" style="margin-top: 0.3rem;">
+        <i class="fab fa-github"></i>
+        <i class="fab fa-linkedin-in"></i>
+        <i class="fab fa-x-twitter"></i>
+        <i class="fab fa-youtube"></i>
+        <i class="fab fa-discord"></i>
+      </div>
+    </div>
+    <div class="phone-show"><i class="fas fa-phone-alt"></i> +1 (555) 247-8080</div>
+    <div><i class="fas fa-envelope" style="color:#2563eb;"></i> hello@doroi.com</div>
+  </div>
+
+  <div class="footer-note">
+    <i class="fas fa-cubes"></i> Doroi Software — building the future, one line of code at a time.
+  </div>
+</div>
+
+<!-- ===== PREVIEW MODAL ===== -->
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-modal">
+    <div class="preview-header">
+      <div class="preview-title">
+        <i class="fas fa-globe"></i>
+        <span id="previewTitle">Website Preview</span>
+      </div>
+      <button class="preview-close" id="previewClose"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="preview-body" id="previewBody">
+      <div class="preview-loading" id="previewLoading">
+        <i class="fas fa-spinner fa-pulse"></i>
+        <span>Loading preview...</span>
+      </div>
+      <iframe id="previewIframe" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" loading="lazy"></iframe>
+    </div>
+    <div class="preview-footer">
+      <a href="#" target="_blank" class="btn-visit" id="previewVisitBtn">
+        <i class="fas fa-external-link-alt"></i> Visit Website
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST NOTIFICATION ===== -->
+<div class="toast" id="toast">
+  <i class="fas fa-check-circle"></i>
+  <span id="toastMessage">Download started</span>
+</div>
+
+<script>
+  (function() {
+    // ===== DRAWER =====
+    const drawer = document.getElementById('drawer');
+    const overlay = document.getElementById('drawerOverlay');
+    const openBtn = document.getElementById('menuToggle');
+    const closeBtn = document.getElementById('drawerClose');
+
+    function openDrawer() {
+      drawer.classList.add('open');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    openBtn.addEventListener('click', openDrawer);
+    closeBtn.addEventListener('click', closeDrawer);
+    overlay.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+
+    // ===== DOWNLOAD FUNCTION =====
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    let toastTimeout;
+
+    function showToast(message) {
+      toastMessage.textContent = message;
+      toast.style.display = 'flex';
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    function downloadApp(appName, fileName) {
+      // Create a dummy file for download demonstration
+      // In production, this would be a real APK file URL
+      const content = `This is a demo download for ${appName}. 
+In production, this would be the actual APK file.
+App: ${appName}
+Version: 1.0.0
+Build: 2024`;
+
+      const blob = new Blob([content], { type: 'application/vnd.android.package-archive' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName || `${appName.toLowerCase().replace(/\s+/g, '-')}.apk`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the URL after a short delay
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 1000);
+      
+      showToast(`📱 ${appName} download started!`);
+      console.log(`📥 Downloading: ${appName} (${fileName})`);
+    }
+
+    // Attach download handlers to all download buttons
+    document.querySelectorAll('.action-btn.download').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const appName = this.dataset.app || 'App';
+        const fileName = this.dataset.file || 'app.apk';
+        downloadApp(appName, fileName);
+      });
+    });
+
+    // ===== PREVIEW MODAL =====
+    const previewOverlay = document.getElementById('previewOverlay');
+    const previewIframe = document.getElementById('previewIframe');
+    const previewLoading = document.getElementById('previewLoading');
+    const previewTitle = document.getElementById('previewTitle');
+    const previewVisitBtn = document.getElementById('previewVisitBtn');
+    const previewClose = document.getElementById('previewClose');
+
+    let currentUrl = '';
+
+    function openPreview(url, title) {
+      if (!url || url === '#') {
+        alert('This website preview is not available yet.');
+        return;
+      }
+      
+      currentUrl = url;
+      previewTitle.textContent = title || 'Website Preview';
+      previewVisitBtn.href = url;
+      
+      previewLoading.style.display = 'flex';
+      previewIframe.style.display = 'none';
+      
+      previewIframe.src = url;
+      
+      previewIframe.onload = function() {
+        previewLoading.style.display = 'none';
+        previewIframe.style.display = 'block';
+      };
+      
+      setTimeout(() => {
+        if (previewLoading.style.display !== 'none') {
+          previewLoading.innerHTML = `
+            <i class="fas fa-exclamation-circle" style="color:#f59e0b;"></i>
+            <span>Preview taking longer than expected. Click "Visit Website" to open directly.</span>
+          `;
+        }
+      }, 8000);
+      
+      previewOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePreview() {
+      previewOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        previewIframe.src = '';
+        previewIframe.style.display = 'none';
+        previewLoading.style.display = 'flex';
+        previewLoading.innerHTML = `
+          <i class="fas fa-spinner fa-pulse"></i>
+          <span>Loading preview...</span>
+        `;
+      }, 300);
+    }
+
+    document.querySelectorAll('.website-clickable').forEach(card => {
+      card.addEventListener('click', function(e) {
+        if (e.target.closest('.action-btn')) return;
+        const url = this.dataset.url;
+        const name = this.querySelector('.info .name')?.textContent || 'Website';
+        openPreview(url, name);
+      });
+    });
+
+    previewClose.addEventListener('click', closePreview);
+    previewOverlay.addEventListener('click', function(e) {
+      if (e.target === this) closePreview();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePreview();
+    });
+
+    console.log('✅ Doroi main page ready — with app downloads & website previews');
+  })();
+</script>
 </body>
 </html>

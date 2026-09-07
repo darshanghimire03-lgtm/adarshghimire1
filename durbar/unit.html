@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Durbar - Units</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f0f4fa;
+      color: #0b1b33;
+      padding: 2rem 1.5rem;
+      max-width: 950px;
+      margin: 0 auto;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #1e4b7a;
+      text-decoration: none;
+      background: #e9eef4;
+      padding: 0.4rem 1.2rem 0.4rem 1rem;
+      border-radius: 40px;
+      transition: all 0.2s;
+      margin-bottom: 1.5rem;
+      width: fit-content;
+    }
+    .back-link:hover {
+      background: #d0dceb;
+      color: #0a2a4a;
+      transform: translateX(-3px);
+    }
+    .back-link i {
+      font-size: 0.9rem;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      border-bottom: 2px solid rgba(0, 40, 80, 0.06);
+      padding-bottom: 1.2rem;
+    }
+
+    .page-header .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .page-header .subject-icon-large {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      background: #e9f0f8;
+      color: #1e4b7a;
+    }
+
+    .page-header .subject-icon-large.economic {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .page-header .subject-icon-large.account {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    .page-header .subject-icon-large.computer {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+    .page-header .subject-icon-large.english {
+      background: #fce4ec;
+      color: #c62828;
+    }
+    .page-header .subject-icon-large.nepali {
+      background: #fff3e0;
+      color: #e65100;
+    }
+    .page-header .subject-icon-large.default {
+      background: #e9f0f8;
+      color: #1e4b7a;
+    }
+
+    .page-header h1 {
+      font-weight: 700;
+      font-size: 2.2rem;
+      letter-spacing: -0.02em;
+      color: #0b2a4a;
+    }
+
+    .page-header h1 .subject-badge {
+      font-weight: 400;
+      font-size: 0.85rem;
+      color: #42648d;
+      background: #e2eaf3;
+      padding: 0.15rem 1rem;
+      border-radius: 30px;
+      letter-spacing: 0.01em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-left: 0.5rem;
+    }
+
+    .unit-count {
+      background: #dce5f0;
+      border-radius: 30px;
+      padding: 0.15rem 1.2rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #1f4770;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .unit-count i {
+      font-size: 0.8rem;
+    }
+
+    .coming-soon-card {
+      background: white;
+      border-radius: 28px;
+      padding: 4rem 2rem;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+      border: 1px solid #e5edf5;
+    }
+    .coming-soon-card i {
+      font-size: 3rem;
+      color: #8aaac9;
+      margin-bottom: 1rem;
+    }
+    .coming-soon-card h2 {
+      font-weight: 500;
+      font-size: 1.8rem;
+      color: #3b5b7c;
+      margin-bottom: 0.5rem;
+    }
+    .coming-soon-card p {
+      color: #6d7f94;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .unit-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .unit-item {
+      background: white;
+      border-radius: 18px;
+      padding: 0.9rem 1.5rem;
+      border: 1px solid #e6edf6;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 6px rgba(0, 20, 40, 0.02);
+    }
+
+    .unit-item:hover {
+      border-color: #b8cfe3;
+      box-shadow: 0 6px 20px rgba(0, 30, 60, 0.06);
+      transform: translateX(4px);
+    }
+
+    .unit-item a {
+      text-decoration: none;
+      color: #0d2b47;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      font-weight: 500;
+      font-size: 1.05rem;
+    }
+
+    .unit-item .unit-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .unit-item .unit-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #eef4fa;
+      color: #4b6f92;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .unit-item:hover .unit-icon {
+      background: #dce8f2;
+      color: #1e4b7a;
+      transform: scale(1.05);
+    }
+
+    .unit-item .unit-name {
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .unit-item .unit-meta {
+      font-weight: 400;
+      font-size: 0.78rem;
+      color: #5e7d9c;
+      background: #eef4fa;
+      padding: 0.15rem 1rem;
+      border-radius: 30px;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+    }
+    .unit-item .unit-meta i {
+      font-size: 0.65rem;
+    }
+
+    .unit-item .arrow-icon {
+      color: #7a9ab8;
+      font-size: 1rem;
+      opacity: 0.3;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+
+    .unit-item:hover .arrow-icon {
+      opacity: 1;
+      transform: translateX(4px);
+      color: #1e4b7a;
+    }
+
+    /* Loading skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, #eef4fa 25%, #f5f8fc 50%, #eef4fa 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 12px;
+      height: 60px;
+      margin-bottom: 0.9rem;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 1rem; }
+      .page-header h1 { font-size: 1.7rem; }
+      .page-header .subject-icon-large { width: 40px; height: 40px; font-size: 1.2rem; }
+      .unit-item { padding: 0.8rem 1rem; }
+      .unit-item a { font-size: 0.95rem; }
+      .unit-item .unit-name { white-space: normal; }
+      .unit-item .unit-meta { font-size: 0.7rem; padding: 0.1rem 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Subjects</a>
+
+<div class="page-header">
+  <div class="header-left">
+    <div id="subjectIcon" class="subject-icon-large default">
+      <i class="fas fa-folder"></i>
+    </div>
+    <h1 id="subjectName">
+      Subject
+      <span class="subject-badge"><i class="fas fa-layer-group"></i> Units</span>
+    </h1>
+  </div>
+  <span id="unitCounter" class="unit-count"><i class="fas fa-cubes"></i> 0 units</span>
+</div>
+
+<div id="comingSoon" class="coming-soon-card" style="display: none;">
+  <i class="fas fa-inbox"></i>
+  <h2>No units yet</h2>
+  <p>This subject is still empty. Check back later for new content.</p>
+</div>
+
+<ul id="unitList" class="unit-list">
+  <!-- Skeleton loaders -->
+  <div class="skeleton"></div>
+  <div class="skeleton"></div>
+  <div class="skeleton"></div>
+</ul>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  (function() {
+    const listEl = document.getElementById("unitList");
+    const comingSoonEl = document.getElementById("comingSoon");
+    const subjectNameEl = document.getElementById("subjectName");
+    const unitCounter = document.getElementById("unitCounter");
+    const subjectIconEl = document.getElementById("subjectIcon");
+
+    const subjectName = qs("subjectName") ? decodeURIComponent(qs("subjectName")) : "Subject";
+    const subjectKeyFromLink = qs("subjectKey");
+    const subjectKey = subjectKeyFromLink || sanitizeKey(subjectName);
+
+    // Subject icon mapping
+    const iconMap = {
+      "Economic": { icon: "fa-chart-line", color: "economic" },
+      "Account": { icon: "fa-calculator", color: "account" },
+      "Computer Science": { icon: "fa-laptop-code", color: "computer" },
+      "English": { icon: "fa-book", color: "english" },
+      "Nepali": { icon: "fa-flag", color: "nepali" }
+    };
+
+    const style = iconMap[subjectName] || { icon: "fa-folder", color: "default" };
+    subjectIconEl.className = "subject-icon-large " + style.color;
+    subjectIconEl.innerHTML = '<i class="fas ' + style.icon + '"></i>';
+
+    subjectNameEl.innerHTML = subjectName + 
+      ' <span class="subject-badge"><i class="fas fa-layer-group"></i> Units</span>';
+    document.title = "Durbar · " + subjectName;
+
+    function updateEmptyState(hasUnits) {
+      listEl.style.display = hasUnits ? "" : "none";
+      comingSoonEl.style.display = hasUnits ? "none" : "";
+      unitCounter.innerHTML = hasUnits ? 
+        '<i class="fas fa-cubes"></i> ' + listEl.children.length + ' units' : 
+        '<i class="fas fa-cubes"></i> 0 units';
+    }
+
+    // Remove skeletons
+    function clearSkeletons() {
+      const skeletons = listEl.querySelectorAll('.skeleton');
+      skeletons.forEach(s => s.remove());
+    }
+
+    unitsRef(subjectKey).once("value")
+      .then(snapshot => {
+        const units = [];
+        snapshot.forEach(child => {
+          units.push(child.val());
+        });
+
+        clearSkeletons();
+
+        if (units.length === 0) {
+          updateEmptyState(false);
+          return;
+        }
+
+        listEl.innerHTML = "";
+        units.forEach(unit => {
+          const notes = unit.notes || {};
+          const noteCount = Object.keys(notes).length;
+          const subtitle = noteCount === 1 ? "1 note" : (noteCount + " notes");
+          const icon = noteCount > 0 ? 'fa-file-alt' : 'fa-folder-open';
+
+          const li = document.createElement("li");
+          li.className = "unit-item";
+
+          const a = document.createElement("a");
+          a.href = "notes.html?unitId=" + encodeURIComponent(unit.id) +
+                   "&unitName=" + encodeURIComponent(unit.name) +
+                   "&subjectName=" + encodeURIComponent(subjectName) +
+                   "&subjectKey=" + encodeURIComponent(subjectKey);
+
+          const left = document.createElement("span");
+          left.className = "unit-left";
+
+          const iconSpan = document.createElement("span");
+          iconSpan.className = "unit-icon";
+          iconSpan.innerHTML = '<i class="fas ' + icon + '"></i>';
+
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "unit-name";
+          nameSpan.textContent = unit.name;
+
+          left.appendChild(iconSpan);
+          left.appendChild(nameSpan);
+
+          const metaSpan = document.createElement("span");
+          metaSpan.className = "unit-meta";
+          metaSpan.innerHTML = '<i class="fas fa-file-alt"></i> ' + subtitle;
+
+          const arrow = document.createElement("span");
+          arrow.className = "arrow-icon";
+          arrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
+
+          a.appendChild(left);
+          a.appendChild(metaSpan);
+          a.appendChild(arrow);
+          li.appendChild(a);
+          listEl.appendChild(li);
+        });
+
+        updateEmptyState(true);
+      })
+      .catch(err => {
+        console.error("loadUnits cancelled: " + err.message);
+        clearSkeletons();
+        updateEmptyState(false);
+      });
+  })();
+</script>
+
+</body>
+</html>

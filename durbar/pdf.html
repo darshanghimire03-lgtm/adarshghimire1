@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Durbar - PDF Viewer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f0f4fa;
+      color: #0b1b33;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Navigation Bar */
+    .pdf-navbar {
+      background: white;
+      padding: 0.8rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e6edf6;
+      box-shadow: 0 2px 8px rgba(0, 20, 40, 0.04);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .pdf-navbar .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .pdf-navbar .nav-left .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #1e4b7a;
+      text-decoration: none;
+      background: #e9eef4;
+      padding: 0.4rem 1.2rem 0.4rem 1rem;
+      border-radius: 40px;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .pdf-navbar .nav-left .back-btn:hover {
+      background: #d0dceb;
+      color: #0a2a4a;
+      transform: translateX(-3px);
+    }
+    .pdf-navbar .nav-left .back-btn i {
+      font-size: 0.9rem;
+    }
+
+    .pdf-navbar .file-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .pdf-navbar .file-info .file-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #fff0f0;
+      color: #d44c4c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .pdf-navbar .file-info .file-details {
+      min-width: 0;
+    }
+
+    .pdf-navbar .file-info .file-details .file-name {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #0d2b47;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pdf-navbar .file-info .file-details .file-meta {
+      font-size: 0.75rem;
+      color: #6a89a8;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .pdf-navbar .file-info .file-details .file-meta .dot {
+      color: #b8cee3;
+    }
+
+    .pdf-navbar .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .pdf-navbar .nav-right .tool-btn {
+      background: #eef4fa;
+      border: none;
+      padding: 0.5rem 0.8rem;
+      border-radius: 12px;
+      color: #3d5a78;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .pdf-navbar .nav-right .tool-btn:hover {
+      background: #dce8f2;
+      color: #0a2a4a;
+    }
+    .pdf-navbar .nav-right .tool-btn i {
+      font-size: 0.9rem;
+    }
+
+    .pdf-navbar .nav-right .tool-btn.download-btn {
+      background: #1e4b7a;
+      color: white;
+    }
+    .pdf-navbar .nav-right .tool-btn.download-btn:hover {
+      background: #0a2a4a;
+    }
+
+    /* PDF Viewer Container */
+    .pdf-viewer-container {
+      flex: 1;
+      background: #e8edf4;
+      padding: 1.5rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .pdf-viewer-container .pdf-wrapper {
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 20, 40, 0.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .pdf-viewer-container .pdf-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Loading State */
+    .pdf-viewer-container .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      transition: opacity 0.3s;
+    }
+
+    .pdf-viewer-container .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .pdf-viewer-container .loading-overlay .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #e6edf6;
+      border-top-color: #1e4b7a;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .pdf-viewer-container .loading-overlay .loading-text {
+      margin-top: 1.5rem;
+      color: #3d5a78;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Error State */
+    .pdf-viewer-container .error-state {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 6;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .pdf-viewer-container .error-state.visible {
+      display: flex;
+    }
+
+    .pdf-viewer-container .error-state i {
+      font-size: 4rem;
+      color: #d44c4c;
+      margin-bottom: 1rem;
+    }
+
+    .pdf-viewer-container .error-state h3 {
+      color: #0d2b47;
+      margin-bottom: 0.5rem;
+    }
+
+    .pdf-viewer-container .error-state p {
+      color: #6a89a8;
+      max-width: 400px;
+    }
+
+    .pdf-viewer-container .error-state .retry-btn {
+      margin-top: 1.5rem;
+      background: #1e4b7a;
+      color: white;
+      border: none;
+      padding: 0.6rem 2rem;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .pdf-viewer-container .error-state .retry-btn:hover {
+      background: #0a2a4a;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .pdf-navbar {
+        padding: 0.6rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .pdf-navbar .file-info {
+        order: 3;
+        flex-basis: 100%;
+        margin-top: 0.3rem;
+      }
+      .pdf-navbar .file-info .file-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+      }
+      .pdf-navbar .file-info .file-details .file-name {
+        font-size: 0.85rem;
+      }
+      .pdf-navbar .nav-right .tool-btn span {
+        display: none;
+      }
+      .pdf-viewer-container {
+        padding: 0.8rem;
+      }
+      .pdf-viewer-container .pdf-wrapper {
+        border-radius: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .pdf-navbar .nav-left .back-btn span {
+        display: none;
+      }
+      .pdf-navbar .nav-left .back-btn {
+        padding: 0.4rem 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="pdf-navbar">
+  <div class="nav-left">
+    <button class="back-btn" onclick="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      <span>Back</span>
+    </button>
+  </div>
+
+  <div class="file-info">
+    <div class="file-icon">
+      <i class="fas fa-file-pdf"></i>
+    </div>
+    <div class="file-details">
+      <div class="file-name" id="pdfFileName">Loading PDF...</div>
+      <div class="file-meta">
+        <span id="pdfFileSize">—</span>
+        <span class="dot">•</span>
+        <span>PDF Document</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-right">
+    <button class="tool-btn" onclick="toggleZoom()" title="Toggle zoom">
+      <i class="fas fa-search-plus"></i>
+      <span>Zoom</span>
+    </button>
+    <button class="tool-btn download-btn" onclick="downloadPDF()" title="Download PDF">
+      <i class="fas fa-download"></i>
+      <span>Download</span>
+    </button>
+  </div>
+</nav>
+
+<!-- PDF Viewer -->
+<div class="pdf-viewer-container">
+  <div class="pdf-wrapper" id="pdfWrapper">
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading PDF document...</div>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" id="errorState">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h3>Unable to load PDF</h3>
+      <p>The PDF document could not be loaded. Please check the URL and try again.</p>
+      <button class="retry-btn" onclick="loadPDF()">Try Again</button>
+    </div>
+
+    <!-- PDF Iframe -->
+    <iframe id="pdfFrame" src="about:blank"></iframe>
+  </div>
+</div>
+
+<script>
+  (function() {
+    "use strict";
+
+    // Get PDF URL from query params
+    const urlParams = new URLSearchParams(window.location.search);
+    const pdfUrl = urlParams.get('url');
+    const fileName = urlParams.get('name') || 'document.pdf';
+    const fileSize = urlParams.get('size') || '—';
+    const returnUrl = urlParams.get('return') || 'notes.html';
+
+    // DOM Elements
+    const pdfFrame = document.getElementById('pdfFrame');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const errorState = document.getElementById('errorState');
+    const pdfFileName = document.getElementById('pdfFileName');
+    const pdfFileSize = document.getElementById('pdfFileSize');
+
+    // Set file info
+    pdfFileName.textContent = decodeURIComponent(fileName);
+    pdfFileSize.textContent = fileSize;
+
+    // Store zoom state
+    let isZoomed = false;
+
+    // Load PDF function
+    function loadPDF() {
+      if (!pdfUrl) {
+        showError('No PDF URL provided');
+        return;
+      }
+
+      // Decode URL if encoded
+      let decodedUrl = pdfUrl;
+      try {
+        decodedUrl = decodeURIComponent(pdfUrl);
+      } catch (e) {
+        // If decode fails, use as is
+      }
+
+      // Hide error, show loading
+      errorState.classList.remove('visible');
+      loadingOverlay.classList.remove('hidden');
+
+      // Add cache-busting param to prevent caching issues
+      const cacheBuster = '?t=' + Date.now();
+      const separator = decodedUrl.includes('?') ? '&' : '?';
+      const finalUrl = decodedUrl + separator + 't=' + Date.now();
+
+      // Use Google Docs Viewer as fallback for better compatibility
+      // This works for most PDFs and provides a clean viewer
+      const viewerUrl = 'https://docs.google.com/gview?embedded=true&url=' + 
+                        encodeURIComponent(decodedUrl);
+
+      // Try direct PDF first, fallback to Google Docs viewer
+      pdfFrame.src = viewerUrl;
+
+      // Set timeout to hide loading after content loads
+      pdfFrame.onload = function() {
+        setTimeout(function() {
+          loadingOverlay.classList.add('hidden');
+        }, 800);
+      };
+
+      // If iframe doesn't load after 10 seconds, show error
+      setTimeout(function() {
+        if (!loadingOverlay.classList.contains('hidden')) {
+          // Check if frame has content
+          try {
+            const frameDoc = pdfFrame.contentDocument || pdfFrame.contentWindow?.document;
+            if (!frameDoc || frameDoc.body.innerHTML.trim() === '' || 
+                frameDoc.body.innerHTML.includes('about:blank')) {
+              showError('The PDF failed to load. The document might be unavailable or corrupted.');
+            } else {
+              loadingOverlay.classList.add('hidden');
+            }
+          } catch (e) {
+            // Cross-origin error - assume loaded
+            loadingOverlay.classList.add('hidden');
+          }
+        }
+      }, 10000);
+    }
+
+    function showError(message) {
+      loadingOverlay.classList.add('hidden');
+      errorState.classList.add('visible');
+      if (message) {
+        const errorP = errorState.querySelector('p');
+        if (errorP) errorP.textContent = message;
+      }
+    }
+
+    // Go back function
+    window.goBack = function() {
+      if (document.referrer && document.referrer.includes(window.location.hostname)) {
+        window.history.back();
+      } else {
+        window.location.href = returnUrl;
+      }
+    };
+
+    // Download PDF
+    window.downloadPDF = function() {
+      if (!pdfUrl) {
+        alert('No PDF URL available to download');
+        return;
+      }
+      try {
+        const decodedUrl = decodeURIComponent(pdfUrl);
+        // Open in new tab for download
+        window.open(decodedUrl, '_blank');
+      } catch (e) {
+        window.open(pdfUrl, '_blank');
+      }
+    };
+
+    // Toggle zoom
+    window.toggleZoom = function() {
+      const wrapper = document.getElementById('pdfWrapper');
+      if (isZoomed) {
+        wrapper.style.transform = 'scale(1)';
+        wrapper.style.transformOrigin = 'top left';
+        isZoomed = false;
+      } else {
+        wrapper.style.transform = 'scale(1.15)';
+        wrapper.style.transformOrigin = 'top left';
+        isZoomed = true;
+      }
+    };
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      // Escape key to go back
+      if (e.key === 'Escape') {
+        goBack();
+      }
+      // Ctrl+Z or Command+Z to toggle zoom
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        toggleZoom();
+      }
+    });
+
+    // Initialize
+    loadPDF();
+
+    // Expose for retry
+    window.loadPDF = loadPDF;
+
+    // Handle resize for zoom
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(function() {
+        if (isZoomed) {
+          // Reset and re-apply zoom to adjust
+          const wrapper = document.getElementById('pdfWrapper');
+          wrapper.style.transform = 'scale(1)';
+          setTimeout(function() {
+            wrapper.style.transform = 'scale(1.15)';
+            wrapper.style.transformOrigin = 'top left';
+          }, 50);
+        }
+      }, 200);
+    });
+
+  })();
+</script>
+
+</body>
+</html>

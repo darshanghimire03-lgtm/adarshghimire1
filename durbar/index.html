@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Durbar - Subjects</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f0f4fa;
+      color: #0b1b33;
+      padding: 2.5rem 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .app-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 2px solid rgba(0, 40, 80, 0.06);
+      padding-bottom: 1.5rem;
+    }
+
+    .app-header .header-top {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .app-header .app-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(30, 75, 122, 0.25);
+      flex-shrink: 0;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app-header .app-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .app-header h1 {
+      font-weight: 700;
+      font-size: 2.8rem;
+      letter-spacing: -0.03em;
+      color: #0a2a4a;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .app-header h1 .title-text {
+      background: linear-gradient(135deg, #0a2a4a, #1e4b7a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .app-header .subtitle {
+      color: #4a6a88;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .app-header .subtitle i {
+      color: #6a8aa8;
+      font-size: 0.8rem;
+    }
+
+    /* Subject Grid */
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.25rem;
+      list-style: none;
+      padding: 0;
+    }
+
+    .subject-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.5rem 1.2rem;
+      border: 1px solid #e6edf6;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 8px rgba(0, 20, 40, 0.02);
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .subject-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #1e4b7a, #4a8ab5);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .subject-card:hover::before {
+      opacity: 1;
+    }
+
+    .subject-card:hover {
+      border-color: #b8cfe3;
+      box-shadow: 0 8px 24px rgba(0, 30, 60, 0.08);
+      transform: translateY(-3px);
+    }
+
+    .subject-card a {
+      text-decoration: none;
+      color: #0d2b47;
+      font-weight: 600;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .subject-card .subject-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      background: #e9f0f8;
+      color: #1e4b7a;
+      transition: all 0.3s;
+    }
+
+    .subject-card:hover .subject-icon {
+      transform: scale(1.05) rotate(-3deg);
+    }
+
+    .subject-card .subject-icon.economic {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .subject-card .subject-icon.account {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    .subject-card .subject-icon.computer {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+    .subject-card .subject-icon.english {
+      background: #fce4ec;
+      color: #c62828;
+    }
+    .subject-card .subject-icon.nepali {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .subject-card .subject-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .subject-card .subject-info .name {
+      font-weight: 600;
+      color: #0d2b47;
+      font-size: 1.05rem;
+    }
+
+    .subject-card .subject-info .count {
+      font-size: 0.7rem;
+      color: #6d89a6;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.1rem;
+    }
+    .subject-card .subject-info .count i {
+      font-size: 0.6rem;
+    }
+
+    .subject-card .arrow-icon {
+      color: #7a9ab8;
+      font-size: 1rem;
+      opacity: 0.3;
+      transition: all 0.3s;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    .subject-card:hover .arrow-icon {
+      opacity: 1;
+      transform: translateX(4px);
+      color: #1e4b7a;
+    }
+
+    /* Footer */
+    .app-footer {
+      margin-top: auto;
+      padding-top: 2.5rem;
+      text-align: center;
+      color: #8aaac9;
+      font-size: 0.8rem;
+      border-top: 1px solid rgba(0, 40, 80, 0.05);
+    }
+    .app-footer i {
+      color: #b8cee3;
+      margin: 0 0.3rem;
+    }
+
+    /* ===== AD POPUP OVERLAY ===== */
+    .ad-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .ad-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .ad-popup {
+      background: white;
+      border-radius: 32px;
+      max-width: 480px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35);
+      animation: slideUp 0.5s ease;
+      position: relative;
+    }
+
+    /* Ad Header with Gradient */
+    .ad-header {
+      background: linear-gradient(135deg, #1a3a5c, #2a6a9e);
+      padding: 2.5rem 2rem 2rem 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .ad-header .ad-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      background: white;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .ad-header .ad-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ad-header .ad-title {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .ad-header .ad-subtitle {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+      margin-top: 0.3rem;
+      font-weight: 400;
+    }
+
+    .ad-header .ad-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .ad-header .ad-badge i {
+      font-size: 0.5rem;
+    }
+
+    /* Ad Body */
+    .ad-body {
+      padding: 1.5rem 2rem 2rem 2rem;
+    }
+
+    .ad-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .ad-feature {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      color: #0d2b47;
+      font-weight: 500;
+      background: #f6faff;
+      padding: 0.6rem 0.8rem;
+      border-radius: 12px;
+      border: 1px solid #eef4fa;
+      transition: all 0.2s;
+    }
+
+    .ad-feature:hover {
+      background: #eef4fa;
+      border-color: #dce8f2;
+    }
+
+    .ad-feature i {
+      color: #2a6a9e;
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .ad-actions {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .ad-actions .btn-download {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, #1e4b7a, #2a6a9e);
+      color: white;
+      padding: 0.85rem 1.5rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(30, 75, 122, 0.3);
+      text-decoration: none;
+    }
+
+    .ad-actions .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(30, 75, 122, 0.4);
+      background: linear-gradient(135deg, #0a2a4a, #1e4b7a);
+    }
+
+    .ad-actions .btn-download i {
+      font-size: 1.1rem;
+    }
+
+    .ad-actions .btn-close {
+      padding: 0.85rem 1.2rem;
+      background: #eef4fa;
+      color: #4a6a88;
+      border: none;
+      border-radius: 60px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .ad-actions .btn-close:hover {
+      background: #dce8f2;
+      color: #0a2a4a;
+    }
+
+    /* Download Progress */
+    .download-progress {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.8rem 1rem;
+      background: #f0f7ff;
+      border-radius: 12px;
+      border: 1px solid #dce8f2;
+    }
+
+    .download-progress.active {
+      display: block;
+    }
+
+    .download-progress .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e6edf6;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .download-progress .progress-bar .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1e4b7a, #2a6a9e);
+      border-radius: 10px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .download-progress .progress-text {
+      font-size: 0.8rem;
+      color: #1e4b7a;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      body { padding: 1.25rem; }
+      .app-header h1 { font-size: 2rem; }
+      .app-header .app-icon { width: 44px; height: 44px; }
+      .subject-grid { grid-template-columns: 1fr; }
+      .subject-card { padding: 1rem; }
+
+      .ad-popup {
+        border-radius: 24px;
+        margin: 1rem;
+      }
+
+      .ad-header {
+        padding: 1.5rem 1.5rem 1.2rem 1.5rem;
+      }
+
+      .ad-header .ad-icon {
+        width: 64px;
+        height: 64px;
+      }
+
+      .ad-header .ad-title {
+        font-size: 1.4rem;
+      }
+
+      .ad-header .ad-subtitle {
+        font-size: 0.85rem;
+      }
+
+      .ad-body {
+        padding: 1rem 1.5rem 1.5rem 1.5rem;
+      }
+
+      .ad-features {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+
+      .ad-feature {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.7rem;
+      }
+
+      .ad-actions {
+        flex-direction: column;
+      }
+
+      .ad-actions .btn-close {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .ad-header .ad-badge {
+        top: 0.6rem;
+        right: 0.6rem;
+        font-size: 0.5rem;
+        padding: 0.15rem 0.6rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .app-header h1 { font-size: 1.7rem; }
+      .ad-header .ad-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-top">
+    <div class="app-icon">
+      <img src="favicon.png" alt="Durbar App Icon">
+    </div>
+    <h1>
+      <span class="title-text">Durbar</span>
+    </h1>
+  </div>
+  
+  <div class="subtitle">
+    <i class="fas fa-compass"></i>
+    Select a subject to explore units and notes
+  </div>
+</div>
+
+<ul id="subjectList" class="subject-grid"></ul>
+
+<div class="app-footer">
+  <i class="fas fa-book-open"></i> Durbar Learning Platform
+</div>
+
+<!-- ===== AD POPUP ===== -->
+<div class="ad-overlay" id="adOverlay">
+  <div class="ad-popup">
+    <!-- Ad Header -->
+    <div class="ad-header">
+      <span class="ad-badge"><i class="fas fa-star"></i> RECOMMENDED</span>
+      <div class="ad-icon">
+        <img src="favicon.png" alt="Durbar App">
+      </div>
+      <div class="ad-title">Durbar App</div>
+      <div class="ad-subtitle">Learn anywhere, anytime with the official app</div>
+    </div>
+
+    <!-- Ad Body -->
+    <div class="ad-body">
+      <div class="ad-features">
+        <div class="ad-feature">
+          <i class="fas fa-mobile-alt"></i>
+          Mobile Learning
+        </div>
+        <div class="ad-feature">
+          <i class="fas fa-wifi"></i>
+          Offline Access
+        </div>
+        <div class="ad-feature">
+          <i class="fas fa-bell"></i>
+          Smart Notifications
+        </div>
+        <div class="ad-feature">
+          <i class="fas fa-tachometer-alt"></i>
+          Faster Performance
+        </div>
+      </div>
+
+      <!-- Download Progress -->
+      <div class="download-progress" id="downloadProgress">
+        <div class="progress-text">
+          <span>Downloading Durbar.apk</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="ad-actions">
+        <a href="#" class="btn-download" id="downloadBtn" onclick="handleAdDownload(event)">
+          <i class="fas fa-download"></i>
+          Download Now
+        </a>
+        <button class="btn-close" onclick="closeAd()">
+          <i class="fas fa-times"></i> Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  (function() {
+    const listEl = document.getElementById("subjectList");
+    let adInterval = null;
+    let isAdShowing = false;
+    let isDownloading = false;
+
+    // Subject icons and colors mapping
+    const subjectStyles = {
+      "Economic": { icon: "fa-chart-line", color: "economic" },
+      "Account": { icon: "fa-calculator", color: "account" },
+      "Computer Science": { icon: "fa-laptop-code", color: "computer" },
+      "English": { icon: "fa-book", color: "english" },
+      "Nepali": { icon: "fa-flag", color: "nepali" }
+    };
+
+    // Build subject list
+    SUBJECTS.forEach(subjectName => {
+      const li = document.createElement("li");
+      li.className = "subject-card";
+
+      const a = document.createElement("a");
+      const subjectKey = sanitizeKey(subjectName);
+      a.href = "unit.html?subjectName=" + encodeURIComponent(subjectName) +
+               "&subjectKey=" + encodeURIComponent(subjectKey);
+
+      const style = subjectStyles[subjectName] || { icon: "fa-folder", color: "" };
+      const iconSpan = document.createElement("span");
+      iconSpan.className = "subject-icon " + style.color;
+      iconSpan.innerHTML = '<i class="fas ' + style.icon + '"></i>';
+
+      const info = document.createElement("span");
+      info.className = "subject-info";
+      
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "name";
+      nameSpan.textContent = subjectName;
+      
+      const countSpan = document.createElement("span");
+      countSpan.className = "count";
+      countSpan.innerHTML = '<i class="fas fa-chevron-right"></i> Explore units';
+      
+      info.appendChild(nameSpan);
+      info.appendChild(countSpan);
+
+      const arrow = document.createElement("span");
+      arrow.className = "arrow-icon";
+      arrow.innerHTML = '<i class="fas fa-arrow-right"></i>';
+
+      a.appendChild(iconSpan);
+      a.appendChild(info);
+      a.appendChild(arrow);
+      li.appendChild(a);
+      listEl.appendChild(li);
+    });
+
+    // ===== DIRECT DOWNLOAD FUNCTION =====
+    function downloadAPK() {
+      const apkUrl = "https://github.com/darshanghimire03-lgtm/DOROI-STORE/releases/download/Doroi/Durbar.apk";
+      const downloadBtn = document.getElementById('downloadBtn');
+      const progressDiv = document.getElementById('downloadProgress');
+      const progressFill = document.getElementById('progressFill');
+      const progressPercent = document.getElementById('progressPercent');
+
+      if (isDownloading) return;
+      isDownloading = true;
+
+      // Show progress
+      progressDiv.classList.add('active');
+      downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+      downloadBtn.style.opacity = '0.7';
+      downloadBtn.style.pointerEvents = 'none';
+
+      // Use fetch to download with progress
+      fetch(apkUrl)
+        .then(response => {
+          if (!response.ok) throw new Error('Download failed');
+          
+          const contentLength = response.headers.get('content-length');
+          const total = parseInt(contentLength, 10);
+          let loaded = 0;
+
+          const reader = response.body.getReader();
+          const chunks = [];
+
+          return new ReadableStream({
+            start(controller) {
+              function push() {
+                reader.read().then(({ done, value }) => {
+                  if (done) {
+                    controller.close();
+                    return;
+                  }
+                  chunks.push(value);
+                  loaded += value.length;
+                  
+                  // Update progress
+                  if (total) {
+                    const percent = Math.round((loaded / total) * 100);
+                    progressFill.style.width = percent + '%';
+                    progressPercent.textContent = percent + '%';
+                  } else {
+                    // If content-length not available, show indeterminate
+                    progressFill.style.width = '100%';
+                    progressFill.style.animation = 'pulse 1s infinite';
+                    progressPercent.textContent = 'Downloading...';
+                  }
+                  
+                  controller.enqueue(value);
+                  push();
+                }).catch(err => {
+                  controller.error(err);
+                });
+              }
+              push();
+            }
+          });
+        })
+        .then(stream => new Response(stream))
+        .then(response => response.blob())
+        .then(blob => {
+          // Create download link
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'Durbar.apk';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+
+          // Reset UI
+          setTimeout(() => {
+            progressDiv.classList.remove('active');
+            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Now';
+            downloadBtn.style.opacity = '1';
+            downloadBtn.style.pointerEvents = 'auto';
+            progressFill.style.width = '0%';
+            progressPercent.textContent = '0%';
+            isDownloading = false;
+            closeAd();
+          }, 1500);
+        })
+        .catch(err => {
+          console.error('Download error:', err);
+          alert('Download failed. Please try again or visit the GitHub releases page directly.');
+          
+          // Reset UI
+          progressDiv.classList.remove('active');
+          downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Now';
+          downloadBtn.style.opacity = '1';
+          downloadBtn.style.pointerEvents = 'auto';
+          progressFill.style.width = '0%';
+          progressPercent.textContent = '0%';
+          isDownloading = false;
+          
+          // Fallback: open in new tab
+          window.open(apkUrl, '_blank');
+        });
+    }
+
+    // ===== AD POPUP FUNCTIONS =====
+
+    // Show Ad Popup
+    function showAd() {
+      if (isAdShowing) return;
+      isAdShowing = true;
+      const overlay = document.getElementById('adOverlay');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close Ad Popup
+    window.closeAd = function() {
+      const overlay = document.getElementById('adOverlay');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      isAdShowing = false;
+      
+      // Reset download state if needed
+      if (isDownloading) {
+        const progressDiv = document.getElementById('downloadProgress');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
+        
+        progressDiv.classList.remove('active');
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Now';
+        downloadBtn.style.opacity = '1';
+        downloadBtn.style.pointerEvents = 'auto';
+        progressFill.style.width = '0%';
+        progressPercent.textContent = '0%';
+        isDownloading = false;
+      }
+      
+      // Restart the timer after closing
+      resetAdTimer();
+    };
+
+    // Handle Download from Ad
+    window.handleAdDownload = function(e) {
+      e.preventDefault();
+      
+      if (isDownloading) return;
+      
+      // Start direct download
+      downloadAPK();
+    };
+
+    // Reset timer
+    function resetAdTimer() {
+      if (adInterval) {
+        clearInterval(adInterval);
+        adInterval = null;
+      }
+      startAdTimer();
+    }
+
+    // Start timer
+    function startAdTimer() {
+      adInterval = setInterval(function() {
+        if (!isAdShowing && !isDownloading) {
+          showAd();
+        }
+      }, 10000); // 10 seconds
+    }
+
+    // Close ad when clicking outside
+    document.getElementById('adOverlay').addEventListener('click', function(e) {
+      if (e.target === this && !isDownloading) {
+        closeAd();
+      }
+    });
+
+    // Keyboard shortcut: ESC to close
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && isAdShowing && !isDownloading) {
+        closeAd();
+      }
+    });
+
+    // Start the ad timer
+    startAdTimer();
+
+    // Show first ad after 3 seconds (so user sees content first)
+    setTimeout(function() {
+      if (!isAdShowing && !isDownloading) {
+        showAd();
+      }
+    }, 3000);
+
+    // Cleanup interval on page unload
+    window.addEventListener('beforeunload', function() {
+      if (adInterval) {
+        clearInterval(adInterval);
+        adInterval = null;
+      }
+    });
+
+  })();
+</script>
+
+</body>
+</html>

@@ -1,378 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Firebase Google OAuth</title>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(145deg, #f6f9fc 0%, #e9f1f8 100%);
-            padding: 1.5rem;
-        }
-
-        .card {
-            max-width: 500px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-radius: 2.5rem;
-            padding: 2.5rem 2rem;
-            box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.25),
-                        0 8px 24px -6px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .card:hover {
-            box-shadow: 0 28px 48px -16px rgba(0, 20, 40, 0.3);
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            color: #1a2b3c;
-            margin-bottom: 0.3rem;
-        }
-
-        .subtitle {
-            font-size: 0.95rem;
-            color: #4a5b6e;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            padding-bottom: 1rem;
-        }
-
-        .avatar {
-            width: 88px;
-            height: 88px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #dce5ed;
-            border: 3px solid white;
-            box-shadow: 0 6px 14px rgba(0, 20, 40, 0.12);
-            margin: 0 auto 1rem;
-            display: block;
-            transition: all 0.2s;
-        }
-
-        .user-name {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #0b1e2e;
-            margin-bottom: 0.2rem;
-        }
-
-        .user-email {
-            font-size: 0.95rem;
-            color: #3d556b;
-            word-break: break-all;
-            margin-bottom: 1.5rem;
-        }
-
-        .status-badge {
-            display: inline-block;
-            background: #e1f0fa;
-            color: #0057a3;
-            font-size: 0.75rem;
-            font-weight: 500;
-            padding: 0.3rem 1rem;
-            border-radius: 40px;
-            letter-spacing: 0.3px;
-            margin-bottom: 1.8rem;
-        }
-
-        .btn-google {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.6rem;
-            background: white;
-            border: 1px solid #dadce0;
-            border-radius: 60px;
-            padding: 0.65rem 1.8rem;
-            font-size: 1rem;
-            font-weight: 500;
-            color: #1f2a3a;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-            margin: 0.4rem 0;
-            width: auto;
-            min-width: 200px;
-            background-color: #ffffff;
-        }
-
-        .btn-google:hover {
-            background: #f8fafc;
-            border-color: #b3bcc8;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
-            transform: scale(1.01);
-        }
-
-        .btn-google:active {
-            background: #eef2f6;
-            transform: scale(0.97);
-        }
-
-        .btn-google img {
-            width: 22px;
-            height: 22px;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.8rem;
-            margin-top: 0.5rem;
-        }
-
-        .btn-logout {
-            background: transparent;
-            border: 1px solid #d0d9e3;
-            color: #2c4056;
-            padding: 0.55rem 1.8rem;
-            border-radius: 60px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.15s;
-            backdrop-filter: blur(4px);
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .btn-logout:hover {
-            background: #eef3f9;
-            border-color: #a0b2c6;
-        }
-
-        .btn-logout:active {
-            background: #dce4ed;
-        }
-
-        .user-info {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            padding: 1.2rem 1rem;
-            border-radius: 2rem;
-            margin: 1.5rem 0 1.2rem;
-            border: 1px solid rgba(255, 255, 255, 0.7);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .divider {
-            width: 60px;
-            height: 3px;
-            background: #cbd8e6;
-            border-radius: 10px;
-            margin: 0.6rem auto 1.2rem;
-        }
-
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        @media (max-width: 480px) {
-            .card {
-                padding: 1.8rem 1.2rem;
-            }
-            .btn-google {
-                min-width: 160px;
-                padding: 0.6rem 1.2rem;
-                font-size: 0.95rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
+  <title>Doroi · Auth</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <!-- favicon.png from main directory (not in auth/) -->
+  <link rel="icon" href="../favicon.png" type="image/png" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f7fc;
+      color: #0b1a2e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .auth-container {
+      max-width: 480px;
+      width: 100%;
+      background: white;
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+      padding: 2.5rem 2rem 2.2rem;
+      border: 1px solid #e9edf4;
+      transition: all 0.2s;
+    }
+    .auth-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      margin-bottom: 2rem;
+    }
+    .auth-header img {
+      height: 56px;
+      width: auto;
+      border-radius: 14px;
+      margin-bottom: 0.2rem;
+    }
+    .auth-header h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(145deg, #0b1a2e, #1e3a6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .auth-header p {
+      color: #4b5b6e;
+      font-size: 0.95rem;
+      margin-top: 0.1rem;
+    }
+    .auth-tabs {
+      display: flex;
+      background: #f1f5fb;
+      border-radius: 60px;
+      padding: 0.3rem;
+      margin-bottom: 1.8rem;
+      border: 1px solid #e2e9f2;
+    }
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.6rem 0.2rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.15s;
+      color: #4b5b6e;
+      background: transparent;
+      border: none;
+      font-family: 'Inter', sans-serif;
+    }
+    .auth-tab.active {
+      background: white;
+      color: #0b1a2e;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .auth-tab:hover:not(.active) {
+      color: #0b1a2e;
+    }
+    .auth-form {
+      display: none;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .auth-form.active {
+      display: flex;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .form-group label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #1f334a;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .form-group label i {
+      color: #2563eb;
+      width: 1.2rem;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid #dce3ed;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      background: white;
+      transition: 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+    }
+    .form-group .input-hint {
+      font-size: 0.75rem;
+      color: #7087a4;
+      margin-top: 0.2rem;
+    }
+    .btn-auth {
+      background: #0b1a2e;
+      color: white;
+      border: none;
+      padding: 0.85rem;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      transition: 0.15s;
+      margin-top: 0.2rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-auth:hover {
+      background: #1f3a6b;
+      transform: scale(0.98);
+    }
+    .btn-auth i {
+      font-size: 1rem;
+    }
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      color: #8a9bb0;
+      font-size: 0.8rem;
+      margin: 0.2rem 0;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #dce3ed;
+    }
+    .auth-footer {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #4b5b6e;
+    }
+    .auth-footer a {
+      color: #0b1a2e;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1.5px solid transparent;
+      transition: 0.1s;
+      cursor: pointer;
+    }
+    .auth-footer a:hover {
+      border-bottom-color: #2563eb;
+    }
+    .auth-message {
+      padding: 0.6rem 1rem;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: none;
+      margin-bottom: 0.2rem;
+      border: 1px solid transparent;
+    }
+    .auth-message.success {
+      display: block;
+      background: #d1fae5;
+      color: #0b5e3a;
+      border-color: #a7e0c0;
+    }
+    .auth-message.error {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+    @media (max-width: 480px) {
+      .auth-container { padding: 1.8rem 1.2rem; }
+      .auth-header h1 { font-size: 1.5rem; }
+    }
+  </style>
 </head>
 <body>
+<div class="auth-container">
+  <!-- header with favicon from main directory -->
+  <div class="auth-header">
+    <img src="../favicon.png" alt="Doroi logo" />
+    <h1>doroi <span style="font-weight:400; -webkit-text-fill-color:#4b5b6e;">auth</span></h1>
+    <p>sign in or create your account</p>
+  </div>
 
-<div class="card" id="appCard">
-    <h1>🔥 Firebase Auth</h1>
-    <div class="subtitle">Google Sign‑In with Firebase</div>
+  <!-- tabs -->
+  <div class="auth-tabs" id="authTabs">
+    <button class="auth-tab active" data-tab="login"><i class="fas fa-sign-in-alt" style="margin-right:6px;"></i>Login</button>
+    <button class="auth-tab" data-tab="signup"><i class="fas fa-user-plus" style="margin-right:6px;"></i>Sign Up</button>
+  </div>
 
-    <img id="userAvatar" class="avatar" src="https://ui-avatars.com/api/?name=User&background=ccd9e6&color=1e2a3a&size=88" alt="User avatar" />
+  <!-- message container -->
+  <div id="authMessage" class="auth-message"></div>
 
-    <div id="userInfo" class="user-info hidden">
-        <div class="user-name" id="userName">——</div>
-        <div class="user-email" id="userEmail">——</div>
-        <div class="status-badge" id="statusBadge">✓ signed in</div>
+  <!-- LOGIN FORM -->
+  <form id="loginForm" class="auth-form active">
+    <div class="form-group">
+      <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com" required />
     </div>
-
-    <div id="authContainer" class="btn-group">
-        <button id="loginBtn" class="btn-google">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" />
-            Sign in with Google
-        </button>
+    <div class="form-group">
+      <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" required />
+      <span class="input-hint"><i class="fas fa-info-circle"></i> min 6 characters</span>
     </div>
-
-    <div id="actionButtons" class="btn-group hidden">
-        <button id="logoutBtn" class="btn-logout">🚪 Sign out</button>
+    <button type="submit" class="btn-auth"><i class="fas fa-arrow-right-to-bracket"></i> Log in</button>
+    <div class="auth-footer">
+      Don't have an account? <a id="switchToSignup">Sign Up</a>
     </div>
+  </form>
 
-    <div class="divider"></div>
-    <div style="font-size: 0.8rem; color: #5d7388; opacity: 0.7;">
-        <span id="sessionState">● disconnected</span>
+  <!-- SIGNUP FORM -->
+  <form id="signupForm" class="auth-form">
+    <div class="form-group">
+      <label for="signupName"><i class="fas fa-user"></i> Full name</label>
+      <input type="text" id="signupName" placeholder="Ana Rodriguez" required />
     </div>
+    <div class="form-group">
+      <label for="signupEmail"><i class="fas fa-envelope"></i> Email</label>
+      <input type="email" id="signupEmail" placeholder="you@example.com" required />
+    </div>
+    <div class="form-group">
+      <label for="signupPassword"><i class="fas fa-lock"></i> Password</label>
+      <input type="password" id="signupPassword" placeholder="••••••••" required />
+      <span class="input-hint"><i class="fas fa-info-circle"></i> min 6 characters</span>
+    </div>
+    <div class="form-group">
+      <label for="signupConfirm"><i class="fas fa-check-circle"></i> Confirm password</label>
+      <input type="password" id="signupConfirm" placeholder="••••••••" required />
+    </div>
+    <button type="submit" class="btn-auth"><i class="fas fa-user-plus"></i> Create account</button>
+    <div class="auth-footer">
+      Already have an account? <a id="switchToLogin">Log in</a>
+    </div>
+  </form>
 </div>
 
 <script>
-    // ========== FIREBASE CONFIG ==========
+  (function() {
+    // ----- Firebase config (exposed) -----
     const firebaseConfig = {
-        apiKey: "AIzaSyCumgad3NpIBi94q4MwHpq9kHq4cuuSkoQ",
-        authDomain: "darbarhigh-4c642.firebaseapp.com",
-        databaseURL: "https://darbarhigh-4c642-default-rtdb.firebaseio.com",
-        projectId: "darbarhigh-4c642",
-        storageBucket: "darbarhigh-4c642.firebasestorage.app",
-        messagingSenderId: "451147040929",
-        appId: "1:451147040929:web:c105a00233209c5c05c8e0"
+      apiKey: "AIzaSyAeoQSz4wpif0vnFABhUBB3nHb4uPo6X58",
+      authDomain: "doroi-9d248.firebaseapp.com",
+      databaseURL: "https://doroi-9d248-default-rtdb.firebaseio.com",
+      projectId: "doroi-9d248",
+      storageBucket: "doroi-9d248.firebasestorage.app",
+      messagingSenderId: "713787321576",
+      appId: "1:713787321576:web:b580da0e7db5d271616d5d"
     };
+    console.log('🔥 Firebase config (auth) loaded', firebaseConfig);
 
-    // ========== INIT FIREBASE ==========
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const provider = new firebase.auth.GoogleAuthProvider();
+    // ----- DOM refs -----
+    const tabs = document.querySelectorAll('.auth-tab');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const messageBox = document.getElementById('authMessage');
+    const switchToSignup = document.getElementById('switchToSignup');
+    const switchToLogin = document.getElementById('switchToLogin');
 
-    // ========== DOM REFS ==========
-    const userInfoDiv = document.getElementById('userInfo');
-    const userNameSpan = document.getElementById('userName');
-    const userEmailSpan = document.getElementById('userEmail');
-    const userAvatarImg = document.getElementById('userAvatar');
-    const statusBadge = document.getElementById('statusBadge');
-    const sessionStateSpan = document.getElementById('sessionState');
-
-    const authContainer = document.getElementById('authContainer');
-    const actionButtons = document.getElementById('actionButtons');
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    // ========== UI UPDATE ==========
-    function updateUI(user) {
-        console.log('Updating UI for user:', user);
-        if (user) {
-            // User is signed in
-            userInfoDiv.classList.remove('hidden');
-            userNameSpan.textContent = user.displayName || 'User';
-            userEmailSpan.textContent = user.email || 'No email';
-            if (user.photoURL) {
-                userAvatarImg.src = user.photoURL;
-            } else {
-                userAvatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=ccd9e6&color=1e2a3a&size=88`;
-            }
-            statusBadge.textContent = '✓ signed in';
-            statusBadge.style.background = '#d8f0e6';
-            statusBadge.style.color = '#0d5e3e';
-
-            authContainer.classList.add('hidden');
-            actionButtons.classList.remove('hidden');
-
-            sessionStateSpan.textContent = '● connected';
-            sessionStateSpan.style.color = '#1a7a4a';
-        } else {
-            // User is signed out
-            userInfoDiv.classList.add('hidden');
-            userNameSpan.textContent = '——';
-            userEmailSpan.textContent = '——';
-            userAvatarImg.src = 'https://ui-avatars.com/api/?name=User&background=ccd9e6&color=1e2a3a&size=88';
-            statusBadge.textContent = '○ signed out';
-            statusBadge.style.background = '#f0f2f5';
-            statusBadge.style.color = '#4b5e72';
-
-            actionButtons.classList.add('hidden');
-            authContainer.classList.remove('hidden');
-
-            sessionStateSpan.textContent = '● disconnected';
-            sessionStateSpan.style.color = '#7a8a9e';
-        }
+    // ----- Tab switching -----
+    function setActiveTab(tabId) {
+      tabs.forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabId);
+      });
+      loginForm.classList.toggle('active', tabId === 'login');
+      signupForm.classList.toggle('active', tabId === 'signup');
+      messageBox.className = 'auth-message';
+      messageBox.textContent = '';
+      messageBox.style.display = 'none';
     }
 
-    // ========== AUTH STATE LISTENER ==========
-    auth.onAuthStateChanged(user => {
-        console.log('Auth state changed:', user);
-        updateUI(user);
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        setActiveTab(this.dataset.tab);
+      });
     });
 
-    // ========== SIGN IN WITH GOOGLE ==========
-    function signInWithGoogle() {
-        // Show loading state
-        loginBtn.classList.add('loading');
-        loginBtn.innerHTML = 'Signing in...';
-
-        auth.signInWithPopup(provider)
-            .then(result => {
-                // This gives you a Google Access Token. You can use it to access the Google API.
-                const credential = result.credential;
-                const token = credential.accessToken;
-                // The signed-in user info.
-                const user = result.user;
-                console.log('Signed in successfully:', user);
-                // Reset button
-                loginBtn.classList.remove('loading');
-                loginBtn.innerHTML = `
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" />
-                    Sign in with Google
-                `;
-                // UI update is handled by onAuthStateChanged
-            })
-            .catch(error => {
-                console.error('Sign-in error:', error);
-                alert('Sign-in failed: ' + error.message);
-                // Reset button
-                loginBtn.classList.remove('loading');
-                loginBtn.innerHTML = `
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" />
-                    Sign in with Google
-                `;
-            });
-    }
-
-    // ========== SIGN OUT ==========
-    function signOut() {
-        auth.signOut()
-            .then(() => {
-                console.log('Signed out successfully');
-                // UI update is handled by onAuthStateChanged
-            })
-            .catch(error => {
-                console.error('Sign-out error:', error);
-                alert('Sign-out failed: ' + error.message);
-            });
-    }
-
-    // ========== EVENT LISTENERS ==========
-    loginBtn.addEventListener('click', signInWithGoogle);
-
-    logoutBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        signOut();
+    switchToSignup.addEventListener('click', (e) => {
+      e.preventDefault();
+      setActiveTab('signup');
+    });
+    switchToLogin.addEventListener('click', (e) => {
+      e.preventDefault();
+      setActiveTab('login');
     });
 
-    // ========== INITIAL LOAD ==========
-    // The onAuthStateChanged will handle initial UI state
-    console.log('Firebase Google Auth App initialized.');
-    console.log('Current auth state:', auth.currentUser);
+    // ----- Helper: show message & redirect -----
+    function showMessage(text, type = 'success', redirect = false) {
+      messageBox.className = 'auth-message ' + type;
+      messageBox.textContent = text;
+      messageBox.style.display = 'block';
+      
+      if (redirect) {
+        // Redirect to main page after 1.5 seconds
+        setTimeout(() => {
+          window.location.href = '../index.html';
+        }, 1500);
+      }
+    }
+
+    // ----- Login handler (with auto-redirect) -----
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      if (!email || !password) {
+        showMessage('Please fill in all fields.', 'error');
+        return;
+      }
+      if (password.length < 6) {
+        showMessage('Password must be at least 6 characters.', 'error');
+        return;
+      }
+
+      console.log('🔐 Login attempt:', { email, password });
+      
+      // Simulate successful login - redirect to main
+      showMessage(`Welcome back! Redirecting...`, 'success', true);
+      
+      // In a real app with Firebase:
+      // firebase.auth().signInWithEmailAndPassword(email, password)
+      //   .then(() => { window.location.href = '../index.html'; })
+      //   .catch((error) => { showMessage(error.message, 'error'); });
+    });
+
+    // ----- Signup handler (with auto-redirect) -----
+    signupForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value.trim();
+      const confirm = document.getElementById('signupConfirm').value.trim();
+
+      if (!name || !email || !password || !confirm) {
+        showMessage('Please fill in all fields.', 'error');
+        return;
+      }
+      if (password.length < 6) {
+        showMessage('Password must be at least 6 characters.', 'error');
+        return;
+      }
+      if (password !== confirm) {
+        showMessage('Passwords do not match.', 'error');
+        return;
+      }
+
+      console.log('📝 Signup attempt:', { name, email, password });
+      
+      // Simulate successful signup - redirect to main
+      showMessage(`Account created for ${name}! Redirecting...`, 'success', true);
+      
+      // In a real app with Firebase:
+      // firebase.auth().createUserWithEmailAndPassword(email, password)
+      //   .then((userCredential) => {
+      //     // Optionally update profile with name
+      //     return userCredential.user.updateProfile({ displayName: name });
+      //   })
+      //   .then(() => { window.location.href = '../index.html'; })
+      //   .catch((error) => { showMessage(error.message, 'error'); });
+    });
+
+    console.log('✅ Auth UI ready with auto-redirect');
+  })();
 </script>
-
 </body>
 </html>
