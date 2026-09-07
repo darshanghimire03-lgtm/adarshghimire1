@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firebase Google OAuth</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(145deg, #f6f9fc 0%, #e9f1f8 100%);
+            padding: 1.5rem;
+        }
+
+        .card {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 2.5rem;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.25),
+                        0 8px 24px -6px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .card:hover {
+            box-shadow: 0 28px 48px -16px rgba(0, 20, 40, 0.3);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #1a2b3c;
+            margin-bottom: 0.3rem;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #4a5b6e;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding-bottom: 1rem;
+        }
+
+        .avatar {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #dce5ed;
+            border: 3px solid white;
+            box-shadow: 0 6px 14px rgba(0, 20, 40, 0.12);
+            margin: 0 auto 1rem;
+            display: block;
+            transition: all 0.2s;
+        }
+
+        .user-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #0b1e2e;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-email {
+            font-size: 0.95rem;
+            color: #3d556b;
+            word-break: break-all;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #e1f0fa;
+            color: #0057a3;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+            margin-bottom: 1.8rem;
+        }
+
+        .btn-google {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            background: white;
+            border: 1px solid #dadce0;
+            border-radius: 60px;
+            padding: 0.65rem 1.8rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1f2a3a;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            margin: 0.4rem 0;
+            width: auto;
+            min-width: 200px;
+            background-color: #ffffff;
+        }
+
+        .btn-google:hover {
+            background: #f8fafc;
+            border-color: #b3bcc8;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            transform: scale(1.01);
+        }
+
+        .btn-google:active {
+            background: #eef2f6;
+            transform: scale(0.97);
+        }
+
+        .btn-google img {
+            width: 22px;
+            height: 22px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid #d0d9e3;
+            color: #2c4056;
+            padding: 0.55rem 1.8rem;
+            border-radius: 60px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            backdrop-filter: blur(4px);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-logout:hover {
+            background: #eef3f9;
+            border-color: #a0b2c6;
+        }
+
+        .btn-logout:active {
+            background: #dce4ed;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 1.2rem 1rem;
+            border-radius: 2rem;
+            margin: 1.5rem 0 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .divider {
+            width: 60px;
+            height: 3px;
+            background: #cbd8e6;
+            border-radius: 10px;
+            margin: 0.6rem auto 1.2rem;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 1.8rem 1.2rem;
+            }
+            .btn-google {
+                min-width: 160px;
+                padding: 0.6rem 1.2rem;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card" id="appCard">
+    <h1>🔥 Firebase Auth</h1>
+    <div class="subtitle">Google Sign‑In with Firebase</div>
+
+    <img id="userAvatar" class="avatar" src="https://ui-avatars.com/api/?name=User&background=ccd9e6&color=1e2a3a&size=88" alt="User avatar" />
+
+    <div id="userInfo" class="user-info hidden">
+        <div class="user-name" id="userName">——</div>
+        <div class="user-email" id="userEmail">——</div>
+        <div class="status-badge" id="statusBadge">✓ signed in</div>
+    </div>
+
+    <div id="authContainer" class="btn-group">
+        <button id="loginBtn" class="btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" />
+            Sign in with Google
+        </button>
+    </div>
+
+    <div id="actionButtons" class="btn-group hidden">
+        <button id="logoutBtn" class="btn-logout">🚪 Sign out</button>
+    </div>
+
+    <div class="divider"></div>
+    <div style="font-size: 0.8rem; color: #5d7388; opacity: 0.7;">
+        <span id="sessionState">● disconnected</span>
+    </div>
+</div>
+
+<script>
+    // ========== FIREBASE CONFIG ==========
+    const firebaseConfig = {
+        apiKey: "AIzaSyCumgad3NpIBi94q4MwHpq9kHq4cuuSkoQ",
+        authDomain: "darbarhigh-4c642.firebaseapp.com",
+        databaseURL: "https://darbarhigh-4c642-default-rtdb.firebaseio.com",
+        projectId: "darbarhigh-4c642",
+        storageBucket: "darbarhigh-4c642.firebasestorage.app",
+        messagingSenderId: "451147040929",
+        appId: "1:451147040929:web:c105a00233209c5c05c8e0"
+    };
+
+    // ========== INIT FIREBASE ==========
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    // ========== DOM REFS ==========
+    const userInfoDiv = document.getElementById('userInfo');
+    const userNameSpan = document.getElementById('userName');
+    const userEmailSpan = document.getElementById('userEmail');
+    const userAvatarImg = document.getElementById('userAvatar');
+    const statusBadge = document.getElementById('statusBadge');
+    const sessionStateSpan = document.getElementById('sessionState');
+
+    const authContainer = document.getElementById('authContainer');
+    const actionButtons = document.getElementById('actionButtons');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // ========== UI UPDATE ==========
+    function updateUI(user) {
+        if (user) {
+            // User is signed in
+            userInfoDiv.classList.remove('hidden');
+            userNameSpan.textContent = user.displayName || 'User';
+            userEmailSpan.textContent = user.email || 'No email';
+            if (user.photoURL) {
+                userAvatarImg.src = user.photoURL;
+            } else {
+                userAvatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=ccd9e6&color=1e2a3a&size=88`;
+            }
+            statusBadge.textContent = '✓ signed in';
+            statusBadge.style.background = '#d8f0e6';
+            statusBadge.style.color = '#0d5e3e';
+
+            authContainer.classList.add('hidden');
+            actionButtons.classList.remove('hidden');
+
+            sessionStateSpan.textContent = '● connected';
+            sessionStateSpan.style.color = '#1a7a4a';
+        } else {
+            // User is signed out
+            userInfoDiv.classList.add('hidden');
+            userNameSpan.textContent = '——';
+            userEmailSpan.textContent = '——';
+            userAvatarImg.src = 'https://ui-avatars.com/api/?name=User&background=ccd9e6&color=1e2a3a&size=88';
+            statusBadge.textContent = '○ signed out';
+            statusBadge.style.background = '#f0f2f5';
+            statusBadge.style.color = '#4b5e72';
+
+            actionButtons.classList.add('hidden');
+            authContainer.classList.remove('hidden');
+
+            sessionStateSpan.textContent = '● disconnected';
+            sessionStateSpan.style.color = '#7a8a9e';
+        }
+    }
+
+    // ========== AUTH STATE LISTENER ==========
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            updateUI(user);
+        } else {
+            updateUI(null);
+        }
+    });
+
+    // ========== SIGN IN WITH GOOGLE ==========
+    function signInWithGoogle() {
+        // Show loading state
+        loginBtn.classList.add('loading');
+        loginBtn.textContent = 'Signing in...';
+
+        auth.signInWithPopup(provider)
+            .then(result => {
+                // This gives you a Google Access Token. You can use it to access the Google API.
+                const credential = result.credential;
+                const token = credential.accessToken;
+                // The signed-in user info.
+                const user = result.user;
+                console.log('Signed in:', user);
+                // UI update is handled by onAuthStateChanged
+            })
+            .catch(error => {
+                console.error('Sign-in error:', error);
+                alert('Sign-in failed: ' + error.message);
+                // Reset button
+                loginBtn.classList.remove('loading');
+                loginBtn.innerHTML = `
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" />
+                    Sign in with Google
+                `;
+            });
+    }
+
+    // ========== SIGN OUT ==========
+    function signOut() {
+        auth.signOut()
+            .then(() => {
+                console.log('Signed out successfully');
+                // UI update is handled by onAuthStateChanged
+            })
+            .catch(error => {
+                console.error('Sign-out error:', error);
+                alert('Sign-out failed: ' + error.message);
+            });
+    }
+
+    // ========== EVENT LISTENERS ==========
+    loginBtn.addEventListener('click', signInWithGoogle);
+
+    logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        signOut();
+    });
+
+    // ========== INITIAL LOAD ==========
+    // The onAuthStateChanged will handle initial UI state
+    console.log('Firebase Google Auth App initialized.');
+</script>
+
+</body>
+</html>
