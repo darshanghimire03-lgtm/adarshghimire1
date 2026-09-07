@@ -269,6 +269,7 @@
 
     // ========== UI UPDATE ==========
     function updateUI(user) {
+        console.log('Updating UI for user:', user);
         if (user) {
             // User is signed in
             userInfoDiv.classList.remove('hidden');
@@ -308,18 +309,15 @@
 
     // ========== AUTH STATE LISTENER ==========
     auth.onAuthStateChanged(user => {
-        if (user) {
-            updateUI(user);
-        } else {
-            updateUI(null);
-        }
+        console.log('Auth state changed:', user);
+        updateUI(user);
     });
 
     // ========== SIGN IN WITH GOOGLE ==========
     function signInWithGoogle() {
         // Show loading state
         loginBtn.classList.add('loading');
-        loginBtn.textContent = 'Signing in...';
+        loginBtn.innerHTML = 'Signing in...';
 
         auth.signInWithPopup(provider)
             .then(result => {
@@ -328,7 +326,13 @@
                 const token = credential.accessToken;
                 // The signed-in user info.
                 const user = result.user;
-                console.log('Signed in:', user);
+                console.log('Signed in successfully:', user);
+                // Reset button
+                loginBtn.classList.remove('loading');
+                loginBtn.innerHTML = `
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" />
+                    Sign in with Google
+                `;
                 // UI update is handled by onAuthStateChanged
             })
             .catch(error => {
@@ -367,6 +371,7 @@
     // ========== INITIAL LOAD ==========
     // The onAuthStateChanged will handle initial UI state
     console.log('Firebase Google Auth App initialized.');
+    console.log('Current auth state:', auth.currentUser);
 </script>
 
 </body>
