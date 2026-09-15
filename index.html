@@ -1,878 +1,332 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
-  <title>Doroi · software</title>
-  <!-- Font Awesome 6 (free) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <!-- Google Font: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
-  <link rel="icon" href="favicon.png" type="image/png" />
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f4f7fc;
-      color: #0b1a2e;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .container {
-      max-width: 1340px;
-      margin: 0 auto;
-      padding: 1.2rem 1.5rem 2.5rem;
-      width: 100%;
-      flex: 1;
-    }
-    /* ===== TOP BAR ===== */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem 1.5rem;
-      background: white;
-      padding: 0.6rem 1.8rem;
-      border-radius: 60px;
-      box-shadow: 0 8px 24px rgba(0,20,40,0.04);
-      margin-bottom: 2rem;
-      border: 1px solid #eef2f8;
-    }
-    .brand-drawer {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    .brand-drawer img {
-      height: 40px;
-      width: auto;
-      display: block;
-      border-radius: 10px;
-    }
-    .brand-drawer h1 {
-      font-weight: 700;
-      font-size: 1.8rem;
-      letter-spacing: -0.02em;
-      background: linear-gradient(145deg, #0b1a2e, #1e3a6b);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-left: 0.1rem;
-    }
-    .brand-drawer span {
-      font-weight: 400;
-      color: #4b5b6e;
-      font-size: 0.85rem;
-      background: #eef2f6;
-      padding: 0.15rem 1rem;
-      border-radius: 40px;
-      -webkit-text-fill-color: #1f2a3f;
-      margin-left: 0.2rem;
-    }
-    .menu-desktop {
-      display: flex;
-      align-items: center;
-      gap: 1.8rem;
-    }
-    .menu-desktop a {
-      text-decoration: none;
-      color: #1f334a;
-      font-weight: 500;
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      transition: 0.15s;
-      border-bottom: 2px solid transparent;
-      padding-bottom: 0.2rem;
-    }
-    .menu-desktop a i {
-      color: #2563eb;
-      font-size: 1rem;
-    }
-    .menu-desktop a:hover {
-      color: #0b1a2e;
-      border-bottom-color: #2563eb;
-    }
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.8rem;
-      color: #0b1a2e;
-      cursor: pointer;
-      padding: 0.2rem 0.4rem;
-    }
-    /* ===== DRAWER ===== */
-    .drawer-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.25);
-      z-index: 999;
-      backdrop-filter: blur(2px);
-    }
-    .drawer-overlay.active { display: block; }
-    .drawer {
-      position: fixed;
-      top: 0;
-      right: -340px;
-      width: 320px;
-      max-width: 80vw;
-      height: 100%;
-      background: white;
-      box-shadow: -6px 0 30px rgba(0,0,0,0.08);
-      z-index: 1000;
-      padding: 2rem 1.8rem;
-      transition: right 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      border-left: 1px solid #e6edf6;
-    }
-    .drawer.open { right: 0; }
-    .drawer-close {
-      align-self: flex-end;
-      background: #f1f5fb;
-      border: none;
-      font-size: 1.6rem;
-      width: 44px;
-      height: 44px;
-      border-radius: 40px;
-      cursor: pointer;
-      color: #1f334a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: 0.1s;
-    }
-    .drawer-close:hover { background: #e2e9f2; }
-    .drawer-brand {
-      font-weight: 700;
-      font-size: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      color: #0b1a2e;
-    }
-    .drawer-brand img {
-      height: 34px;
-      width: auto;
-      border-radius: 8px;
-    }
-    .drawer-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 1.3rem;
-      margin-top: 0.5rem;
-    }
-    .drawer-nav a {
-      text-decoration: none;
-      color: #1f334a;
-      font-weight: 500;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.9rem;
-      padding: 0.5rem 0.2rem;
-      border-bottom: 1px solid #ecf0f6;
-      transition: 0.1s;
-    }
-    .drawer-nav a i { width: 1.8rem; color: #2563eb; font-size: 1.2rem; }
-    .drawer-nav a:hover { color: #0b1a2e; padding-left: 0.4rem; }
-    .drawer-social {
-      margin-top: auto;
-      display: flex;
-      gap: 1.2rem;
-      font-size: 1.4rem;
-      color: #2c3e58;
-      padding-top: 1.2rem;
-      border-top: 1px solid #e9edf4;
-    }
-    .drawer-social i { cursor: default; opacity: 0.6; transition: 0.1s; }
-    .drawer-social i:hover { opacity: 1; color: #2563eb; }
-    /* ===== MAIN CONTENT ===== */
-    .page-title {
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: #0b1a2e;
-    }
-    .page-sub {
-      color: #4b5b6e;
-      font-size: 1.1rem;
-      margin-bottom: 2.5rem;
-      border-left: 4px solid #2563eb;
-      padding-left: 1rem;
-    }
-    .section-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2.5rem;
-    }
-    @media (max-width: 820px) {
-      .section-grid { grid-template-columns: 1fr; gap: 2rem; }
-      .topbar { border-radius: 40px; padding: 0.6rem 1.2rem; }
-      .menu-desktop { display: none; }
-      .menu-toggle { display: block; }
-    }
-    @media (max-width: 480px) {
-      .container { padding: 0.8rem 0.8rem 2rem; }
-      .brand-drawer h1 { font-size: 1.4rem; }
-      .brand-drawer span { font-size: 0.7rem; padding: 0.1rem 0.7rem; }
-      .brand-drawer img { height: 32px; }
-      .drawer { width: 280px; }
-      .page-title { font-size: 1.5rem; }
-    }
-    /* ===== CARDS ===== */
-    .section-card {
-      background: white;
-      border-radius: 2rem;
-      padding: 1.8rem 2rem;
-      border: 1px solid #dfe8f2;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.02);
-    }
-    .section-card h2 {
-      font-size: 1.4rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 1.5rem;
-      color: #0b1a2e;
-    }
-    .section-card h2 i { color: #2563eb; }
-    .card-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-    }
-    .card-item {
-      background: #f8fafd;
-      border-radius: 18px;
-      padding: 0.8rem 1.4rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border: 1px solid #e2e9f2;
-      transition: 0.15s;
-    }
-    .card-item:hover {
-      background: white;
-      border-color: #b6c9e2;
-      box-shadow: 0 6px 14px rgba(0,20,50,0.04);
-    }
-    .card-item .left {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      overflow: hidden;
-      flex: 1;
-    }
-    .card-item .left i {
-      font-size: 1.3rem;
-      color: #2563eb;
-      width: 2rem;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    .card-item .left .info {
-      display: flex;
-      flex-direction: column;
-    }
-    .card-item .left .info .name {
-      font-weight: 600;
-      color: #1a2b3f;
-      font-size: 0.95rem;
-    }
-    .card-item .left .info .desc {
-      font-size: 0.75rem;
-      color: #7087a4;
-    }
-    .card-item .action-btn {
-      background: #eef2f8;
-      padding: 0.3rem 1.2rem;
-      border-radius: 50px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #1f3a6b;
-      text-decoration: none;
-      transition: 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      border: none;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      flex-shrink: 0;
-    }
-    .card-item .action-btn i { font-size: 0.7rem; }
-    .card-item .action-btn:hover {
-      background: #2563eb;
-      color: white;
-    }
-    .card-item .action-btn.download {
-      background: #dbeafe;
-      color: #1e3a6b;
-    }
-    .card-item .action-btn.download:hover {
-      background: #2563eb;
-      color: white;
-    }
-    .badge {
-      font-size: 0.65rem;
-      background: #d1fae5;
-      color: #0b5e3a;
-      padding: 0.15rem 0.6rem;
-      border-radius: 40px;
-      font-weight: 600;
-      margin-left: 0.3rem;
-      flex-shrink: 0;
-    }
-    .badge.ios { background: #e0e7ff; color: #1e3a6b; }
-    .badge.android { background: #d1fae5; color: #0b5e3a; }
-    .badge.web { background: #fef3c7; color: #92400e; }
-    /* ===== PREVIEW MODAL ===== */
-    .preview-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      z-index: 2000;
-      backdrop-filter: blur(6px);
-      justify-content: center;
-      align-items: center;
-      padding: 2rem;
-    }
-    .preview-overlay.active {
-      display: flex;
-    }
-    .preview-modal {
-      background: white;
-      border-radius: 2rem;
-      max-width: 900px;
-      width: 100%;
-      max-height: 90vh;
-      overflow: hidden;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-      display: flex;
-      flex-direction: column;
-    }
-    .preview-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #e9edf4;
-    }
-    .preview-header .preview-title {
-      font-weight: 600;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    .preview-header .preview-title i {
-      color: #2563eb;
-    }
-    .preview-close {
-      background: #f1f5fb;
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 40px;
-      font-size: 1.3rem;
-      cursor: pointer;
-      transition: 0.15s;
-      color: #1f334a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .preview-close:hover {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-    .preview-body {
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-      background: #f4f7fc;
-      min-height: 400px;
-    }
-    .preview-body iframe {
-      width: 100%;
-      height: 100%;
-      min-height: 400px;
-      border: none;
-    }
-    .preview-body .preview-loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #7087a4;
-      font-size: 1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.8rem;
-    }
-    .preview-body .preview-loading i {
-      font-size: 2.5rem;
-      color: #2563eb;
-    }
-    .preview-footer {
-      padding: 0.8rem 1.5rem;
-      border-top: 1px solid #e9edf4;
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.8rem;
-      background: #fafcff;
-    }
-    .preview-footer .btn-visit {
-      background: #0b1a2e;
-      color: white;
-      border: none;
-      padding: 0.5rem 1.5rem;
-      border-radius: 60px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: 0.15s;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: 'Inter', sans-serif;
-    }
-    .preview-footer .btn-visit:hover {
-      background: #1f3a6b;
-      transform: scale(0.96);
-    }
-    .preview-footer .btn-visit i {
-      font-size: 0.8rem;
-    }
-    .social-preview {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-    .social-preview i {
-      font-size: 1.8rem;
-      color: #2c3e58;
-      opacity: 0.5;
-      transition: 0.1s;
-    }
-    .social-preview i:hover { opacity: 1; color: #2563eb; }
-    .phone-show {
-      font-size: 0.9rem;
-      color: #1f3a5e;
-      margin-top: 0.6rem;
-    }
-    .phone-show i { margin-right: 6px; color: #2563eb; }
-    .footer-note {
-      margin-top: 2.5rem;
-      text-align: center;
-      color: #7087a4;
-      font-size: 0.85rem;
-      border-top: 1px solid #e9edf4;
-      padding-top: 1.5rem;
-    }
-    .footer-note i { color: #2563eb; }
-    .website-clickable {
-      cursor: pointer;
-    }
-    .website-clickable:hover .left .info .name {
-      color: #2563eb;
-    }
-    /* Toast notification for download */
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #0b1a2e;
-      color: white;
-      padding: 0.8rem 2rem;
-      border-radius: 60px;
-      font-weight: 500;
-      font-size: 0.95rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      z-index: 3000;
-      display: none;
-      align-items: center;
-      gap: 0.8rem;
-      animation: slideUp 0.3s ease;
-    }
-    .toast i {
-      color: #60a5fa;
-    }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-      to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WinSec Academy — Windows Password Security Training</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0a0e1a;
+    color: #e6edf3;
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+    border-bottom: 1px solid #1f6feb33;
+    padding: 1rem 2rem;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  nav { max-width: 1100px; margin: auto; display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-size: 1.4rem; font-weight: 700; color: #58a6ff; display: flex; align-items: center; gap: .5rem; }
+  .logo span { color: #3fb950; }
+  .win-icon {
+    display: inline-grid; grid-template-columns: 1fr 1fr;
+    gap: 2px; width: 20px; height: 20px;
+  }
+  .win-icon div { background: #58a6ff; border-radius: 1px; }
+  nav ul { display: flex; gap: 2rem; list-style: none; }
+  nav a { color: #c9d1d9; text-decoration: none; font-size: 0.95rem; transition: color .2s; }
+  nav a:hover { color: #58a6ff; }
+
+  .hero {
+    max-width: 1100px; margin: auto;
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+  }
+  .badge {
+    display: inline-block; padding: .35rem 1rem;
+    background: #1f6feb22; color: #58a6ff;
+    border: 1px solid #1f6feb55; border-radius: 50px;
+    font-size: .8rem; letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 { font-size: 3rem; line-height: 1.15; margin-bottom: 1.2rem; }
+  .hero h1 em { color: #3fb950; font-style: normal; }
+  .hero p { color: #8b949e; font-size: 1.15rem; max-width: 640px; margin: auto auto 2rem; }
+  .btn {
+    display: inline-block; padding: .9rem 2rem;
+    background: #238636; color: #fff; text-decoration: none;
+    border-radius: 8px; font-weight: 600; transition: .2s;
+    border: 1px solid #2ea043;
+  }
+  .btn:hover { background: #2ea043; transform: translateY(-2px); }
+  .btn-alt { background: transparent; border: 1px solid #30363d; color: #c9d1d9; margin-left: .8rem; }
+  .btn-alt:hover { background: #161b22; }
+
+  section { max-width: 1100px; margin: auto; padding: 4rem 2rem; }
+  .section-title { font-size: 2rem; margin-bottom: .5rem; }
+  .section-sub { color: #8b949e; margin-bottom: 2.5rem; }
+
+  .modules { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 1.5rem; }
+  .card {
+    background: #0d1117; border: 1px solid #21262d;
+    border-radius: 12px; padding: 1.8rem;
+    transition: .25s; position: relative;
+  }
+  .card:hover { border-color: #1f6feb; transform: translateY(-4px); }
+  .card .num {
+    font-size: .8rem; color: #3fb950; font-weight: 700;
+    letter-spacing: 1px; margin-bottom: .8rem;
+  }
+  .card h3 { font-size: 1.2rem; margin-bottom: .7rem; }
+  .card p { color: #8b949e; font-size: .92rem; }
+
+  .lab-box {
+    background: linear-gradient(135deg, #161b22, #0d1117);
+    border: 1px solid #1f6feb44; border-radius: 14px;
+    padding: 2.5rem; margin-top: 1rem;
+  }
+  .lab-box h3 { color: #58a6ff; margin-bottom: 1rem; font-size: 1.4rem; }
+  .lab-box h4 { color: #3fb950; margin: 1.2rem 0 .5rem; font-size: 1rem; }
+  .lab-box ol { margin: 1rem 0 1rem 1.5rem; color: #c9d1d9; }
+  .lab-box li { margin-bottom: .6rem; }
+  .warning {
+    background: #3d1e1e; border-left: 4px solid #f85149;
+    padding: 1rem 1.3rem; border-radius: 6px;
+    color: #ffa198; font-size: .9rem; margin-top: 1.5rem;
+  }
+  .info {
+    background: #0d2818; border-left: 4px solid #3fb950;
+    padding: 1rem 1.3rem; border-radius: 6px;
+    color: #7ee787; font-size: .9rem; margin-top: 1.2rem;
+  }
+  code {
+    background: #161b22; color: #79c0ff;
+    padding: .15rem .45rem; border-radius: 4px;
+    font-family: 'Consolas', monospace; font-size: .88em;
+  }
+
+  .ethics {
+    background: #0d1117; border: 1px solid #21262d;
+    border-radius: 12px; padding: 2.5rem; text-align: center;
+  }
+  .ethics ul { list-style: none; display: inline-block; text-align: left; margin-top: 1.5rem; }
+  .ethics li { margin-bottom: .7rem; color: #c9d1d9; }
+  .ethics li::before { content: "✔ "; color: #3fb950; font-weight: bold; }
+
+  .defense-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .defense-item {
+    background: #0d1117; border: 1px solid #21262d;
+    border-left: 3px solid #3fb950;
+    padding: 1.2rem; border-radius: 8px;
+  }
+  .defense-item h4 { color: #58a6ff; font-size: .95rem; margin-bottom: .4rem; }
+  .defense-item p { color: #8b949e; font-size: .85rem; }
+
+  footer {
+    border-top: 1px solid #21262d; padding: 2.5rem 2rem;
+    text-align: center; color: #6e7681; font-size: .88rem;
+    margin-top: 3rem;
+  }
+  footer a { color: #58a6ff; text-decoration: none; }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 2rem; }
+    nav ul { display: none; }
+    .btn-alt { margin: .8rem 0 0; display: block; }
+  }
+</style>
 </head>
 <body>
-<div class="container">
-  <!-- ===== TOPBAR ===== -->
-  <div class="topbar">
-    <div class="brand-drawer">
-      <img src="favicon.png" alt="Doroi logo" />
-      <h1>doroi <span>software</span></h1>
-    </div>
-    <div class="menu-desktop">
-      <a href="#apps"><i class="fas fa-th"></i> our apps</a>
-      <a href="#websites"><i class="fas fa-globe"></i> our websites</a>
-      <a href="#"><i class="fas fa-envelope"></i> contact</a>
-    </div>
-    <button class="menu-toggle" id="menuToggle" aria-label="open menu">
-      <i class="fas fa-bars"></i>
-    </button>
-  </div>
 
-  <!-- ===== DRAWER ===== -->
-  <div class="drawer-overlay" id="drawerOverlay"></div>
-  <div class="drawer" id="drawer">
-    <button class="drawer-close" id="drawerClose"><i class="fas fa-xmark"></i></button>
-    <div class="drawer-brand">
-      <img src="favicon.png" alt="logo" /> doroi
+<header>
+  <nav>
+    <div class="logo">
+      <div class="win-icon"><div></div><div></div><div></div><div></div></div>
+      Win<span>Sec</span> Academy
     </div>
-    <div class="drawer-nav">
-      <a href="#apps"><i class="fas fa-th"></i> our apps</a>
-      <a href="#websites"><i class="fas fa-globe"></i> our websites</a>
-      <a href="#"><i class="fas fa-envelope"></i> contact</a>
-    </div>
-    <div class="drawer-social">
-      <i class="fab fa-github"></i>
-      <i class="fab fa-linkedin-in"></i>
-      <i class="fab fa-x-twitter"></i>
-      <i class="fab fa-youtube"></i>
-    </div>
-    <div style="font-size:0.8rem; color:#4d657e; margin-top:0.5rem;">
-      <i class="fas fa-phone-alt"></i> +1 (555) 247-8080
-    </div>
-  </div>
+    <ul>
+      <li><a href="#curriculum">Curriculum</a></li>
+      <li><a href="#labs">Windows Labs</a></li>
+      <li><a href="#defense">Hardening</a></li>
+      <li><a href="#ethics">Ethics</a></li>
+    </ul>
+  </nav>
+</header>
 
-  <!-- ===== MAIN CONTENT ===== -->
-  <div class="page-title">Explore our ecosystem</div>
-  <div class="page-sub">Discover our apps and websites — all built with ❤️ by Doroi</div>
-
-  <div class="section-grid">
-    <!-- APPS SECTION -->
-    <div class="section-card" id="apps">
-      <h2><i class="fas fa-th"></i> our apps</h2>
-      <div class="card-grid">
-        <div class="card-item">
-          <div class="left">
-            <i class="fas fa-store"></i>
-            <div class="info">
-              <span class="name">Doroi Store</span>
-              <span class="desc">Your digital marketplace</span>
-            </div>
-          </div>
-          <button class="action-btn download" data-app="Doroi Store" data-file="doroi-store.apk">
-            <i class="fas fa-download"></i> Download
-          </button>
-        </div>
-        <div class="card-item">
-          <div class="left">
-            <i class="fas fa-landmark"></i>
-            <div class="info">
-              <span class="name">Durbar</span>
-              <span class="desc">Explore the heritage</span>
-            </div>
-          </div>
-          <button class="action-btn download" data-app="Durbar" data-file="durbar.apk">
-            <i class="fas fa-download"></i> Download
-          </button>
-        </div>
-        <div class="card-item">
-          <div class="left">
-            <i class="fas fa-music"></i>
-            <div class="info">
-              <span class="name">Dusic</span>
-              <span class="desc">Stream & discover music</span>
-            </div>
-          </div>
-          <button class="action-btn download" data-app="Dusic" data-file="dusic.apk">
-            <i class="fas fa-download"></i> Download
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- WEBSITES SECTION -->
-    <div class="section-card" id="websites">
-      <h2><i class="fas fa-globe"></i> our websites</h2>
-      <div class="card-grid">
-        <div class="card-item website-clickable" data-url="https://adarshghimire1.com.np/durbar/">
-          <div class="left">
-            <i class="fas fa-landmark"></i>
-            <div class="info">
-              <span class="name">Durbar</span>
-              <span class="desc">Explore the heritage</span>
-            </div>
-          </div>
-          <span class="action-btn" style="pointer-events:none;"><i class="fas fa-eye"></i> Preview</span>
-        </div>
-        <div class="card-item website-clickable" data-url="https://adarshghimire1.com.np/shortcuts/">
-          <div class="left">
-            <i class="fas fa-link"></i>
-            <div class="info">
-              <span class="name">Shortcuts</span>
-              <span class="desc">Quick links & tools</span>
-            </div>
-          </div>
-          <span class="action-btn" style="pointer-events:none;"><i class="fas fa-eye"></i> Preview</span>
-        </div>
-        <div class="card-item website-clickable" data-url="https://adarshghimire1.com.np/darshanghimire/">
-          <div class="left">
-            <i class="fas fa-user-astronaut"></i>
-            <div class="info">
-              <span class="name">Darshan Ghimire</span>
-              <span class="desc">Personal portfolio</span>
-            </div>
-          </div>
-          <span class="action-btn" style="pointer-events:none;"><i class="fas fa-eye"></i> Preview</span>
-        </div>
-        <div class="card-item website-clickable" data-url="#">
-          <div class="left">
-            <i class="fas fa-code"></i>
-            <div class="info">
-              <span class="name">Dev Portal</span>
-              <span class="desc">Developer resources</span>
-            </div>
-          </div>
-          <span class="action-btn" style="pointer-events:none;"><i class="fas fa-eye"></i> Preview</span>
-        </div>
-        <div class="card-item website-clickable" data-url="#">
-          <div class="left">
-            <i class="fas fa-chart-line"></i>
-            <div class="info">
-              <span class="name">Analytics Dashboard</span>
-              <span class="desc">Real-time metrics</span>
-            </div>
-          </div>
-          <span class="action-btn" style="pointer-events:none;"><i class="fas fa-eye"></i> Preview</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Social & Contact -->
-  <div style="margin-top: 2.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; background: white; padding: 1.2rem 2rem; border-radius: 2rem; border: 1px solid #e9edf4;">
-    <div>
-      <p style="font-weight:600; color:#1f334a;"><i class="fab fa-connectdevelop"></i> connect with us</p>
-      <div class="social-preview" style="margin-top: 0.3rem;">
-        <i class="fab fa-github"></i>
-        <i class="fab fa-linkedin-in"></i>
-        <i class="fab fa-x-twitter"></i>
-        <i class="fab fa-youtube"></i>
-        <i class="fab fa-discord"></i>
-      </div>
-    </div>
-    <div class="phone-show"><i class="fas fa-phone-alt"></i> +1 (555) 247-8080</div>
-    <div><i class="fas fa-envelope" style="color:#2563eb;"></i> hello@doroi.com</div>
-  </div>
-
-  <div class="footer-note">
-    <i class="fas fa-cubes"></i> Doroi Software — building the future, one line of code at a time.
-  </div>
+<div class="hero">
+  <div class="badge">Windows Security · Authorized Training Only</div>
+  <h1>Master <em>Windows</em> Password Security in a Safe Lab</h1>
+  <p>Hands-on training covering Windows authentication, SAM/NTLM internals, local account recovery on owned VMs, and enterprise-grade hardening.</p>
+  <a href="#curriculum" class="btn">View Curriculum</a>
+  <a href="#labs" class="btn btn-alt">Start a Lab</a>
 </div>
 
-<!-- ===== PREVIEW MODAL ===== -->
-<div class="preview-overlay" id="previewOverlay">
-  <div class="preview-modal">
-    <div class="preview-header">
-      <div class="preview-title">
-        <i class="fas fa-globe"></i>
-        <span id="previewTitle">Website Preview</span>
-      </div>
-      <button class="preview-close" id="previewClose"><i class="fas fa-xmark"></i></button>
+<section id="curriculum">
+  <h2 class="section-title">Windows Course Modules</h2>
+  <p class="section-sub">Theory first, then supervised practice in isolated Windows VMs.</p>
+
+  <div class="modules">
+    <div class="card">
+      <div class="num">MODULE 01</div>
+      <h3>Windows Authentication Architecture</h3>
+      <p>Logon process, Winlogon, LSA, LSASS, SAM database, and how credentials flow from Ctrl+Alt+Del to session token.</p>
     </div>
-    <div class="preview-body" id="previewBody">
-      <div class="preview-loading" id="previewLoading">
-        <i class="fas fa-spinner fa-pulse"></i>
-        <span>Loading preview...</span>
-      </div>
-      <iframe id="previewIframe" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" loading="lazy"></iframe>
+    <div class="card">
+      <div class="num">MODULE 02</div>
+      <h3>Password Storage: SAM & NTLM</h3>
+      <p>LM vs NTLM hashes, why LM is broken, SYSKEY, and how modern Windows protects local credentials.</p>
     </div>
-    <div class="preview-footer">
-      <a href="#" target="_blank" class="btn-visit" id="previewVisitBtn">
-        <i class="fas fa-external-link-alt"></i> Visit Website
-      </a>
+    <div class="card">
+      <div class="num">MODULE 03</div>
+      <h3>Local Account Recovery (Owned VM)</h3>
+      <p>Official Microsoft recovery paths, password reset disks, and understanding what a physical attacker can attempt on your own VM.</p>
+    </div>
+    <div class="card">
+      <div class="num">MODULE 04</div>
+      <h3>Windows Privilege Escalation Concepts</h3>
+      <p>Weak service permissions, unquoted service paths, AlwaysInstallElevated, and token impersonation — theory plus TryHackMe labs.</p>
+    </div>
+    <div class="card">
+      <div class="num">MODULE 05</div>
+      <h3>Active Directory Credential Threats</h3>
+      <p>Kerberoasting, Pass-the-Hash, DCSync — why domain accounts need tiered admin and credential guard.</p>
+    </div>
+    <div class="card">
+      <div class="num">MODULE 06</div>
+      <h3>Detection & Incident Response</h3>
+      <p>Event IDs 4624, 4625, 4672, 4720. Reading the Security log, spotting credential theft, and responding to lockouts.</p>
     </div>
   </div>
-</div>
+</section>
 
-<!-- ===== TOAST NOTIFICATION ===== -->
-<div class="toast" id="toast">
-  <i class="fas fa-check-circle"></i>
-  <span id="toastMessage">Download started</span>
-</div>
+<section id="labs">
+  <h2 class="section-title">Windows Hands-On Labs</h2>
+  <p class="section-sub">Every lab runs on a Windows VM you build and own. No real targets.</p>
 
-<script>
-  (function() {
-    // ===== DRAWER =====
-    const drawer = document.getElementById('drawer');
-    const overlay = document.getElementById('drawerOverlay');
-    const openBtn = document.getElementById('menuToggle');
-    const closeBtn = document.getElementById('drawerClose');
+  <div class="lab-box">
+    <h3>Lab 1 — Windows Local Account Recovery (Owned VM)</h3>
+    <h4>Goal</h4>
+    <p style="color:#c9d1d9;">Understand what a physical attacker can do to an unprotected Windows machine — and how to stop them.</p>
+    <h4>Setup</h4>
+    <ol>
+      <li>Install Windows 10 or 11 in VirtualBox or VMware.</li>
+      <li>Create a <strong>local test account</strong> with a password you control (not a Microsoft account).</li>
+      <li>Take a snapshot so you can restore the VM at any time.</li>
+    </ol>
+    <h4>Exercise</h4>
+    <ol>
+      <li>Boot your VM from the Windows installation ISO.</li>
+      <li>Choose <code>Repair your computer</code> → <code>Troubleshoot</code> → <code>Command Prompt</code>.</li>
+      <li>Examine your own VM's <code>SAM</code> and <code>SYSTEM</code> hives.</li>
+      <li>Try the classic <code>utilman.exe</code> swap technique on your VM only.</li>
+      <li>Restore the snapshot afterward.</li>
+    </ol>
+    <h4>Report (required)</h4>
+    <ol>
+      <li>Which method worked on your unprotected VM?</li>
+      <li>Which single Windows setting would have blocked it?</li>
+      <li>Write the hardening checklist you'd give a small business owner.</li>
+    </ol>
+    <div class="warning">
+      ⚠ Only on a VM YOU own. Performing this on any other Windows machine — even one you can physically touch — is a criminal offense under CFAA and equivalent laws worldwide.
+    </div>
+  </div>
 
-    function openDrawer() {
-      drawer.classList.add('open');
-      overlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeDrawer() {
-      drawer.classList.remove('open');
-      overlay.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-    openBtn.addEventListener('click', openDrawer);
-    closeBtn.addEventListener('click', closeDrawer);
-    overlay.addEventListener('click', closeDrawer);
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+  <div class="lab-box" style="margin-top:1.5rem;">
+    <h3>Lab 2 — SAM Hash Extraction & Offline Analysis</h3>
+    <h4>Setup</h4>
+    <ol>
+      <li>On your VM, create three local accounts: <code>user_weak</code> (password: <code>Password1</code>), <code>user_medium</code> (<code>Summer2024!</code>), <code>user_strong</code> (16-char random).</li>
+      <li>Snapshot the VM.</li>
+      <li>Extract the SAM and SYSTEM hives to your analysis host (your own machine).</li>
+    </ol>
+    <h4>Analysis</h4>
+    <ol>
+      <li>Use <code>secretsdump.py</code> or <code>samdump2</code> on the copied hives.</li>
+      <li>Run <code>hashcat -m 1000 hashes.txt rockyou.txt</code>.</li>
+      <li>Record crack time for each account.</li>
+      <li>Graph the relationship between password entropy and crack time.</li>
+    </ol>
+    <div class="info">
+      ✔ Conclusion you're aiming for: password length and entropy dominate — a 16-character random password is effectively uncrackable with consumer hardware.
+    </div>
+  </div>
 
-    // ===== DOWNLOAD FUNCTION =====
-    const toast = document.getElementById('toast');
-    const toastMessage = document.getElementById('toastMessage');
-    let toastTimeout;
+  <div class="lab-box" style="margin-top:1.5rem;">
+    <h3>Lab 3 — Microsoft Account Password Reset (Legitimate Path)</h3>
+    <h4>Goal</h4>
+    <p style="color:#c9d1d9;">Learn the <em>official</em> recovery flow Microsoft provides — the one you'd walk a real user through.</p>
+    <ol>
+      <li>Create a test Microsoft account.</li>
+      <li>On the VM, sign in with it and enable "Sign in with Windows Hello."</li>
+      <li>Boot a separate browser → <code>account.live.com/password/reset</code>.</li>
+      <li>Complete the reset with your recovery email.</li>
+      <li>Sign back into the VM with the new password.</li>
+      <li>Document why this path is safe and the local-account path isn't.</li>
+    </ol>
+  </div>
 
-    function showToast(message) {
-      toastMessage.textContent = message;
-      toast.style.display = 'flex';
-      clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => {
-        toast.style.display = 'none';
-      }, 3000);
-    }
+  <div class="lab-box" style="margin-top:1.5rem;">
+    <h3>Lab 4 — Windows Event Log Forensics</h3>
+    <h4>Goal</h4>
+    <p style="color:#c9d1d9;">Detect a password attack from the defender's side.</p>
+    <ol>
+      <li>Enable Audit Logon Events and Audit Account Logon Events in <code>secpol.msc</code>.</li>
+      <li>From a second VM, attempt several failed RDP logins against your target VM.</li>
+      <li>Open Event Viewer → Windows Logs → Security.</li>
+      <li>Find Event ID <code>4625</code> (failed logon) and <code>4624</code> (successful).</li>
+      <li>Write a Splunk/PowerShell query that would alert on 10+ failed logins in 60 seconds.</li>
+    </ol>
+    <div class="info">
+      ✔ This is the skill employers actually pay for: not breaking in, but spotting when someone tried.
+    </div>
+  </div>
+</section>
 
-    function downloadApp(appName, fileName) {
-      // Create a dummy file for download demonstration
-      // In production, this would be a real APK file URL
-      const content = `This is a demo download for ${appName}. 
-In production, this would be the actual APK file.
-App: ${appName}
-Version: 1.0.0
-Build: 2024`;
+<section id="defense">
+  <h2 class="section-title">Windows Hardening Checklist</h2>
+  <p class="section-sub">Every lab ends with these defenses. Teach offense to teach defense.</p>
 
-      const blob = new Blob([content], { type: 'application/vnd.android.package-archive' });
-      const url = URL.createObjectURL(blob);
-      
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName || `${appName.toLowerCase().replace(/\s+/g, '-')}.apk`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Clean up the URL after a short delay
-      setTimeout(() => {
-        URL.revokeObjectURL(url);
-      }, 1000);
-      
-      showToast(`📱 ${appName} download started!`);
-      console.log(`📥 Downloading: ${appName} (${fileName})`);
-    }
+  <div class="defense-grid">
+    <div class="defense-item">
+      <h4>BitLocker + TPM</h4>
+      <p>Full-disk encryption with TPM 2.0 + PIN blocks offline SAM extraction completely.</p>
+    </div>
+    <div class="defense-item">
+      <h4>Windows LAPS</h4>
+      <p>Randomizes local admin passwords per machine, rotated automatically.</p>
+    </div>
+    <div class="defense-item">
+      <h4>Credential Guard</h4>
+      <p>Isolates LSASS in a virtualization container — defeats most credential dumping.</p>
+    </div>
+    <div class="defense-item">
+      <h4>BIOS / UEFI Password</h4>
+      <p>Stops boot-from-USB attacks before Windows even loads.</p>
+    </div>
+    <div class="defense-item">
+      <h4>Microsoft Account + Hello</h4>
+      <p>Cloud-backed recovery + biometric login removes the local-password attack surface.</p>
+    </div>
+    <div class="defense-item">
+      <h4>Account Lockout Policy</h4>
+      <p>5 attempts → 15 min lockout neutralizes brute-force RDP attacks.</p>
+    </div>
+  </div>
+</section>
 
-    // Attach download handlers to all download buttons
-    document.querySelectorAll('.action-btn.download').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const appName = this.dataset.app || 'App';
-        const fileName = this.dataset.file || 'app.apk';
-        downloadApp(appName, fileName);
-      });
-    });
+<section id="ethics">
+  <div class="ethics">
+    <h2 class="section-title">Legal & Ethical Rules</h2>
+    <p class="section-sub">Enrollment is conditional on accepting these terms.</p>
+    <ul>
+      <li>Only test Windows systems you personally own or have written authorization to test.</li>
+      <li>Never use these techniques on school, work, library, or public computers.</li>
+      <li>All labs must be completed inside your isolated Windows VM.</li>
+      <li>Report any accidental access to real data immediately to your instructor.</li>
+      <li>Unauthorized access is a criminal offense under CFAA, the UK Computer Misuse Act, and equivalent laws worldwide.</li>
+    </ul>
+  </div>
+</section>
 
-    // ===== PREVIEW MODAL =====
-    const previewOverlay = document.getElementById('previewOverlay');
-    const previewIframe = document.getElementById('previewIframe');
-    const previewLoading = document.getElementById('previewLoading');
-    const previewTitle = document.getElementById('previewTitle');
-    const previewVisitBtn = document.getElementById('previewVisitBtn');
-    const previewClose = document.getElementById('previewClose');
+<footer>
+  © 2026 WinSec Academy — Windows educational training only. All labs require owned or authorized systems.<br>
+  <a href="#ethics">Ethics Policy</a> · <a href="#curriculum">Curriculum</a> · <a href="#defense">Hardening</a>
+</footer>
 
-    let currentUrl = '';
-
-    function openPreview(url, title) {
-      if (!url || url === '#') {
-        alert('This website preview is not available yet.');
-        return;
-      }
-      
-      currentUrl = url;
-      previewTitle.textContent = title || 'Website Preview';
-      previewVisitBtn.href = url;
-      
-      previewLoading.style.display = 'flex';
-      previewIframe.style.display = 'none';
-      
-      previewIframe.src = url;
-      
-      previewIframe.onload = function() {
-        previewLoading.style.display = 'none';
-        previewIframe.style.display = 'block';
-      };
-      
-      setTimeout(() => {
-        if (previewLoading.style.display !== 'none') {
-          previewLoading.innerHTML = `
-            <i class="fas fa-exclamation-circle" style="color:#f59e0b;"></i>
-            <span>Preview taking longer than expected. Click "Visit Website" to open directly.</span>
-          `;
-        }
-      }, 8000);
-      
-      previewOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closePreview() {
-      previewOverlay.classList.remove('active');
-      document.body.style.overflow = '';
-      setTimeout(() => {
-        previewIframe.src = '';
-        previewIframe.style.display = 'none';
-        previewLoading.style.display = 'flex';
-        previewLoading.innerHTML = `
-          <i class="fas fa-spinner fa-pulse"></i>
-          <span>Loading preview...</span>
-        `;
-      }, 300);
-    }
-
-    document.querySelectorAll('.website-clickable').forEach(card => {
-      card.addEventListener('click', function(e) {
-        if (e.target.closest('.action-btn')) return;
-        const url = this.dataset.url;
-        const name = this.querySelector('.info .name')?.textContent || 'Website';
-        openPreview(url, name);
-      });
-    });
-
-    previewClose.addEventListener('click', closePreview);
-    previewOverlay.addEventListener('click', function(e) {
-      if (e.target === this) closePreview();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closePreview();
-    });
-
-    console.log('✅ Doroi main page ready — with app downloads & website previews');
-  })();
-</script>
 </body>
 </html>

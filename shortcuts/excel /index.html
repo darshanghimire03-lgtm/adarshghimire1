@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Excel Math Tricks · Perfect Guide</title>
+  <!-- Google Font + Font Awesome 6 (free) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fbfe;
+      color: #1e2b3a;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------- HEADER ---------- */
+    .hero {
+      background: linear-gradient(135deg, #0b3b2c 0%, #176b45 100%);
+      color: white;
+      padding: 2.2rem 1.5rem 2.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 4px solid #f5b342;
+    }
+
+    .hero::after {
+      content: "⚡";
+      font-size: 8rem;
+      position: absolute;
+      right: -20px;
+      bottom: -40px;
+      opacity: 0.08;
+      pointer-events: none;
+      transform: rotate(10deg);
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 7vw, 2.9rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .hero h1 i {
+      font-size: 2.2rem;
+      color: #f7d44a;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      font-weight: 400;
+      opacity: 0.92;
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .hero p i {
+      font-size: 1rem;
+      background: rgba(255,255,255,0.2);
+      padding: 0.25rem;
+      border-radius: 50%;
+    }
+
+    /* ---------- SEARCH ---------- */
+    .search-wrapper {
+      max-width: 650px;
+      margin: -1.7rem auto 1.8rem;
+      padding: 0 1.2rem;
+      position: relative;
+      z-index: 5;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border-radius: 60px;
+      box-shadow: 0 12px 30px -8px rgba(0, 40, 30, 0.2), 0 4px 12px rgba(0,0,0,0.05);
+      padding: 0.2rem 0.2rem 0.2rem 1.4rem;
+      border: 1px solid rgba(23, 107, 69, 0.15);
+      transition: all 0.2s;
+    }
+
+    .search-box:focus-within {
+      box-shadow: 0 12px 30px -6px rgba(23, 107, 69, 0.3), 0 0 0 3px rgba(23, 107, 69, 0.15);
+      border-color: #176b45;
+    }
+
+    .search-box i {
+      color: #5b7e6b;
+      font-size: 1.1rem;
+    }
+
+    .search-box input {
+      width: 100%;
+      border: none;
+      padding: 0.9rem 0.8rem 0.9rem 0.7rem;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      background: transparent;
+      color: #1e2b3a;
+    }
+
+    .search-box input::placeholder {
+      color: #8fa99b;
+      font-weight: 400;
+    }
+
+    /* ---------- CONTAINER ---------- */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.2rem 3.5rem;
+    }
+
+    /* ---------- CATEGORY ---------- */
+    .category {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0b3b2c;
+      margin: 2.2rem 0 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      letter-spacing: -0.01em;
+      border-left: 6px solid #f5b342;
+      padding-left: 1rem;
+    }
+
+    .category i {
+      color: #176b45;
+      font-size: 1.5rem;
+    }
+
+    /* ---------- GRID ---------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.4rem;
+    }
+
+    /* ---------- CARD ---------- */
+    .card {
+      background: #ffffff;
+      border-radius: 1.5rem;
+      padding: 1.6rem 1.4rem;
+      box-shadow: 0 6px 18px -6px rgba(0, 30, 20, 0.08), 0 2px 8px rgba(0,0,0,0.02);
+      border: 1px solid rgba(23, 107, 69, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 28px -12px rgba(23, 107, 69, 0.2), 0 4px 12px rgba(0,0,0,0.03);
+      border-color: rgba(23, 107, 69, 0.25);
+    }
+
+    .shortcut {
+      display: inline-block;
+      background: #e8f5ee;
+      color: #0b3b2c;
+      padding: 0.35rem 0.9rem;
+      border-radius: 40px;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      align-self: flex-start;
+      border: 1px solid rgba(23, 107, 69, 0.25);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      letter-spacing: 0.01em;
+    }
+
+    .card h3 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #0b3b2c;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card > p {
+      color: #4b6374;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .example {
+      background: #f1f8f4;
+      padding: 0.9rem 1rem;
+      border-radius: 1rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #1a3e30;
+      border: 1px solid #cbe3d6;
+      margin-bottom: 1.2rem;
+      word-break: break-word;
+    }
+
+    .steps {
+      background: #f9fdfb;
+      border-left: 4px solid #176b45;
+      padding: 1rem 1rem 1rem 1.2rem;
+      border-radius: 0 1rem 1rem 0;
+      margin-bottom: 1rem;
+      flex: 1;
+    }
+
+    .steps strong {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #176b45;
+      margin-bottom: 0.7rem;
+      font-weight: 700;
+    }
+
+    .steps strong i {
+      font-size: 0.8rem;
+    }
+
+    .steps ol {
+      padding-left: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .steps li {
+      font-size: 0.9rem;
+      color: #2f4a5c;
+      line-height: 1.45;
+      padding-left: 0.1rem;
+    }
+
+    .steps li b {
+      background: #e8f0ec;
+      padding: 0.1rem 0.4rem;
+      border-radius: 6px;
+      font-family: monospace;
+      font-weight: 600;
+      color: #0b3b2c;
+      font-size: 0.85rem;
+    }
+
+    .result {
+      margin-top: 0.8rem;
+      padding: 0.8rem 1rem;
+      background: #e8f5ee;
+      border-radius: 1rem;
+      color: #0b3b2c;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid #b8d9c8;
+    }
+
+    .result i {
+      color: #176b45;
+      font-size: 1.1rem;
+    }
+
+    /* keyboard shortcut cards (no formula / example) */
+    .card .shortcut + h3 + .steps {
+      margin-top: 0.2rem;
+    }
+
+    /* ---------- FOOTER ---------- */
+    footer {
+      text-align: center;
+      color: #5e7e6e;
+      font-size: 0.9rem;
+      padding: 2rem 1.5rem 2.5rem;
+      border-top: 1px solid rgba(23, 107, 69, 0.12);
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    footer i {
+      color: #176b45;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width: 600px) {
+      .hero {
+        padding: 1.8rem 1rem 2.2rem;
+      }
+
+      .hero h1 {
+        font-size: 1.9rem;
+      }
+
+      .hero h1 i {
+        font-size: 1.8rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .search-wrapper {
+        margin-top: -1.5rem;
+      }
+
+      .search-box {
+        padding: 0.1rem 0.1rem 0.1rem 1.2rem;
+      }
+
+      .search-box input {
+        padding: 0.8rem 0.6rem 0.8rem 0.5rem;
+        font-size: 0.95rem;
+      }
+
+      .category {
+        font-size: 1.3rem;
+        margin: 1.8rem 0 1rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+      }
+
+      .card {
+        padding: 1.3rem 1.1rem;
+      }
+
+      .card h3 {
+        font-size: 1.25rem;
+      }
+
+      .steps li {
+        font-size: 0.88rem;
+      }
+
+      .result {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .hero h1 {
+        font-size: 1.6rem;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+
+      .hero p {
+        font-size: 0.9rem;
+      }
+
+      .shortcut {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.7rem;
+      }
+
+      .steps ol {
+        padding-left: 1.2rem;
+      }
+    }
+
+    /* hide cards with search */
+    .card.hidden {
+      display: none;
+    }
+
+    /* small touch for empty state */
+    .no-results {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #5b7e6b;
+      font-size: 1.1rem;
+      grid-column: 1 / -1;
+      background: #ffffff;
+      border-radius: 1.5rem;
+      border: 1px dashed #b8d9c8;
+    }
+
+    .no-results i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: block;
+      color: #aac7b8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO / TITLE -->
+  <header class="hero">
+    <h1>
+      <i class="fas fa-calculator"></i> 
+      Excel Math Tricks
+    </h1>
+    <p>
+      <i class="fas fa-check-circle"></i> 
+      Step-by-step calculations & shortcuts
+      <i class="fas fa-arrow-right"></i>
+    </p>
+  </header>
+
+  <!-- SEARCH -->
+  <div class="search-wrapper">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="search" placeholder="Search addition, SUM, percentage, shortcuts..." aria-label="Search Excel tricks">
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="container" id="mainContainer">
+
+    <!-- BASIC CALCULATIONS -->
+    <h2 class="category"><i class="fas fa-plus-circle"></i> Basic Cell Calculations</h2>
+    <div class="grid" id="basicGrid">
+      <!-- Addition -->
+      <div class="card">
+        <span class="shortcut">+</span>
+        <h3>Addition</h3>
+        <p>Add numbers from different cells.</p>
+        <div class="example">A1 = 25 · B1 = 15 → 40</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the cell where you want the result.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Click the first cell.</li>
+            <li>Press <b>+</b>.</li>
+            <li>Click the second cell.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> 25 + 15 = 40</div>
+      </div>
+      <!-- Subtraction -->
+      <div class="card">
+        <span class="shortcut">−</span>
+        <h3>Subtraction</h3>
+        <p>Subtract one cell's value from another.</p>
+        <div class="example">A1 = 25 · B1 = 15 → 10</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the result cell.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Click the first cell.</li>
+            <li>Press <b>-</b>.</li>
+            <li>Click the second cell.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> 25 − 15 = 10</div>
+      </div>
+      <!-- Multiplication -->
+      <div class="card">
+        <span class="shortcut">*</span>
+        <h3>Multiplication</h3>
+        <p>Multiply values from different cells.</p>
+        <div class="example">A1 = 12 · B1 = 8 → 96</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the result cell.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Click the first cell.</li>
+            <li>Press <b>*</b>.</li>
+            <li>Click the second cell.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> 12 × 8 = 96</div>
+      </div>
+      <!-- Division -->
+      <div class="card">
+        <span class="shortcut">/</span>
+        <h3>Division</h3>
+        <p>Divide one cell's value by another.</p>
+        <div class="example">A1 = 100 · B1 = 4 → 25</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the result cell.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Click the first cell.</li>
+            <li>Press <b>/</b>.</li>
+            <li>Click the second cell.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> 100 ÷ 4 = 25</div>
+      </div>
+      <!-- Power -->
+      <div class="card">
+        <span class="shortcut">^</span>
+        <h3>Power</h3>
+        <p>Calculate a number to a power.</p>
+        <div class="example">A1 = 5 · B1 = 2 → 25</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the result cell.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Click the base number cell.</li>
+            <li>Press <b>^</b>.</li>
+            <li>Click the power cell.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> 5² = 25</div>
+      </div>
+      <!-- Percentage -->
+      <div class="card">
+        <span class="shortcut">%</span>
+        <h3>Percentage</h3>
+        <p>Calculate a percentage using cells.</p>
+        <div class="example">A1 = 200 · B1 = 15% → 30</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the result cell.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Click the amount cell.</li>
+            <li>Press <b>*</b>.</li>
+            <li>Click the percentage cell.</li>
+            <li>Press <b>%</b>.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> 200 × 15% = 30</div>
+      </div>
+    </div>
+
+    <!-- MATH FUNCTIONS -->
+    <h2 class="category"><i class="fas fa-square-root-variable"></i> Excel Math Functions</h2>
+    <div class="grid" id="functionsGrid">
+      <!-- SUM -->
+      <div class="card">
+        <span class="shortcut">SUM</span>
+        <h3>Add Many Cells</h3>
+        <p>Add a complete range of cells.</p>
+        <div class="example">A1=10 · A2=20 · A3=30 → 60</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the result cell.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Type <b>SUM(</b>.</li>
+            <li>Select the cells.</li>
+            <li>Type <b>)</b>.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> SUM = 60</div>
+      </div>
+      <!-- AVERAGE -->
+      <div class="card">
+        <span class="shortcut">AVERAGE</span>
+        <h3>Average</h3>
+        <p>Find the average of selected cells.</p>
+        <div class="example">10, 20, 30 → 20</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the result cell.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Type <b>AVERAGE(</b>.</li>
+            <li>Select the cells.</li>
+            <li>Type <b>)</b>.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> AVERAGE = 20</div>
+      </div>
+      <!-- MAX -->
+      <div class="card">
+        <span class="shortcut">MAX</span>
+        <h3>Largest Number</h3>
+        <p>Find the highest value in cells.</p>
+        <div class="example">12, 45, 23 → 45</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the result cell.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Type <b>MAX(</b>.</li>
+            <li>Select the cells.</li>
+            <li>Type <b>)</b>.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> MAX = 45</div>
+      </div>
+      <!-- MIN -->
+      <div class="card">
+        <span class="shortcut">MIN</span>
+        <h3>Smallest Number</h3>
+        <p>Find the lowest value in cells.</p>
+        <div class="example">12, 45, 23 → 12</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the result cell.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Type <b>MIN(</b>.</li>
+            <li>Select the cells.</li>
+            <li>Type <b>)</b>.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> MIN = 12</div>
+      </div>
+      <!-- SQRT -->
+      <div class="card">
+        <span class="shortcut">SQRT</span>
+        <h3>Square Root</h3>
+        <p>Find the square root of a cell.</p>
+        <div class="example">A1 = 144 → 12</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the result cell.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Type <b>SQRT(</b>.</li>
+            <li>Click the cell with 144.</li>
+            <li>Type <b>)</b>.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> √144 = 12</div>
+      </div>
+      <!-- ROUND -->
+      <div class="card">
+        <span class="shortcut">ROUND</span>
+        <h3>Round a Number</h3>
+        <p>Round a decimal value.</p>
+        <div class="example">A1=12.567 · B1=2 → 12.57</div>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the result cell.</li>
+            <li>Press <b>=</b>.</li>
+            <li>Type <b>ROUND(</b>.</li>
+            <li>Click the decimal cell.</li>
+            <li>Press <b>,</b>.</li>
+            <li>Click the decimal-place cell.</li>
+            <li>Type <b>)</b>.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-equals"></i> ROUND = 12.57</div>
+      </div>
+    </div>
+
+    <!-- KEYBOARD SHORTCUTS -->
+    <h2 class="category"><i class="fas fa-keyboard"></i> Useful Keyboard Shortcuts</h2>
+    <div class="grid" id="shortcutsGrid">
+      <!-- Alt + = -->
+      <div class="card">
+        <span class="shortcut">Alt + =</span>
+        <h3>AutoSum</h3>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click the empty cell below numbers.</li>
+            <li>Press <b>Alt + =</b>.</li>
+            <li>Excel selects nearby numbers.</li>
+            <li>Press <b>Enter</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-bolt"></i> Auto‑creates SUM formula.</div>
+      </div>
+      <!-- Ctrl + D -->
+      <div class="card">
+        <span class="shortcut">Ctrl + D</span>
+        <h3>Fill Down</h3>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Select the cell with formula.</li>
+            <li>Select cells below.</li>
+            <li>Press <b>Ctrl + D</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-arrow-down"></i> Formula copied downward.</div>
+      </div>
+      <!-- F4 -->
+      <div class="card">
+        <span class="shortcut">F4</span>
+        <h3>Lock Cell Reference</h3>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click a cell with a formula.</li>
+            <li>Edit the formula.</li>
+            <li>Select the cell reference.</li>
+            <li>Press <b>F4</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-lock"></i> A1 → $A$1</div>
+      </div>
+      <!-- Ctrl + ; -->
+      <div class="card">
+        <span class="shortcut">Ctrl + ;</span>
+        <h3>Insert Date</h3>
+        <div class="steps">
+          <strong><i class="fas fa-list-ol"></i> Full Process</strong>
+          <ol>
+            <li>Click an empty cell.</li>
+            <li>Press <b>Ctrl + ;</b>.</li>
+          </ol>
+        </div>
+        <div class="result"><i class="fas fa-calendar"></i> Today's date is inserted.</div>
+      </div>
+    </div>
+
+    <!-- NO RESULTS MESSAGE (hidden by default) -->
+    <div id="noResults" class="no-results" style="display: none;">
+      <i class="fas fa-search-minus"></i>
+      No matching tricks found. Try a different keyword.
+    </div>
+
+  </main>
+
+  <footer>
+    <i class="fas fa-file-excel"></i> 
+    Excel Math Tricks · Learn Excel Step by Step 
+    <i class="fas fa-star"></i>
+  </footer>
+
+  <!-- SEARCH SCRIPT -->
+  <script>
+    (function() {
+      const searchInput = document.getElementById('search');
+      const allCards = document.querySelectorAll('.card');
+      const noResults = document.getElementById('noResults');
+      const grids = document.querySelectorAll('.grid');
+
+      function filterCards() {
+        const query = searchInput.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        allCards.forEach(card => {
+          const text = card.innerText.toLowerCase();
+          if (query === '' || text.includes(query)) {
+            card.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+
+        // Show or hide no-results message
+        if (visibleCount === 0) {
+          noResults.style.display = 'block';
+        } else {
+          noResults.style.display = 'none';
+        }
+
+        // Optional: hide empty grid sections? (we keep them, but cards hidden)
+        // Improve UX: if a whole grid has no visible cards, we could hide the category.
+        // But for simplicity we keep all categories visible.
+      }
+
+      searchInput.addEventListener('input', filterCards);
+
+      // Initial run (in case of autofill)
+      filterCards();
+    })();
+  </script>
+</body>
+</html>
