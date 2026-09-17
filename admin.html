@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin · Profile Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            background-color: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #000; display: flex; justify-content: center; min-height: 100vh;
+        }
+        .app-container {
+            width: 100%; max-width: 480px; background: #fff; min-height: 100vh;
+            display: flex; flex-direction: column; position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.03);
+            padding-bottom: 100px;
+        }
+
+        /* ===== ADMIN TOOLBAR ===== */
+        .admin-toolbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px;
+            background: #0b1a2b; color: #fff;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .admin-toolbar .left {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 14px; font-weight: 600;
+        }
+        .admin-toolbar .left i { color: #fbbf24; }
+        .toolbar-btn {
+            background: rgba(255,255,255,0.12); color: #fff;
+            border: none; padding: 8px 14px; border-radius: 30px;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: background 0.15s;
+        }
+        .toolbar-btn:hover { background: rgba(255,255,255,0.22); }
+
+        /* ===== PROFILE INFO ===== */
+        .profile-info-section {
+            padding: 20px 16px 0;
+            display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        .profile-text { flex: 1; padding-top: 4px; }
+        .profile-name { font-size: 24px; font-weight: 700; line-height: 1.25; letter-spacing: -0.4px; }
+        .profile-username-row { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+        .profile-username { font-size: 15px; color: #000; }
+        .verified-badge { color: #1d9bf0; font-size: 15px; }
+        .profile-avatar-large {
+            width: 76px; height: 76px; border-radius: 50%; object-fit: cover;
+            flex-shrink: 0; border: 1px solid #e1e8ed; background: #f0f0f0;
+        }
+
+        /* ===== ACTION BUTTONS ===== */
+        .action-buttons { display: flex; gap: 10px; padding: 16px 16px 0; }
+        .action-btn {
+            flex: 1; padding: 12px 0; border-radius: 30px;
+            font-size: 15px; font-weight: 600; text-align: center;
+            cursor: pointer; font-family: 'Inter', sans-serif;
+            transition: all 0.15s ease; border: 1.5px solid #dbdbdb;
+            background: #fff; color: #000;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .action-btn.share-btn { background: #0b1a2b; color: #fff; border-color: #0b1a2b; font-weight: 700; }
+        .action-btn.share-btn:active { background: #1e3349; }
+        .action-btn.edit-profile-btn { color: #000; border-color: #dbdbdb; }
+        .action-btn:active { background-color: #f2f2f2; }
+
+        /* ===== TABS ===== */
+        .tabs-container {
+            display: flex; justify-content: space-around; padding: 18px 8px 0;
+            border-bottom: 1px solid #eaeaea; margin-top: 4px;
+        }
+        .tab-item {
+            font-size: 15px; font-weight: 500; color: #687684;
+            padding-bottom: 12px; cursor: pointer; position: relative;
+            background: none; border: none; font-family: 'Inter', sans-serif;
+            flex: 1; transition: color 0.2s;
+        }
+        .tab-item.active { color: #000; font-weight: 600; }
+        .tab-item.active::after {
+            content: ''; position: absolute; bottom: -1px; left: 0;
+            width: 100%; height: 2px; background: #000; border-radius: 1px;
+        }
+        .tab-panel { display: none; animation: fadeInPanel 0.25s ease; }
+        .tab-panel.active { display: block; }
+        @keyframes fadeInPanel { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== POST CARD ===== */
+        .post-card {
+            padding: 14px 16px 20px; display: flex; flex-direction: column;
+            border-bottom: 1px solid #f0f0f0; margin-top: 4px;
+        }
+        .post-header { display: flex; align-items: center; gap: 10px; }
+        .post-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 1px solid #e1e8ed; background: #f0f0f0; }
+        .post-user-info { display: flex; align-items: center; gap: 5px; flex: 1; min-width: 0; }
+        .post-username { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .post-verified { color: #1d9bf0; font-size: 14px; flex-shrink: 0; }
+        .post-time { font-size: 15px; color: #687684; flex-shrink: 0; }
+        .post-more { color: #687684; font-size: 18px; cursor: pointer; padding: 0 4px; background: none; border: none; }
+        .post-caption { margin-top: 12px; font-size: 16px; line-height: 1.4; }
+        .post-media {
+            margin-top: 12px; border-radius: 16px; overflow: hidden;
+            background: #f0f0f0; width: 100%; aspect-ratio: 4/5;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .post-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        /* ===== CARD ACTIONS ===== */
+        .card-actions {
+            display: flex; gap: 8px; justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .card-action-btn {
+            background: #f1f5f9; color: #334155;
+            border: none; padding: 7px 14px; border-radius: 10px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: all 0.15s;
+        }
+        .card-action-btn:hover { background: #e2e8f0; }
+        .card-action-btn.danger { background: #fee2e2; color: #b91c1c; }
+        .card-action-btn.danger:hover { background: #fecaca; }
+        .card-action-btn.primary { background: #dbeafe; color: #1d4ed8; }
+        .card-action-btn.primary:hover { background: #bfdbfe; }
+
+        /* ===== LIST ===== */
+        .list-container { padding: 8px 16px 20px; }
+        .list-item-wrap { border-bottom: 1px solid #f5f5f5; }
+        .list-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 12px; border-radius: 16px;
+            transition: background 0.15s; cursor: pointer;
+            text-decoration: none; color: inherit;
+        }
+        .list-item:hover { background: #f8fafc; }
+        .list-icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: #fff; flex-shrink: 0;
+            box-shadow: 0 6px 12px -6px rgba(0,0,0,0.15);
+        }
+        .list-icon.app-color { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .list-icon.web-color { background: linear-gradient(135deg, #0ea5e9, #06b6d4); }
+        .list-content { flex: 1; min-width: 0; }
+        .list-title { font-size: 15px; font-weight: 600; color: #0b1a2b; margin-bottom: 2px; }
+        .list-desc { font-size: 13px; color: #687684; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-arrow { color: #94a3b8; font-size: 14px; flex-shrink: 0; }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            padding: 48px 24px;
+            text-align: center;
+            color: #64748b;
+        }
+        .empty-state i {
+            font-size: 44px;
+            color: #cbd5e1;
+            margin-bottom: 14px;
+            display: block;
+        }
+        .empty-state h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        .empty-state p {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #94a3b8;
+        }
+
+        /* ===== FAB ===== */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: calc(50% - 240px + 20px);
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: #0b1a2b;
+            color: #fff;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 12px 24px -8px rgba(11,26,43,0.6);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 500;
+            transition: transform 0.2s ease, background 0.2s;
+        }
+        .fab:hover { background: #1e3349; transform: scale(1.08) rotate(90deg); }
+        .fab:active { transform: scale(0.95) rotate(90deg); }
+        @media (max-width: 520px) {
+            .fab { right: 20px; }
+        }
+
+        /* ===== DIALOGS ===== */
+        .dialog-overlay {
+            position: fixed; inset: 0;
+            background: rgba(10, 20, 30, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; padding: 16px;
+            visibility: hidden; opacity: 0;
+            transition: opacity 0.25s, visibility 0.25s;
+        }
+        .dialog-overlay.active { visibility: visible; opacity: 1; }
+        .dialog {
+            background: #fff; max-width: 440px; width: 100%;
+            border-radius: 28px; padding: 22px 20px 20px;
+            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.4);
+            transform: scale(0.94);
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+            max-height: 88vh; overflow-y: auto;
+        }
+        .dialog-overlay.active .dialog { transform: scale(1); }
+        .dialog-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px;
+        }
+        .dialog-header h3 {
+            font-size: 18px; font-weight: 700; color: #0b1a2b;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .dialog-header h3 i { color: #6366f1; }
+        .dialog-close {
+            background: #f1f5f9; border: none; width: 34px; height: 34px;
+            border-radius: 50%; font-size: 16px; color: #475569;
+            cursor: pointer; transition: background 0.15s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .dialog-close:hover { background: #e2e8f0; }
+
+        .dialog-form { display: flex; flex-direction: column; gap: 12px; }
+        .dialog-field { display: flex; flex-direction: column; gap: 5px; }
+        .dialog-field label {
+            font-size: 12px; font-weight: 600; color: #475569;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .dialog-field input, .dialog-field textarea {
+            font-family: 'Inter', sans-serif; font-size: 14px;
+            padding: 11px 14px; border: 1.5px solid #e2e8f0;
+            border-radius: 12px; outline: none;
+            background: #fff; color: #0f172a;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .dialog-field input:focus, .dialog-field textarea:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
+        }
+        .dialog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .dialog-actions {
+            display: flex; gap: 10px; margin-top: 6px;
+        }
+        .dialog-btn {
+            flex: 1; padding: 13px;
+            border-radius: 14px; font-family: 'Inter', sans-serif;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            border: none; transition: all 0.15s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .dialog-btn.primary { background: #0b1a2b; color: #fff; }
+        .dialog-btn.primary:hover { background: #1e3349; }
+        .dialog-btn.primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .dialog-btn.secondary { background: #f1f5f9; color: #334155; flex: 0 0 110px; }
+        .dialog-btn.secondary:hover { background: #e2e8f0; }
+        .dialog-btn.danger { background: #b91c1c; color: #fff; }
+        .dialog-btn.danger:hover { background: #991b1b; }
+
+        /* Add-item chooser grid */
+        .chooser-grid {
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px; margin-bottom: 6px;
+        }
+        .chooser-item {
+            background: #f8fafc; border: 1.5px solid #e2e8f0;
+            border-radius: 18px; padding: 18px 8px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            transition: all 0.15s; font-family: 'Inter', sans-serif;
+        }
+        .chooser-item:hover {
+            background: #fff; border-color: #6366f1;
+            transform: translateY(-3px);
+            box-shadow: 0 14px 22px -12px rgba(99,102,241,0.4);
+        }
+        .chooser-item i { font-size: 24px; color: #6366f1; }
+        .chooser-item span { font-size: 13px; font-weight: 600; color: #1e293b; }
+
+        /* ===== AVATAR PREVIEW ===== */
+        .avatar-preview-row {
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 16px;
+        }
+        .avatar-preview {
+            width: 60px; height: 60px; border-radius: 50%;
+            object-fit: cover; flex-shrink: 0;
+            border: 2px solid #fff;
+            box-shadow: 0 6px 14px -6px rgba(0,0,0,0.2);
+            background: #f0f0f0;
+        }
+        .avatar-preview-info { flex: 1; min-width: 0; }
+        .avatar-preview-info h5 {
+            font-size: 13px; font-weight: 700; color: #0b1a2b;
+            margin-bottom: 3px;
+        }
+        .avatar-preview-info p {
+            font-size: 11px; color: #64748b; line-height: 1.4;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed; bottom: 100px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #0b1a2b; color: #fff;
+            padding: 12px 22px; border-radius: 30px;
+            font-size: 14px; font-weight: 500;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 2000; box-shadow: 0 12px 24px -8px rgba(0,0,0,0.3);
+            max-width: 85%; text-align: center;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast i { margin-right: 8px; color: #4ade80; }
+        .toast.error { background: #b91c1c; }
+        .toast.error i { color: #fecaca; }
+
+        @media (max-width: 400px) {
+            .profile-name { font-size: 21px; }
+            .profile-avatar-large { width: 68px; height: 68px; }
+            .action-btn { font-size: 14px; padding: 10px 0; }
+            .tab-item { font-size: 14px; }
+            .dialog-grid { grid-template-columns: 1fr; }
+            .chooser-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- ===== ADMIN TOOLBAR ===== -->
+    <div class="admin-toolbar">
+        <div class="left">
+            <i class="fas fa-user-shield"></i>
+            <span>Admin Mode</span>
+        </div>
+        <button class="toolbar-btn" id="viewPublicBtn">
+            <i class="fas fa-eye"></i> Public View
+        </button>
+    </div>
+
+    <!-- ===== PROFILE INFO ===== -->
+    <section class="profile-info-section">
+        <div class="profile-text">
+            <h1 class="profile-name" id="profileName">Loading…</h1>
+            <div class="profile-username-row">
+                <span class="profile-username" id="profileUsername">@…</span>
+                <span class="verified-badge"><i class="fa-solid fa-circle-check"></i></span>
+            </div>
+        </div>
+        <img class="profile-avatar-large" id="profileAvatar" src="profile.png" alt="Profile"
+             onerror="this.src='https://ui-avatars.com/api/?name=User&size=120&background=0b1a2b&color=fff&bold=true'">
+    </section>
+
+    <!-- ===== ACTION BUTTONS: Share + Edit Profile ===== -->
+    <div class="action-buttons">
+        <button class="action-btn share-btn" id="shareBtn">
+            <i class="fas fa-share-alt"></i> Share
+        </button>
+        <button class="action-btn edit-profile-btn" id="editProfileBtn">
+            <i class="fas fa-user-edit"></i> Edit Profile
+        </button>
+    </div>
+
+    <!-- ===== TABS ===== -->
+    <div class="tabs-container" id="tabsContainer">
+        <button class="tab-item active" data-tab="posts">Posts</button>
+        <button class="tab-item" data-tab="apps">Apps</button>
+        <button class="tab-item" data-tab="websites">Websites</button>
+    </div>
+
+    <!-- ===== POSTS PANEL ===== -->
+    <div class="tab-panel active" id="panel-posts">
+        <div id="postsContainer"></div>
+    </div>
+
+    <!-- ===== APPS PANEL ===== -->
+    <div class="tab-panel" id="panel-apps">
+        <div class="list-container" id="appsContainer"></div>
+    </div>
+
+    <!-- ===== WEBSITES PANEL ===== -->
+    <div class="tab-panel" id="panel-websites">
+        <div class="list-container" id="websitesContainer"></div>
+    </div>
+
+</div>
+
+<!-- ===== FAB (bottom) ===== -->
+<button class="fab" id="fab" title="Add new item">
+    <i class="fas fa-plus"></i>
+</button>
+
+<!-- ===== DIALOG: Add Chooser ===== -->
+<div class="dialog-overlay" id="addChooserDialog">
+    <div class="dialog">
+        <div class="dialog-header">
+            <h3><i class="fas fa-plus-circle"></i> Add New</h3>
+            <button class="dialog-close" data-close><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chooser-grid">
+            <button class="chooser-item" data-add="posts">
+                <i class="fas fa-newspaper"></i>
+                <span>Post</span>
+            </button>
+            <button class="chooser-item" data-add="apps">
+                <i class="fas fa-mobile-alt"></i>
+                <span>App</span>
+            </button>
+            <button class="chooser-item" data-add="websites">
+                <i class="fas fa-globe"></i>
+                <span>Website</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DIALOG: Edit Profile ===== -->
+<div class="dialog-overlay" id="editProfileDialog">
+    <div class="dialog">
+        <div class="dialog-header">
+            <h3><i class="fas fa-user-edit"></i> Edit Profile</h3>
+            <button class="dialog-close" data-close><i class="fas fa-times"></i></button>
+        </div>
+        <div class="dialog-form">
+            <div class="avatar-preview-row">
+                <img class="avatar-preview" id="dAvatarPreview" src="profile.png" alt="Avatar preview"
+                     onerror="this.src='https://ui-avatars.com/api/?name=User&size=120&background=0b1a2b&color=fff&bold=true'">
+                <div class="avatar-preview-info">
+                    <h5>Profile Picture</h5>
+                    <p>Leave URL blank to use <strong>profile.png</strong></p>
+                </div>
+            </div>
+            <div class="dialog-field">
+                <label><i class="fas fa-image"></i> Avatar URL</label>
+                <input type="text" id="dAvatar" placeholder="https://... or leave empty">
+            </div>
+            <div class="dialog-field">
+                <label><i class="fas fa-user"></i> Name</label>
+                <input type="text" id="dName" placeholder="Darshan Ghimire">
+            </div>
+            <div class="dialog-field">
+                <label><i class="fas fa-at"></i> Username</label>
+                <input type="text" id="dUsername" placeholder="darshang404">
+            </div>
+        </div>
+        <div class="dialog-actions">
+            <button class="dialog-btn secondary" data-close>Cancel</button>
+            <button class="dialog-btn primary" id="saveProfileBtn">
+                <i class="fas fa-save"></i> Save Profile
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DIALOG: Edit / Add Post ===== -->
+<div class="dialog-overlay" id="editPostDialog">
+    <div class="dialog">
+        <div class="dialog-header">
+            <h3><i class="fas fa-newspaper"></i> <span id="postDialogTitle">Edit Post</span></h3>
+            <button class="dialog-close" data-close><i class="fas fa-times"></i></button>
+        </div>
+        <div class="dialog-form">
+            <div class="dialog-grid">
+                <div class="dialog-field">
+                    <label>Username</label>
+                    <input type="text" id="pUsername" placeholder="darshang404">
+                </div>
+                <div class="dialog-field">
+                    <label>Time</label>
+                    <input type="text" id="pTime" placeholder="7h">
+                </div>
+            </div>
+            <div class="dialog-field">
+                <label>Caption</label>
+                <input type="text" id="pCaption" placeholder="What's on your mind?">
+            </div>
+            <div class="dialog-field">
+                <label>Image URL</label>
+                <input type="text" id="pImage" placeholder="https://...">
+            </div>
+        </div>
+        <div class="dialog-actions">
+            <button class="dialog-btn secondary" data-close>Cancel</button>
+            <button class="dialog-btn primary" id="savePostBtn">
+                <i class="fas fa-save"></i> Save Post
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DIALOG: Edit / Add App ===== -->
+<div class="dialog-overlay" id="editAppDialog">
+    <div class="dialog">
+        <div class="dialog-header">
+            <h3><i class="fas fa-mobile-alt"></i> <span id="appDialogTitle">Edit App</span></h3>
+            <button class="dialog-close" data-close><i class="fas fa-times"></i></button>
+        </div>
+        <div class="dialog-form">
+            <div class="dialog-grid">
+                <div class="dialog-field">
+                    <label>Title</label>
+                    <input type="text" id="aTitle" placeholder="App Name">
+                </div>
+                <div class="dialog-field">
+                    <label>Icon (Font Awesome)</label>
+                    <input type="text" id="aIcon" placeholder="fa-mobile-alt">
+                </div>
+            </div>
+            <div class="dialog-field">
+                <label>Description</label>
+                <input type="text" id="aDescription" placeholder="Short description">
+            </div>
+            <div class="dialog-field">
+                <label>URL</label>
+                <input type="text" id="aUrl" placeholder="https://...">
+            </div>
+        </div>
+        <div class="dialog-actions">
+            <button class="dialog-btn secondary" data-close>Cancel</button>
+            <button class="dialog-btn primary" id="saveAppBtn">
+                <i class="fas fa-save"></i> Save App
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DIALOG: Edit / Add Website ===== -->
+<div class="dialog-overlay" id="editWebsiteDialog">
+    <div class="dialog">
+        <div class="dialog-header">
+            <h3><i class="fas fa-globe"></i> <span id="websiteDialogTitle">Edit Website</span></h3>
+            <button class="dialog-close" data-close><i class="fas fa-times"></i></button>
+        </div>
+        <div class="dialog-form">
+            <div class="dialog-grid">
+                <div class="dialog-field">
+                    <label>Title</label>
+                    <input type="text" id="wTitle" placeholder="Website Name">
+                </div>
+                <div class="dialog-field">
+                    <label>Icon (Font Awesome)</label>
+                    <input type="text" id="wIcon" placeholder="fa-globe">
+                </div>
+            </div>
+            <div class="dialog-field">
+                <label>Description</label>
+                <input type="text" id="wDescription" placeholder="Short description">
+            </div>
+            <div class="dialog-field">
+                <label>URL</label>
+                <input type="text" id="wUrl" placeholder="https://...">
+            </div>
+        </div>
+        <div class="dialog-actions">
+            <button class="dialog-btn secondary" data-close>Cancel</button>
+            <button class="dialog-btn primary" id="saveWebsiteBtn">
+                <i class="fas fa-save"></i> Save Website
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DIALOG: Confirm Delete ===== -->
+<div class="dialog-overlay" id="confirmDeleteDialog">
+    <div class="dialog">
+        <div class="dialog-header">
+            <h3><i class="fas fa-exclamation-triangle" style="color:#b91c1c;"></i> Confirm Delete</h3>
+            <button class="dialog-close" data-close><i class="fas fa-times"></i></button>
+        </div>
+        <p style="color:#475569; font-size:14px; line-height:1.5; margin-bottom:18px;">
+            Are you sure you want to delete this item? This action cannot be undone.
+        </p>
+        <div class="dialog-actions">
+            <button class="dialog-btn secondary" data-close>Cancel</button>
+            <button class="dialog-btn danger" id="confirmDeleteBtn">
+                <i class="fas fa-trash"></i> Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastText">Done</span></div>
+
+<script type="module">
+    import { PROFILE_REF, get, set, onValue } from './firebase-config.js';
+
+    // ============ DOM ============
+    const profileName     = document.getElementById('profileName');
+    const profileUsername = document.getElementById('profileUsername');
+    const profileAvatar   = document.getElementById('profileAvatar');
+    const shareBtn        = document.getElementById('shareBtn');
+    const editProfileBtn  = document.getElementById('editProfileBtn');
+    const viewPublicBtn   = document.getElementById('viewPublicBtn');
+    const toast           = document.getElementById('toast');
+    const toastText       = document.getElementById('toastText');
+    const postsContainer  = document.getElementById('postsContainer');
+    const appsContainer   = document.getElementById('appsContainer');
+    const websitesContainer = document.getElementById('websitesContainer');
+    const fab             = document.getElementById('fab');
+
+    // Dialog elements
+    const addChooserDialog    = document.getElementById('addChooserDialog');
+    const editProfileDialog   = document.getElementById('editProfileDialog');
+    const editPostDialog      = document.getElementById('editPostDialog');
+    const editAppDialog       = document.getElementById('editAppDialog');
+    const editWebsiteDialog   = document.getElementById('editWebsiteDialog');
+    const confirmDeleteDialog = document.getElementById('confirmDeleteDialog');
+
+    // Avatar preview
+    const dAvatarPreview = document.getElementById('dAvatarPreview');
+
+    // ============ STATE ============
+    let currentData = {
+        name: '', username: '', avatar: '',
+        links: {},
+        posts: [], apps: [], websites: []
+    };
+
+    let editingPostIndex    = -1;
+    let editingAppIndex     = -1;
+    let editingWebsiteIndex = -1;
+    let pendingDelete       = null;
+
+    // ============ TOAST ============
+    let toastTimer = null;
+    function showToast(msg, isError = false) {
+        toastText.textContent = msg;
+        toast.classList.toggle('error', isError);
+        const icon = toast.querySelector('i');
+        icon.className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    // ============ HELPERS ============
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, m => ({
+            '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+        }[m]));
+    }
+    function toArray(input) {
+        if (!input) return [];
+        if (Array.isArray(input)) return input;
+        return Object.keys(input).sort((a,b) => Number(a) - Number(b)).map(k => input[k]);
+    }
+    function toObject(arr) {
+        const obj = {};
+        arr.forEach((item, i) => { obj[i] = item; });
+        return obj;
+    }
+
+    // ============ EMPTY STATES ============
+    const EMPTY_STATES = {
+        posts: `
+            <div class="empty-state">
+                <i class="fas fa-newspaper"></i>
+                <h4>No posts yet</h4>
+                <p>Tap the + button at the bottom to create your first post.</p>
+            </div>
+        `,
+        apps: `
+            <div class="empty-state">
+                <i class="fas fa-mobile-alt"></i>
+                <h4>No apps yet</h4>
+                <p>Tap the + button at the bottom to add your first app.</p>
+            </div>
+        `,
+        websites: `
+            <div class="empty-state">
+                <i class="fas fa-globe"></i>
+                <h4>No websites yet</h4>
+                <p>Tap the + button at the bottom to add your first website.</p>
+            </div>
+        `
+    };
+
+    // ============ DIALOG CONTROL ============
+    function openDialog(el) {
+        el.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeDialog(el) {
+        el.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    function closeAllDialogs() {
+        document.querySelectorAll('.dialog-overlay').forEach(d => d.classList.remove('active'));
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('[data-close]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            closeDialog(btn.closest('.dialog-overlay'));
+        });
+    });
+
+    document.querySelectorAll('.dialog-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeDialog(overlay);
+        });
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeAllDialogs();
+    });
+
+    // ============ RENDER PROFILE ============
+    function renderProfile() {
+        profileName.textContent = currentData.name || 'Unnamed';
+        profileUsername.textContent = '@' + (currentData.username || 'unknown');
+
+        if (currentData.avatar && currentData.avatar.trim() !== '') {
+            profileAvatar.src = currentData.avatar;
+        } else {
+            profileAvatar.src = 'profile.png';
+        }
+        profileAvatar.onerror = function() {
+            this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(currentData.name || 'User') + '&size=120&background=0b1a2b&color=fff&bold=true';
+        };
+
+        renderPosts();
+        renderApps();
+        renderWebsites();
+    }
+
+    // ============ RENDER POSTS ============
+    function renderPosts() {
+        if (!currentData.posts.length) {
+            postsContainer.innerHTML = EMPTY_STATES.posts;
+            return;
+        }
+        postsContainer.innerHTML = currentData.posts.map((post, i) => `
+            <article class="post-card">
+                <div class="post-header">
+                    <img class="post-avatar" src="${post.avatar || profileAvatar.src}" 
+                         onerror="this.src='https://ui-avatars.com/api/?name=User&size=80&background=0b1a2b&color=fff&bold=true'">
+                    <div class="post-user-info">
+                        <span class="post-username">${escapeHTML(post.username || 'user')}</span>
+                        <span class="post-verified"><i class="fa-solid fa-circle-check"></i></span>
+                        <span class="post-time">${escapeHTML(post.time || 'now')}</span>
+                    </div>
+                    <button class="post-more"><i class="fa-solid fa-ellipsis"></i></button>
+                </div>
+                ${post.caption ? `<div class="post-caption">${escapeHTML(post.caption)}</div>` : ''}
+                ${post.image ? `<div class="post-media"><img src="${post.image}" alt="Post image" onerror="this.parentElement.innerHTML='<div style=\\'padding:20px;color:#5a6b7a;\\'>📸 Image preview</div>'"></div>` : ''}
+                <div class="card-actions">
+                    <button class="card-action-btn primary" data-edit="posts" data-index="${i}">
+                        <i class="fas fa-pen"></i> Edit
+                    </button>
+                    <button class="card-action-btn danger" data-delete="posts" data-index="${i}">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </article>
+        `).join('');
+        attachCardActions();
+    }
+
+    // ============ RENDER APPS ============
+    function renderApps() {
+        if (!currentData.apps.length) {
+            appsContainer.innerHTML = EMPTY_STATES.apps;
+            return;
+        }
+        appsContainer.innerHTML = currentData.apps.map((item, i) => `
+            <div class="list-item-wrap">
+                <a href="${item.url || '#'}" target="_blank" rel="noopener noreferrer" class="list-item">
+                    <div class="list-icon app-color"><i class="fas ${item.icon || 'fa-mobile-alt'}"></i></div>
+                    <div class="list-content">
+                        <div class="list-title">${escapeHTML(item.title || 'Untitled')}</div>
+                        <div class="list-desc">${escapeHTML(item.description || '')}</div>
+                    </div>
+                    <div class="list-arrow"><i class="fas fa-chevron-right"></i></div>
+                </a>
+                <div class="card-actions" style="padding: 0 12px 14px;">
+                    <button class="card-action-btn primary" data-edit="apps" data-index="${i}">
+                        <i class="fas fa-pen"></i> Edit
+                    </button>
+                    <button class="card-action-btn danger" data-delete="apps" data-index="${i}">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        attachCardActions();
+    }
+
+    // ============ RENDER WEBSITES ============
+    function renderWebsites() {
+        if (!currentData.websites.length) {
+            websitesContainer.innerHTML = EMPTY_STATES.websites;
+            return;
+        }
+        websitesContainer.innerHTML = currentData.websites.map((item, i) => `
+            <div class="list-item-wrap">
+                <a href="${item.url || '#'}" target="_blank" rel="noopener noreferrer" class="list-item">
+                    <div class="list-icon web-color"><i class="fas ${item.icon || 'fa-globe'}"></i></div>
+                    <div class="list-content">
+                        <div class="list-title">${escapeHTML(item.title || 'Untitled')}</div>
+                        <div class="list-desc">${escapeHTML(item.description || '')}</div>
+                    </div>
+                    <div class="list-arrow"><i class="fas fa-chevron-right"></i></div>
+                </a>
+                <div class="card-actions" style="padding: 0 12px 14px;">
+                    <button class="card-action-btn primary" data-edit="websites" data-index="${i}">
+                        <i class="fas fa-pen"></i> Edit
+                    </button>
+                    <button class="card-action-btn danger" data-delete="websites" data-index="${i}">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        attachCardActions();
+    }
+
+    // ============ ATTACH CARD ACTIONS ============
+    function attachCardActions() {
+        document.querySelectorAll('[data-edit]').forEach(btn => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                const type = btn.dataset.edit;
+                const index = parseInt(btn.dataset.index, 10);
+                if (type === 'posts') openEditPostDialog(index);
+                if (type === 'apps') openEditAppDialog(index);
+                if (type === 'websites') openEditWebsiteDialog(index);
+            };
+        });
+
+        document.querySelectorAll('[data-delete]').forEach(btn => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                pendingDelete = {
+                    type: btn.dataset.delete,
+                    index: parseInt(btn.dataset.index, 10)
+                };
+                openDialog(confirmDeleteDialog);
+            };
+        });
+    }
+
+    // ============ SHARE ============
+    shareBtn.addEventListener('click', async () => {
+        const shareUrl = window.location.origin + '/index.html';
+        const shareData = {
+            title: currentData.name || 'Profile',
+            text: `Check out ${currentData.name || 'this profile'} (@${currentData.username || 'user'})`,
+            url: shareUrl
+        };
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+                showToast('Shared successfully ✅');
+            } else if (navigator.clipboard) {
+                await navigator.clipboard.writeText(`${shareData.text} - ${shareUrl}`);
+                showToast('Link copied to clipboard!');
+            } else {
+                prompt('Copy this link:', shareUrl);
+            }
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.error(err);
+                showToast('Share cancelled.', true);
+            }
+        }
+    });
+
+    // ============ VIEW PUBLIC ============
+    viewPublicBtn.addEventListener('click', () => {
+        window.open('index.html', '_blank');
+    });
+
+    // ============ EDIT PROFILE DIALOG ============
+    editProfileBtn.addEventListener('click', () => {
+        document.getElementById('dName').value     = currentData.name || '';
+        document.getElementById('dUsername').value = currentData.username || '';
+        document.getElementById('dAvatar').value   = currentData.avatar || '';
+        updateAvatarPreview(currentData.avatar || '');
+        openDialog(editProfileDialog);
+    });
+
+    document.getElementById('dAvatar').addEventListener('input', (e) => {
+        updateAvatarPreview(e.target.value.trim());
+    });
+
+    function updateAvatarPreview(url) {
+        if (url && url.trim() !== '') {
+            dAvatarPreview.src = url;
+        } else {
+            dAvatarPreview.src = 'profile.png';
+        }
+        dAvatarPreview.onerror = function() {
+            this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(document.getElementById('dName').value || 'User') + '&size=120&background=0b1a2b&color=fff&bold=true';
+        };
+    }
+
+    document.getElementById('saveProfileBtn').onclick = async () => {
+        const btn = document.getElementById('saveProfileBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+        try {
+            currentData.name     = document.getElementById('dName').value.trim() || 'Unnamed';
+            currentData.username = document.getElementById('dUsername').value.trim() || 'user';
+            currentData.avatar   = document.getElementById('dAvatar').value.trim();
+
+            await saveAllToFirebase();
+            renderProfile();
+            closeDialog(editProfileDialog);
+            showToast('✅ Profile saved!');
+        } catch (err) {
+            console.error(err);
+            showToast('Save failed: ' + err.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Profile';
+        }
+    };
+
+    // ============ EDIT POST DIALOG ============
+    function openEditPostDialog(index) {
+        editingPostIndex = index;
+        const post = currentData.posts[index] || {};
+        document.getElementById('postDialogTitle').textContent = 'Edit Post';
+        document.getElementById('pUsername').value = post.username || '';
+        document.getElementById('pTime').value     = post.time || '';
+        document.getElementById('pCaption').value  = post.caption || '';
+        document.getElementById('pImage').value    = post.image || '';
+        openDialog(editPostDialog);
+    }
+
+    function openAddPostDialog() {
+        editingPostIndex = -1;
+        document.getElementById('postDialogTitle').textContent = 'Add New Post';
+        document.getElementById('pUsername').value = currentData.username || 'user';
+        document.getElementById('pTime').value     = 'now';
+        document.getElementById('pCaption').value  = '';
+        document.getElementById('pImage').value    = '';
+        openDialog(editPostDialog);
+    }
+
+    document.getElementById('savePostBtn').onclick = async () => {
+        const btn = document.getElementById('savePostBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+        try {
+            const post = {
+                username: document.getElementById('pUsername').value.trim() || currentData.username || 'user',
+                time: document.getElementById('pTime').value.trim() || 'now',
+                caption: document.getElementById('pCaption').value.trim(),
+                image: document.getElementById('pImage').value.trim()
+            };
+
+            if (editingPostIndex === -1) {
+                currentData.posts.push(post);
+            } else {
+                currentData.posts[editingPostIndex] = post;
+            }
+
+            await saveAllToFirebase();
+            renderPosts();
+            closeDialog(editPostDialog);
+            showToast(editingPostIndex === -1 ? '✅ Post added!' : '✅ Post updated!');
+        } catch (err) {
+            console.error(err);
+            showToast('Save failed: ' + err.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Post';
+        }
+    };
+
+    // ============ EDIT APP DIALOG ============
+    function openEditAppDialog(index) {
+        editingAppIndex = index;
+        const item = currentData.apps[index] || {};
+        document.getElementById('appDialogTitle').textContent = 'Edit App';
+        document.getElementById('aTitle').value       = item.title || '';
+        document.getElementById('aIcon').value        = item.icon || 'fa-mobile-alt';
+        document.getElementById('aDescription').value = item.description || '';
+        document.getElementById('aUrl').value         = item.url || '';
+        openDialog(editAppDialog);
+    }
+
+    function openAddAppDialog() {
+        editingAppIndex = -1;
+        document.getElementById('appDialogTitle').textContent = 'Add New App';
+        document.getElementById('aTitle').value       = '';
+        document.getElementById('aIcon').value        = 'fa-mobile-alt';
+        document.getElementById('aDescription').value = '';
+        document.getElementById('aUrl').value         = '';
+        openDialog(editAppDialog);
+    }
+
+    document.getElementById('saveAppBtn').onclick = async () => {
+        const btn = document.getElementById('saveAppBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+        try {
+            const item = {
+                title: document.getElementById('aTitle').value.trim() || 'Untitled',
+                icon: document.getElementById('aIcon').value.trim() || 'fa-mobile-alt',
+                description: document.getElementById('aDescription').value.trim(),
+                url: document.getElementById('aUrl').value.trim()
+            };
+
+            if (editingAppIndex === -1) {
+                currentData.apps.push(item);
+            } else {
+                currentData.apps[editingAppIndex] = item;
+            }
+
+            await saveAllToFirebase();
+            renderApps();
+            closeDialog(editAppDialog);
+            showToast(editingAppIndex === -1 ? '✅ App added!' : '✅ App updated!');
+        } catch (err) {
+            console.error(err);
+            showToast('Save failed: ' + err.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> Save App';
+        }
+    };
+
+    // ============ EDIT WEBSITE DIALOG ============
+    function openEditWebsiteDialog(index) {
+        editingWebsiteIndex = index;
+        const item = currentData.websites[index] || {};
+        document.getElementById('websiteDialogTitle').textContent = 'Edit Website';
+        document.getElementById('wTitle').value       = item.title || '';
+        document.getElementById('wIcon').value        = item.icon || 'fa-globe';
+        document.getElementById('wDescription').value = item.description || '';
+        document.getElementById('wUrl').value         = item.url || '';
+        openDialog(editWebsiteDialog);
+    }
+
+    function openAddWebsiteDialog() {
+        editingWebsiteIndex = -1;
+        document.getElementById('websiteDialogTitle').textContent = 'Add New Website';
+        document.getElementById('wTitle').value       = '';
+        document.getElementById('wIcon').value        = 'fa-globe';
+        document.getElementById('wDescription').value = '';
+        document.getElementById('wUrl').value         = '';
+        openDialog(editWebsiteDialog);
+    }
+
+    document.getElementById('saveWebsiteBtn').onclick = async () => {
+        const btn = document.getElementById('saveWebsiteBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+        try {
+            const item = {
+                title: document.getElementById('wTitle').value.trim() || 'Untitled',
+                icon: document.getElementById('wIcon').value.trim() || 'fa-globe',
+                description: document.getElementById('wDescription').value.trim(),
+                url: document.getElementById('wUrl').value.trim()
+            };
+
+            if (editingWebsiteIndex === -1) {
+                currentData.websites.push(item);
+            } else {
+                currentData.websites[editingWebsiteIndex] = item;
+            }
+
+            await saveAllToFirebase();
+            renderWebsites();
+            closeDialog(editWebsiteDialog);
+            showToast(editingWebsiteIndex === -1 ? '✅ Website added!' : '✅ Website updated!');
+        } catch (err) {
+            console.error(err);
+            showToast('Save failed: ' + err.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Website';
+        }
+    };
+
+    // ============ CONFIRM DELETE ============
+    document.getElementById('confirmDeleteBtn').onclick = async () => {
+        if (!pendingDelete) return;
+        const { type, index } = pendingDelete;
+        const btn = document.getElementById('confirmDeleteBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting…';
+
+        try {
+            currentData[type].splice(index, 1);
+            await saveAllToFirebase();
+            if (type === 'posts') renderPosts();
+            if (type === 'apps') renderApps();
+            if (type === 'websites') renderWebsites();
+            closeDialog(confirmDeleteDialog);
+            showToast('🗑️ Deleted successfully');
+        } catch (err) {
+            console.error(err);
+            showToast('Delete failed: ' + err.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-trash"></i> Delete';
+            pendingDelete = null;
+        }
+    };
+
+    // ============ FAB → ADD CHOOSER ============
+    fab.addEventListener('click', () => {
+        openDialog(addChooserDialog);
+    });
+
+    document.querySelectorAll('[data-add]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const type = btn.dataset.add;
+            closeDialog(addChooserDialog);
+            setTimeout(() => {
+                if (type === 'posts') openAddPostDialog();
+                if (type === 'apps') openAddAppDialog();
+                if (type === 'websites') openAddWebsiteDialog();
+            }, 200);
+        });
+    });
+
+    // ============ TABS ============
+    document.querySelectorAll('.tab-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tab = this.dataset.tab;
+            document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('panel-' + tab)?.classList.add('active');
+        });
+    });
+
+    // ============ FIREBASE SAVE HELPER ============
+    async function saveAllToFirebase() {
+        const payload = {
+            name: currentData.name || '',
+            username: currentData.username || '',
+            avatar: currentData.avatar || '',
+            links: currentData.links || {},
+            posts:    toObject(currentData.posts),
+            apps:     toObject(currentData.apps),
+            websites: toObject(currentData.websites),
+            updatedAt: new Date().toISOString()
+        };
+        await set(PROFILE_REF, payload);
+    }
+
+    // ============ LOAD PROFILE (no demo data) ============
+    async function loadProfile() {
+        try {
+            const snap = await get(PROFILE_REF);
+            const data = snap.val();
+
+            if (data) {
+                currentData = {
+                    name: data.name || '',
+                    username: data.username || '',
+                    avatar: data.avatar || '',
+                    links: data.links || {},
+                    posts: toArray(data.posts),
+                    apps: toArray(data.apps),
+                    websites: toArray(data.websites)
+                };
+            } else {
+                // ✅ No demo data — start fully empty
+                currentData = {
+                    name: '',
+                    username: '',
+                    avatar: '',
+                    links: {},
+                    posts: [],
+                    apps: [],
+                    websites: []
+                };
+            }
+
+            if (!currentData.links) currentData.links = {};
+            renderProfile();
+        } catch (err) {
+            console.error(err);
+            showToast('Load failed: ' + err.message, true);
+        }
+    }
+
+    // ============ INIT ============
+    loadProfile();
+
+    // Live sync from DB (skip if any dialog is open)
+    onValue(PROFILE_REF, (snapshot) => {
+        const anyOpen = document.querySelector('.dialog-overlay.active');
+        if (anyOpen) return;
+
+        const data = snapshot.val();
+        if (data) {
+            currentData = {
+                name: data.name || '',
+                username: data.username || '',
+                avatar: data.avatar || '',
+                links: data.links || {},
+                posts: toArray(data.posts),
+                apps: toArray(data.apps),
+                websites: toArray(data.websites)
+            };
+            renderProfile();
+        } else {
+            // DB is empty — keep everything blank
+            currentData = {
+                name: '',
+                username: '',
+                avatar: '',
+                links: {},
+                posts: [],
+                apps: [],
+                websites: []
+            };
+            renderProfile();
+        }
+    });
+</script>
+
+</body>
+</html>
