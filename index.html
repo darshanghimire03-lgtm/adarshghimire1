@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile · @darshang404</title>
+    <title>darshang404</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="../favicon.png" type="image/png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
@@ -21,30 +22,11 @@
             box-shadow: 0 0 40px rgba(0,0,0,0.03);
         }
 
-        /* header social icons */
-        .header-social {
-            display: flex; justify-content: center; gap: 12px; padding: 14px 16px 10px;
-            min-height: 68px; opacity: 0; visibility: hidden; transform: translateY(-10px);
-            transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
+        /* ===== PROFILE INFO ===== */
+        .profile-info-section {
+            padding: 20px 16px 0;
+            display: flex; justify-content: space-between; align-items: flex-start;
         }
-        .header-social.visible { opacity: 1; visibility: visible; transform: translateY(0); }
-        .social-icon {
-            width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 20px; color: #fff; cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; border: none;
-            flex-shrink: 0; box-shadow: 0 6px 12px -5px rgba(0,0,0,0.25);
-        }
-        .social-icon:hover { transform: scale(1.12) translateY(-2px); box-shadow: 0 10px 18px -6px rgba(0,0,0,0.3); }
-        .social-icon:active { transform: scale(0.95); }
-        .social-icon.facebook { background: #1877f2; }
-        .social-icon.tiktok { background: #000; }
-        .social-icon.instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-        .social-icon.whatsapp { background: #25D366; }
-        .social-icon.twitter { background: #000; }
-        .social-icon.telegram { background: #0088cc; }
-
-        /* profile info */
-        .profile-info-section { padding: 8px 16px 0; display: flex; justify-content: space-between; align-items: flex-start; }
         .profile-text { flex: 1; padding-top: 4px; }
         .profile-name { font-size: 24px; font-weight: 700; line-height: 1.25; letter-spacing: -0.4px; }
         .profile-username-row { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
@@ -55,12 +37,14 @@
             flex-shrink: 0; border: 1px solid #e1e8ed; background: #f0f0f0;
         }
 
-        /* action buttons */
+        /* ===== ACTION BUTTONS ===== */
         .action-buttons { display: flex; gap: 10px; padding: 16px 16px 0; }
         .action-btn {
-            flex: 1; padding: 12px 0; border-radius: 30px; font-size: 15px; font-weight: 600;
-            text-align: center; cursor: pointer; font-family: 'Inter', sans-serif;
-            transition: all 0.15s ease; border: 1.5px solid #dbdbdb; background: #fff; color: #000;
+            flex: 1; padding: 12px 0; border-radius: 30px;
+            font-size: 15px; font-weight: 600; text-align: center;
+            cursor: pointer; font-family: 'Inter', sans-serif;
+            transition: all 0.15s ease; border: 1.5px solid #dbdbdb;
+            background: #fff; color: #000;
             display: flex; align-items: center; justify-content: center; gap: 6px;
         }
         .action-btn.follow-btn-main { background: #0b1a2b; color: #fff; border-color: #0b1a2b; font-weight: 700; }
@@ -69,28 +53,122 @@
         .action-btn.message { color: #000; border-color: #dbdbdb; }
         .action-btn:active { background-color: #f2f2f2; }
 
-        /* tabs */
+        /* ===== SOCIAL SUGGESTIONS ROW ===== */
+        .social-suggestions {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.35s ease, margin 0.35s ease;
+            margin-top: 0;
+        }
+        .social-suggestions.visible {
+            max-height: 130px;
+            opacity: 1;
+            margin-top: 18px;
+        }
+        .social-suggestions-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0 16px 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .social-suggestions-label i { color: #6366f1; }
+        .social-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 4px 16px 12px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            scroll-behavior: smooth;
+        }
+        .social-scroll::-webkit-scrollbar { display: none; }
+        .suggestion-card {
+            flex: 0 0 auto;
+            width: 92px;
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 12px 8px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 4px 10px -6px rgba(0,0,0,0.06);
+        }
+        .suggestion-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 22px -10px rgba(0,0,0,0.18);
+            border-color: #cbd5e1;
+        }
+        .suggestion-card:active { transform: scale(0.96); }
+        .suggestion-icon {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .suggestion-icon img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .suggestion-icon.facebook  { background: #1877f2; }
+        .suggestion-icon.tiktok    { background: #000; }
+        .suggestion-icon.instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .suggestion-icon.twitter   { background: #000; }
+        .suggestion-icon.threads   { background: #000; }
+        .suggestion-icon.telegram  { background: #0088cc; }
+        .suggestion-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1e293b;
+            text-align: center;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        /* ===== TABS ===== */
         .tabs-container {
             display: flex; justify-content: space-around; padding: 18px 8px 0;
             border-bottom: 1px solid #eaeaea; margin-top: 4px;
         }
         .tab-item {
-            font-size: 15px; font-weight: 500; color: #687684; padding-bottom: 12px;
-            cursor: pointer; position: relative; letter-spacing: -0.2px; background: none;
-            border: none; font-family: 'Inter', sans-serif; flex: 1; transition: color 0.2s;
+            font-size: 15px; font-weight: 500; color: #687684;
+            padding-bottom: 12px; cursor: pointer; position: relative;
+            background: none; border: none; font-family: 'Inter', sans-serif;
+            flex: 1; transition: color 0.2s;
         }
-        .tab-item:hover { color: #333; }
         .tab-item.active { color: #000; font-weight: 600; }
         .tab-item.active::after {
-            content: ''; position: absolute; bottom: -1px; left: 0; width: 100%;
-            height: 2px; background: #000; border-radius: 1px;
+            content: ''; position: absolute; bottom: -1px; left: 0;
+            width: 100%; height: 2px; background: #000; border-radius: 1px;
         }
         .tab-panel { display: none; animation: fadeInPanel 0.25s ease; }
         .tab-panel.active { display: block; }
         @keyframes fadeInPanel { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* post card */
-        .post-card { padding: 14px 16px 20px; display: flex; flex-direction: column; border-bottom: 1px solid #f0f0f0; margin-top: 4px; }
+        /* ===== POST CARD ===== */
+        .post-card {
+            padding: 14px 16px 20px; display: flex; flex-direction: column;
+            border-bottom: 1px solid #f0f0f0; margin-top: 4px;
+        }
         .post-header { display: flex; align-items: center; gap: 10px; }
         .post-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 1px solid #e1e8ed; background: #f0f0f0; }
         .post-user-info { display: flex; align-items: center; gap: 5px; flex: 1; min-width: 0; }
@@ -99,77 +177,112 @@
         .post-time { font-size: 15px; color: #687684; flex-shrink: 0; }
         .post-more { color: #687684; font-size: 18px; cursor: pointer; padding: 0 4px; background: none; border: none; }
         .post-caption { margin-top: 12px; font-size: 16px; line-height: 1.4; }
-        .post-caption .emoji { font-size: 18px; }
-        .post-media { margin-top: 12px; border-radius: 16px; overflow: hidden; background: #f0f0f0; width: 100%; aspect-ratio: 4/5; display: flex; align-items: center; justify-content: center; }
+        .post-media {
+            margin-top: 12px; border-radius: 16px; overflow: hidden;
+            background: #f0f0f0; width: 100%; aspect-ratio: 4/5;
+            display: flex; align-items: center; justify-content: center;
+        }
         .post-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        /* apps/websites list */
+        /* ===== LIST (apps/websites) ===== */
         .list-container { padding: 8px 16px 20px; }
         .list-item {
-            display: flex; align-items: center; gap: 14px; padding: 14px 12px;
-            border-radius: 16px; transition: background 0.15s; cursor: pointer;
-            text-decoration: none; color: inherit; border-bottom: 1px solid #f5f5f5;
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 12px; border-radius: 16px;
+            transition: background 0.15s; cursor: pointer;
+            text-decoration: none; color: inherit;
+            border-bottom: 1px solid #f5f5f5;
         }
         .list-item:hover { background: #f8fafc; }
         .list-icon {
-            width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center;
-            justify-content: center; font-size: 22px; color: #fff; flex-shrink: 0;
+            width: 48px; height: 48px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: #fff; flex-shrink: 0;
             box-shadow: 0 6px 12px -6px rgba(0,0,0,0.15);
+            overflow: hidden;
+            background: #f1f5f9;
         }
         .list-icon.app-color { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
         .list-icon.web-color { background: linear-gradient(135deg, #0ea5e9, #06b6d4); }
+        .list-icon img {
+            width: 100%; height: 100%;
+            object-fit: contain;
+            border-radius: 14px;
+            background: #fff;
+        }
+        .list-icon i { color: #fff; }
         .list-content { flex: 1; min-width: 0; }
         .list-title { font-size: 15px; font-weight: 600; color: #0b1a2b; margin-bottom: 2px; }
         .list-desc { font-size: 13px; color: #687684; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .list-arrow { color: #94a3b8; font-size: 14px; flex-shrink: 0; }
 
-        /* toast */
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            padding: 48px 24px;
+            text-align: center;
+            color: #64748b;
+        }
+        .empty-state i {
+            font-size: 44px;
+            color: #cbd5e1;
+            margin-bottom: 14px;
+            display: block;
+        }
+        .empty-state h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        .empty-state p {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #94a3b8;
+        }
+
+        /* ===== TOAST ===== */
         .toast {
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px);
-            background: #0b1a2b; color: #fff; padding: 12px 22px; border-radius: 30px;
-            font-size: 14px; font-weight: 500; opacity: 0; pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s; z-index: 2000;
-            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.3); max-width: 85%; text-align: center;
+            position: fixed; bottom: 40px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #0b1a2b; color: #fff;
+            padding: 12px 22px; border-radius: 30px;
+            font-size: 14px; font-weight: 500;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 2000; box-shadow: 0 12px 24px -8px rgba(0,0,0,0.3);
+            max-width: 85%; text-align: center;
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .toast i { margin-right: 8px; color: #4ade80; }
-
-        /* loading skeleton */
-        .loading-skeleton { padding: 20px; text-align: center; color: #687684; font-size: 14px; }
 
         @media (max-width: 400px) {
             .profile-name { font-size: 21px; }
             .profile-avatar-large { width: 68px; height: 68px; }
             .action-btn { font-size: 14px; padding: 10px 0; }
             .tab-item { font-size: 14px; }
-            .social-icon { width: 40px; height: 40px; font-size: 18px; }
-        }
-        @media (max-width: 360px) {
-            .header-social { gap: 8px; }
-            .social-icon { width: 36px; height: 36px; font-size: 16px; }
+            .suggestion-card { width: 84px; }
+            .suggestion-icon { width: 40px; height: 40px; font-size: 18px; }
         }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <!-- Header social icons -->
-    <div class="header-social" id="headerSocial"></div>
 
-    <!-- Profile info -->
+    <!-- ===== PROFILE INFO ===== -->
     <section class="profile-info-section">
         <div class="profile-text">
             <h1 class="profile-name" id="profileName">Loading…</h1>
             <div class="profile-username-row">
                 <span class="profile-username" id="profileUsername">@…</span>
-                <span class="verified-badge" id="verifiedBadge"><i class="fa-solid fa-circle-check"></i></span>
+                <span class="verified-badge"><i class="fa-solid fa-circle-check"></i></span>
             </div>
         </div>
         <img class="profile-avatar-large" id="profileAvatar" src="profile.png" alt="Profile"
              onerror="this.src='https://ui-avatars.com/api/?name=User&size=120&background=0b1a2b&color=fff&bold=true'">
     </section>
 
-    <!-- Action buttons -->
+    <!-- ===== ACTION BUTTONS ===== -->
     <div class="action-buttons">
         <button class="action-btn follow-btn-main" id="followBtn">
             <i class="fas fa-user-plus"></i> Follow
@@ -179,53 +292,61 @@
         </button>
     </div>
 
-    <!-- Tabs -->
+    <!-- ===== SOCIAL SUGGESTIONS ROW ===== -->
+    <div class="social-suggestions" id="socialSuggestions">
+        <div class="social-suggestions-label">
+            <i class="fas fa-users"></i> Follow on other platforms
+        </div>
+        <div class="social-scroll" id="socialScroll"></div>
+    </div>
+
+    <!-- ===== TABS ===== -->
     <div class="tabs-container" id="tabsContainer">
         <button class="tab-item active" data-tab="posts">Posts</button>
         <button class="tab-item" data-tab="apps">Apps</button>
         <button class="tab-item" data-tab="websites">Websites</button>
     </div>
 
-    <!-- Posts panel -->
+    <!-- ===== POSTS PANEL ===== -->
     <div class="tab-panel active" id="panel-posts">
         <div id="postsContainer"></div>
     </div>
 
-    <!-- Apps panel -->
+    <!-- ===== APPS PANEL ===== -->
     <div class="tab-panel" id="panel-apps">
         <div class="list-container" id="appsContainer"></div>
     </div>
 
-    <!-- Websites panel -->
+    <!-- ===== WEBSITES PANEL ===== -->
     <div class="tab-panel" id="panel-websites">
         <div class="list-container" id="websitesContainer"></div>
     </div>
+
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast">
-    <i class="fas fa-check-circle"></i><span id="toastText">Done</span>
-</div>
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastText">Done</span></div>
 
 <script type="module">
     import { PROFILE_REF, onValue } from './firebase-config.js';
 
-    // ---------- DOM ----------
-    const headerSocial    = document.getElementById('headerSocial');
-    const profileName     = document.getElementById('profileName');
-    const profileUsername = document.getElementById('profileUsername');
-    const profileAvatar   = document.getElementById('profileAvatar');
-    const followBtn       = document.getElementById('followBtn');
-    const messageBtn      = document.getElementById('messageBtn');
-    const toast           = document.getElementById('toast');
-    const toastText       = document.getElementById('toastText');
-    const postsContainer  = document.getElementById('postsContainer');
-    const appsContainer   = document.getElementById('appsContainer');
-    const websitesContainer = document.getElementById('websitesContainer');
+    // ============ DOM ============
+    const profileName        = document.getElementById('profileName');
+    const profileUsername    = document.getElementById('profileUsername');
+    const profileAvatar      = document.getElementById('profileAvatar');
+    const followBtn          = document.getElementById('followBtn');
+    const messageBtn         = document.getElementById('messageBtn');
+    const socialSuggestions  = document.getElementById('socialSuggestions');
+    const socialScroll       = document.getElementById('socialScroll');
+    const toast              = document.getElementById('toast');
+    const toastText          = document.getElementById('toastText');
+    const postsContainer     = document.getElementById('postsContainer');
+    const appsContainer      = document.getElementById('appsContainer');
+    const websitesContainer  = document.getElementById('websitesContainer');
 
     let profileData = null;
+    let isFollowing = false;
 
-    // ---------- Toast ----------
+    // ============ TOAST ============
     let toastTimer = null;
     function showToast(msg, ok = true) {
         toastText.textContent = msg;
@@ -237,7 +358,178 @@
         toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
     }
 
-    // ---------- Render profile ----------
+    // ============ HELPERS ============
+    function toArray(input) {
+        if (!input) return [];
+        if (Array.isArray(input)) return input;
+        return Object.keys(input).sort((a,b) => Number(a) - Number(b)).map(k => input[k]);
+    }
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, m => ({
+            '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+        }[m]));
+    }
+
+    function getFaviconUrl(url, size = 64) {
+        if (!url) return '';
+        try {
+            const u = new URL(url);
+            return `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=${size}`;
+        } catch {
+            return '';
+        }
+    }
+
+    // ✅ Website icon — priority: separate folder → favicon → FA icon
+    function buildWebsiteIconHTML(item) {
+        const iconField = (item.icon || '').trim();
+
+        const isImagePath = /\.(png|jpe?g|gif|svg|webp|ico|bmp|avif)(\?.*)?$/i.test(iconField)
+            || iconField.startsWith('./')
+            || iconField.startsWith('../')
+            || iconField.startsWith('/')
+            || iconField.startsWith('http');
+
+        if (isImagePath && iconField) {
+            return `<img src="${escapeHTML(iconField)}" alt="icon"
+                        onerror="this.parentElement.innerHTML='<i class=\\'fas fa-globe\\'></i>';">
+                    `;
+        }
+
+        const favicon = getFaviconUrl(item.url, 64);
+        if (favicon) {
+            return `<img src="${favicon}" alt="favicon"
+                        onerror="this.parentElement.innerHTML='<i class=\\'fas fa-globe\\'></i>';">
+                    `;
+        }
+
+        const faClass = iconField && /^fa-/.test(iconField) ? iconField : 'fa-globe';
+        return `<i class="fas ${escapeHTML(faClass)}"></i>`;
+    }
+
+    // ✅ App icon — priority: separate folder → FA icon
+    function buildAppIconHTML(item) {
+        const iconField = (item.icon || '').trim();
+
+        const isImagePath = /\.(png|jpe?g|gif|svg|webp|ico|bmp|avif)(\?.*)?$/i.test(iconField)
+            || iconField.startsWith('./')
+            || iconField.startsWith('../')
+            || iconField.startsWith('/')
+            || iconField.startsWith('http');
+
+        if (isImagePath && iconField) {
+            return `<img src="${escapeHTML(iconField)}" alt="icon"
+                        onerror="this.parentElement.innerHTML='<i class=\\'fas fa-mobile-alt\\'></i>';">
+                    `;
+        }
+
+        const faClass = iconField && /^fa-/.test(iconField) ? iconField : 'fa-mobile-alt';
+        return `<i class="fas ${escapeHTML(faClass)}"></i>`;
+    }
+
+    // ============ EMPTY STATES ============
+    const EMPTY_STATES = {
+        posts: `
+            <div class="empty-state">
+                <i class="fas fa-newspaper"></i>
+                <h4>No posts yet</h4>
+                <p>This user hasn't posted anything yet.</p>
+            </div>
+        `,
+        apps: `
+            <div class="empty-state">
+                <i class="fas fa-mobile-alt"></i>
+                <h4>No apps yet</h4>
+                <p>No apps to show at the moment.</p>
+            </div>
+        `,
+        websites: `
+            <div class="empty-state">
+                <i class="fas fa-globe"></i>
+                <h4>No websites yet</h4>
+                <p>No websites to show at the moment.</p>
+            </div>
+        `
+    };
+
+    // ============ PLATFORMS (WhatsApp removed, Threads added, X icon fixed) ============
+    // Using inline SVG strings for X and Threads to guarantee correct icons render
+    const PLATFORMS = [
+        {
+            key: 'facebook',
+            label: 'Facebook',
+            iconHTML: `<i class="fab fa-facebook-f"></i>`
+        },
+        {
+            key: 'tiktok',
+            label: 'TikTok',
+            iconHTML: `<i class="fab fa-tiktok"></i>`
+        },
+        {
+            key: 'instagram',
+            label: 'Instagram',
+            iconHTML: `<i class="fab fa-instagram"></i>`
+        },
+        {
+            key: 'twitter',
+            label: 'X',
+            // Inline SVG for X — more reliable than fa-x-twitter
+            iconHTML: `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`
+        },
+        {
+            key: 'threads',
+            label: 'Threads',
+            // Inline SVG for Threads
+            iconHTML: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></svg>`
+        },
+        {
+            key: 'telegram',
+            label: 'Telegram',
+            iconHTML: `<i class="fab fa-telegram"></i>`
+        }
+    ];
+
+    // ============ SOCIAL SUGGESTIONS ============
+    function buildSocialSuggestions(links) {
+        socialScroll.innerHTML = '';
+
+        // Exclude WhatsApp entirely from suggestions
+        const available = PLATFORMS.filter(p => p.key !== 'whatsapp' && links && links[p.key]);
+
+        if (!available.length) {
+            socialScroll.innerHTML = `
+                <div style="width:100%; text-align:center; padding:12px 8px; font-size:13px; color:#94a3b8;">
+                    No social platforms linked yet.
+                </div>
+            `;
+            return;
+        }
+
+        available.forEach(p => {
+            const url = links[p.key];
+            const card = document.createElement('a');
+            card.className = 'suggestion-card';
+            card.href = url;
+            card.target = '_blank';
+            card.rel = 'noopener noreferrer';
+            card.setAttribute('aria-label', `Follow on ${p.label}`);
+            card.innerHTML = `
+                <div class="suggestion-icon ${p.key}">
+                    ${p.iconHTML}
+                </div>
+                <div class="suggestion-name">${p.label}</div>
+            `;
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                showToast(`Opening ${p.label}…`);
+                setTimeout(() => window.open(url, '_blank', 'noopener,noreferrer'), 200);
+            });
+            socialScroll.appendChild(card);
+        });
+    }
+
+    // ============ RENDER PROFILE ============
     function renderProfile(data) {
         if (!data) return;
         profileData = data;
@@ -245,67 +537,26 @@
         profileName.textContent = data.name || 'Unnamed';
         profileUsername.textContent = '@' + (data.username || 'unknown');
 
-        // Avatar — use data.avatar if set, otherwise profile.png
         if (data.avatar && data.avatar.trim() !== '') {
             profileAvatar.src = data.avatar;
         } else {
             profileAvatar.src = 'profile.png';
         }
         profileAvatar.onerror = function() {
-            this.src = 'https://ui-avatars.com/api/?name=' + 
-                encodeURIComponent(data.name || 'User') + 
-                '&size=120&background=0b1a2b&color=fff&bold=true';
+            this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.name || 'User') + '&size=120&background=0b1a2b&color=fff&bold=true';
         };
 
-        buildSocialIcons(data.links || {});
+        buildSocialSuggestions(data.links || {});
         renderPosts(data.posts || []);
-        renderList(appsContainer, data.apps || [], 'app-color', 'fa-mobile-alt');
-        renderList(websitesContainer, data.websites || [], 'web-color', 'fa-globe');
+        renderApps(data.apps || []);
+        renderWebsites(data.websites || []);
     }
 
-    // ---------- Social icons ----------
-    const PLATFORMS = [
-        { key: 'facebook',  label: 'Facebook',   icon: 'fa-facebook-f' },
-        { key: 'tiktok',    label: 'TikTok',     icon: 'fa-tiktok' },
-        { key: 'instagram', label: 'Instagram',  icon: 'fa-instagram' },
-        { key: 'whatsapp',  label: 'WhatsApp',   icon: 'fa-whatsapp' },
-        { key: 'twitter',   label: 'Twitter (X)',icon: 'fa-x-twitter' },
-        { key: 'telegram',  label: 'Telegram',   icon: 'fa-telegram' }
-    ];
-
-    function buildSocialIcons(links) {
-        headerSocial.innerHTML = '';
-        PLATFORMS.forEach(p => {
-            const url = links[p.key];
-            if (!url) return;
-            const a = document.createElement('a');
-            a.className = `social-icon ${p.key}`;
-            a.href = url;
-            a.target = '_blank';
-            a.rel = 'noopener noreferrer';
-            a.setAttribute('aria-label', p.label);
-            a.innerHTML = `<i class="fab ${p.icon}"></i>`;
-            a.addEventListener('click', (e) => {
-                e.preventDefault();
-                showToast(`Opening ${p.label}…`);
-                setTimeout(() => window.open(url, '_blank', 'noopener,noreferrer'), 250);
-            });
-            headerSocial.appendChild(a);
-        });
-    }
-
-    // ---------- Posts (supports arrays AND objects from Realtime DB) ----------
-    function toArray(input) {
-        if (!input) return [];
-        if (Array.isArray(input)) return input;
-        // Realtime DB converts arrays to objects with numeric keys
-        return Object.keys(input).sort((a,b) => Number(a) - Number(b)).map(k => input[k]);
-    }
-
+    // ============ POSTS ============
     function renderPosts(posts) {
         const list = toArray(posts);
         if (!list.length) {
-            postsContainer.innerHTML = '<div class="loading-skeleton">No posts yet.</div>';
+            postsContainer.innerHTML = EMPTY_STATES.posts;
             return;
         }
         postsContainer.innerHTML = list.map(post => `
@@ -321,28 +572,21 @@
                     <button class="post-more"><i class="fa-solid fa-ellipsis"></i></button>
                 </div>
                 ${post.caption ? `<div class="post-caption">${escapeHTML(post.caption)}</div>` : ''}
-                ${post.image ? `
-                    <div class="post-media">
-                        <img src="${post.image}" alt="Post image"
-                             onerror="this.parentElement.innerHTML='<div style=\\'padding:20px;color:#5a6b7a;\\'>📸 Image preview</div>'">
-                    </div>
-                ` : ''}
+                ${post.image ? `<div class="post-media"><img src="${post.image}" alt="Post image" onerror="this.parentElement.innerHTML='<div style=\\'padding:20px;color:#5a6b7a;\\'>📸 Image preview</div>'"></div>` : ''}
             </article>
         `).join('');
     }
 
-    // ---------- Apps / Websites list ----------
-    function renderList(container, items, colorClass, fallbackIcon) {
-        const list = toArray(items);
+    // ============ APPS ============
+    function renderApps(apps) {
+        const list = toArray(apps);
         if (!list.length) {
-            container.innerHTML = '<div class="loading-skeleton">Nothing here yet.</div>';
+            appsContainer.innerHTML = EMPTY_STATES.apps;
             return;
         }
-        container.innerHTML = list.map(item => `
+        appsContainer.innerHTML = list.map(item => `
             <a href="${item.url || '#'}" target="_blank" rel="noopener noreferrer" class="list-item">
-                <div class="list-icon ${colorClass}">
-                    <i class="fas ${item.icon || fallbackIcon}"></i>
-                </div>
+                <div class="list-icon app-color">${buildAppIconHTML(item)}</div>
                 <div class="list-content">
                     <div class="list-title">${escapeHTML(item.title || 'Untitled')}</div>
                     <div class="list-desc">${escapeHTML(item.description || '')}</div>
@@ -352,32 +596,43 @@
         `).join('');
     }
 
-    function escapeHTML(str) {
-        if (!str) return '';
-        return String(str).replace(/[&<>"']/g, m => ({
-            '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-        }[m]));
+    // ============ WEBSITES ============
+    function renderWebsites(websites) {
+        const list = toArray(websites);
+        if (!list.length) {
+            websitesContainer.innerHTML = EMPTY_STATES.websites;
+            return;
+        }
+        websitesContainer.innerHTML = list.map(item => `
+            <a href="${item.url || '#'}" target="_blank" rel="noopener noreferrer" class="list-item">
+                <div class="list-icon web-color">${buildWebsiteIconHTML(item)}</div>
+                <div class="list-content">
+                    <div class="list-title">${escapeHTML(item.title || 'Untitled')}</div>
+                    <div class="list-desc">${escapeHTML(item.description || '')}</div>
+                </div>
+                <div class="list-arrow"><i class="fas fa-chevron-right"></i></div>
+            </a>
+        `).join('');
     }
 
-    // ---------- Follow button ----------
-    let isFollowing = false;
+    // ============ FOLLOW BUTTON ============
     followBtn.addEventListener('click', () => {
         if (!isFollowing) {
             isFollowing = true;
             followBtn.classList.add('followed');
             followBtn.innerHTML = '<i class="fas fa-check"></i> Following';
-            headerSocial.classList.add('visible');
-            showToast('Followed! Choose a platform.');
+            socialSuggestions.classList.add('visible');
+            showToast('Followed! Choose a platform below.');
         } else {
             isFollowing = false;
             followBtn.classList.remove('followed');
             followBtn.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
-            headerSocial.classList.remove('visible');
+            socialSuggestions.classList.remove('visible');
             showToast('Unfollowed.', false);
         }
     });
 
-    // ---------- Message button (WhatsApp) ----------
+    // ============ MESSAGE BUTTON ============
     messageBtn.addEventListener('click', () => {
         const wa = profileData?.links?.whatsapp;
         if (wa) {
@@ -388,7 +643,7 @@
         }
     });
 
-    // ---------- Tabs ----------
+    // ============ TABS ============
     document.querySelectorAll('.tab-item').forEach(btn => {
         btn.addEventListener('click', function() {
             const tab = this.dataset.tab;
@@ -399,15 +654,23 @@
         });
     });
 
-    // ---------- Realtime Database listener ----------
+    // ============ FIREBASE LISTENER ============
     onValue(PROFILE_REF, (snapshot) => {
         const data = snapshot.val();
         if (data) {
             renderProfile(data);
-            console.log('✅ Profile loaded from Realtime DB:', data);
+            console.log('✅ Profile loaded:', data);
         } else {
             profileName.textContent = 'Profile not set';
             profileUsername.textContent = '—';
+            postsContainer.innerHTML = EMPTY_STATES.posts;
+            appsContainer.innerHTML = EMPTY_STATES.apps;
+            websitesContainer.innerHTML = EMPTY_STATES.websites;
+            socialScroll.innerHTML = `
+                <div style="width:100%; text-align:center; padding:12px 8px; font-size:13px; color:#94a3b8;">
+                    No social platforms linked yet.
+                </div>
+            `;
             showToast('Open admin.html to set up the profile.', false);
         }
     }, (err) => {
