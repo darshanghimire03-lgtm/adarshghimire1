@@ -4,13 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Shorts — Durbar</title>
-  
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       background: #000;
@@ -20,16 +16,13 @@
       height: 100vh;
       width: 100vw;
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
     }
 
     /* ===== TOP BAR ===== */
     .topbar {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       z-index: 50;
       background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(12px);
@@ -38,7 +31,6 @@
       align-items: center;
       justify-content: space-between;
     }
-
     .topbar .title {
       font-size: 18px;
       font-weight: 800;
@@ -47,11 +39,7 @@
       align-items: center;
       gap: 8px;
     }
-
-    .topbar .title i {
-      color: #f59e0b;
-    }
-
+    .topbar .title i { color: #f59e0b; }
     .topbar .back-btn {
       color: #fff;
       background: rgba(255, 255, 255, 0.1);
@@ -64,10 +52,7 @@
       align-items: center;
       gap: 6px;
     }
-
-    .topbar .back-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
+    .topbar .back-btn:hover { background: rgba(255, 255, 255, 0.2); }
 
     /* ===== SHORTS FEED ===== */
     .shorts-feed {
@@ -78,12 +63,8 @@
       scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
     }
+    .shorts-feed::-webkit-scrollbar { display: none; }
 
-    .shorts-feed::-webkit-scrollbar {
-      display: none;
-    }
-
-    /* ===== SHORT ITEM ===== */
     .short-item {
       height: 100vh;
       width: 100vw;
@@ -95,14 +76,12 @@
       background: #000;
       overflow: hidden;
     }
-
     .short-item video {
       width: 100%;
       height: 100%;
       object-fit: cover;
       position: absolute;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
     }
 
     /* ===== SOUND TOGGLE BUTTON ===== */
@@ -125,28 +104,21 @@
       cursor: pointer;
       transition: all 0.3s;
     }
-
     .sound-toggle:hover {
       background: rgba(255, 255, 255, 0.2);
       transform: scale(1.05);
     }
+    .sound-toggle.muted { opacity: 0.6; }
 
-    .sound-toggle.muted {
-      opacity: 0.6;
-    }
-
-    /* ===== SHORT OVERLAY ===== */
+    /* ===== OVERLAY ===== */
     .short-overlay {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       padding: 40px 20px 30px 20px;
       background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
       z-index: 10;
       pointer-events: none;
     }
-
     .short-overlay .short-title {
       font-size: 18px;
       font-weight: 700;
@@ -154,7 +126,6 @@
       margin-bottom: 6px;
       text-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
-
     .short-overlay .short-meta {
       display: flex;
       align-items: center;
@@ -164,7 +135,6 @@
       text-shadow: 0 2px 8px rgba(0,0,0,0.5);
       flex-wrap: wrap;
     }
-
     .short-overlay .short-meta .subject-tag {
       background: rgba(46, 115, 242, 0.3);
       padding: 2px 10px;
@@ -175,28 +145,21 @@
       backdrop-filter: blur(4px);
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
-
     .short-overlay .short-meta .views {
       display: flex;
       align-items: center;
       gap: 4px;
     }
-
-    .short-overlay .short-meta .views i {
-      font-size: 12px;
-    }
+    .short-overlay .short-meta .views i { font-size: 12px; }
 
     /* ===== PROGRESS BAR ===== */
     .short-progress {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       height: 3px;
       background: rgba(255, 255, 255, 0.15);
       z-index: 20;
     }
-
     .short-progress .progress-fill {
       height: 100%;
       background: linear-gradient(90deg, #1e4b7a, #4a8ab5);
@@ -205,7 +168,7 @@
       border-radius: 0 2px 2px 0;
     }
 
-    /* ===== RIGHT SIDE ACTIONS ===== */
+    /* ===== ACTIONS ===== */
     .short-actions {
       position: absolute;
       right: 16px;
@@ -215,7 +178,6 @@
       gap: 18px;
       z-index: 15;
     }
-
     .short-actions .action-btn {
       display: flex;
       flex-direction: column;
@@ -230,20 +192,15 @@
       font-weight: 500;
       text-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
-
     .short-actions .action-btn:hover {
       color: #fff;
       transform: scale(1.1);
     }
-
     .short-actions .action-btn i {
       font-size: 26px;
       display: block;
     }
-
-    .short-actions .action-btn .count {
-      font-size: 10px;
-    }
+    .short-actions .action-btn .count { font-size: 10px; }
 
     /* ===== SHORT NUMBER ===== */
     .short-number {
@@ -260,7 +217,7 @@
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* ===== LOADING STATE ===== */
+    /* ===== STATES ===== */
     .loading-state {
       display: flex;
       flex-direction: column;
@@ -270,7 +227,6 @@
       color: rgba(255, 255, 255, 0.5);
       gap: 16px;
     }
-
     .loading-state .spinner {
       width: 40px;
       height: 40px;
@@ -279,12 +235,8 @@
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* ===== EMPTY STATE ===== */
     .empty-state {
       display: flex;
       flex-direction: column;
@@ -296,24 +248,13 @@
       text-align: center;
       padding: 20px;
     }
-
-    .empty-state i {
-      font-size: 48px;
-      opacity: 0.3;
-    }
-
-    .empty-state h3 {
-      color: rgba(255, 255, 255, 0.7);
-      font-weight: 500;
-    }
+    .empty-state i { font-size: 48px; opacity: 0.3; }
+    .empty-state h3 { color: rgba(255, 255, 255, 0.7); font-weight: 500; }
 
     /* ===== BOTTOM SHEET ===== */
     .bottom-sheet-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      inset: 0;
       background: rgba(0, 0, 0, 0.6);
       z-index: 100;
       display: none;
@@ -321,21 +262,12 @@
       justify-content: center;
       animation: fadeIn 0.3s ease;
     }
-
-    .bottom-sheet-overlay.active {
-      display: flex;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
+    .bottom-sheet-overlay.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp {
       from { transform: translateY(100%); }
       to { transform: translateY(0); }
     }
-
     .bottom-sheet {
       background: #1a1a2e;
       border-radius: 20px 20px 0 0;
@@ -346,7 +278,6 @@
       max-height: 80vh;
       overflow-y: auto;
     }
-
     .bottom-sheet .sheet-handle {
       width: 40px;
       height: 4px;
@@ -354,7 +285,6 @@
       border-radius: 2px;
       margin: 0 auto 16px auto;
     }
-
     .bottom-sheet .sheet-title {
       font-size: 18px;
       font-weight: 700;
@@ -362,20 +292,17 @@
       margin-bottom: 16px;
       text-align: center;
     }
-
     .bottom-sheet .sheet-subtitle {
       font-size: 13px;
       color: rgba(255, 255, 255, 0.5);
       text-align: center;
       margin-bottom: 20px;
     }
-
     .bottom-sheet .share-options {
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
-
     .bottom-sheet .share-option {
       display: flex;
       align-items: center;
@@ -393,12 +320,10 @@
       text-align: left;
       font-family: inherit;
     }
-
     .bottom-sheet .share-option:hover {
       background: rgba(255, 255, 255, 0.1);
       transform: translateX(4px);
     }
-
     .bottom-sheet .share-option .option-icon {
       width: 44px;
       height: 44px;
@@ -409,37 +334,16 @@
       font-size: 20px;
       flex-shrink: 0;
     }
-
-    .bottom-sheet .share-option .option-icon.copy {
-      background: rgba(46, 115, 242, 0.2);
-      color: #4a8ab5;
-    }
-
-    .bottom-sheet .share-option .option-icon.download {
-      background: rgba(46, 204, 113, 0.2);
-      color: #2ecc71;
-    }
-
-    .bottom-sheet .share-option .option-icon.whatsapp {
-      background: rgba(37, 211, 102, 0.2);
-      color: #25d366;
-    }
-
-    .bottom-sheet .share-option .option-icon.share {
-      background: rgba(241, 196, 15, 0.2);
-      color: #f1c40f;
-    }
-
-    .bottom-sheet .share-option .option-label {
-      flex: 1;
-    }
-
+    .bottom-sheet .share-option .option-icon.copy { background: rgba(46, 115, 242, 0.2); color: #4a8ab5; }
+    .bottom-sheet .share-option .option-icon.download { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+    .bottom-sheet .share-option .option-icon.whatsapp { background: rgba(37, 211, 102, 0.2); color: #25d366; }
+    .bottom-sheet .share-option .option-icon.share { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+    .bottom-sheet .share-option .option-label { flex: 1; }
     .bottom-sheet .share-option .option-desc {
       font-size: 11px;
       color: rgba(255, 255, 255, 0.4);
       font-weight: 400;
     }
-
     .bottom-sheet .sheet-close-btn {
       width: 100%;
       padding: 14px;
@@ -454,12 +358,9 @@
       transition: all 0.2s;
       font-family: inherit;
     }
+    .bottom-sheet .sheet-close-btn:hover { background: rgba(255, 255, 255, 0.1); }
 
-    .bottom-sheet .sheet-close-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    /* Toast Notification */
+    /* ===== TOAST ===== */
     .toast {
       position: fixed;
       bottom: 100px;
@@ -478,76 +379,26 @@
       max-width: 90%;
       text-align: center;
     }
-
-    .toast.show {
-      display: block;
-    }
+    .toast.show { display: block; }
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 480px) {
-      .short-overlay .short-title {
-        font-size: 15px;
-      }
-      .short-overlay .short-meta {
-        font-size: 11px;
-        gap: 8px;
-      }
-      .short-actions {
-        right: 12px;
-        bottom: 100px;
-        gap: 14px;
-      }
-      .short-actions .action-btn i {
-        font-size: 22px;
-      }
-      .short-number {
-        top: 60px;
-        font-size: 10px;
-        padding: 3px 10px;
-      }
-      .sound-toggle {
-        top: 72px;
-        right: 12px;
-        width: 38px;
-        height: 38px;
-        font-size: 15px;
-      }
-      .bottom-sheet {
-        padding: 16px 16px 24px 16px;
-      }
-      .bottom-sheet .share-option {
-        padding: 12px 14px;
-        font-size: 14px;
-      }
-      .bottom-sheet .share-option .option-icon {
-        width: 38px;
-        height: 38px;
-        font-size: 17px;
-      }
+      .short-overlay .short-title { font-size: 15px; }
+      .short-overlay .short-meta { font-size: 11px; gap: 8px; }
+      .short-actions { right: 12px; bottom: 100px; gap: 14px; }
+      .short-actions .action-btn i { font-size: 22px; }
+      .short-number { top: 60px; font-size: 10px; padding: 3px 10px; }
+      .sound-toggle { top: 72px; right: 12px; width: 38px; height: 38px; font-size: 15px; }
+      .bottom-sheet { padding: 16px 16px 24px 16px; }
+      .bottom-sheet .share-option { padding: 12px 14px; font-size: 14px; }
+      .bottom-sheet .share-option .option-icon { width: 38px; height: 38px; font-size: 17px; }
     }
-
     @media (max-width: 380px) {
-      .short-overlay {
-        padding: 30px 14px 20px 14px;
-      }
-      .short-overlay .short-title {
-        font-size: 13px;
-      }
-      .short-actions {
-        right: 10px;
-        bottom: 80px;
-        gap: 12px;
-      }
-      .short-actions .action-btn i {
-        font-size: 18px;
-      }
-      .sound-toggle {
-        top: 64px;
-        right: 10px;
-        width: 34px;
-        height: 34px;
-        font-size: 13px;
-      }
+      .short-overlay { padding: 30px 14px 20px 14px; }
+      .short-overlay .short-title { font-size: 13px; }
+      .short-actions { right: 10px; bottom: 80px; gap: 12px; }
+      .short-actions .action-btn i { font-size: 18px; }
+      .sound-toggle { top: 64px; right: 10px; width: 34px; height: 34px; font-size: 13px; }
     }
   </style>
 </head>
@@ -577,7 +428,7 @@
     <div class="sheet-handle"></div>
     <div class="sheet-title">Share Short</div>
     <div class="sheet-subtitle" id="sheetSubtitle">Share this video with others</div>
-    
+
     <div class="share-options">
       <button class="share-option" onclick="copyLink()">
         <span class="option-icon copy"><i class="fas fa-link"></i></span>
@@ -586,7 +437,7 @@
           <div class="option-desc">Copy shareable link</div>
         </span>
       </button>
-      
+
       <button class="share-option" onclick="downloadVideo()">
         <span class="option-icon download"><i class="fas fa-download"></i></span>
         <span class="option-label">
@@ -594,7 +445,7 @@
           <div class="option-desc">Save to your device</div>
         </span>
       </button>
-      
+
       <button class="share-option" onclick="shareWhatsApp()">
         <span class="option-icon whatsapp"><i class="fab fa-whatsapp"></i></span>
         <span class="option-label">
@@ -602,7 +453,7 @@
           <div class="option-desc">Share via WhatsApp</div>
         </span>
       </button>
-      
+
       <button class="share-option" onclick="shareNative()">
         <span class="option-icon share"><i class="fas fa-share-alt"></i></span>
         <span class="option-label">
@@ -611,7 +462,7 @@
         </span>
       </button>
     </div>
-    
+
     <button class="sheet-close-btn" onclick="closeBottomSheet()">Cancel</button>
   </div>
 </div>
@@ -619,7 +470,6 @@
 <!-- ===== TOAST ===== -->
 <div class="toast" id="toast"></div>
 
-<!-- Font Awesome for Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <!-- Firebase -->
@@ -639,7 +489,7 @@
     firebase.initializeApp(firebaseConfig);
     var db = firebase.database();
 
-    // ===== DOM REFERENCES =====
+    // ===== DOM =====
     var feed = document.getElementById('shortsFeed');
     var loadingState = document.getElementById('loadingState');
     var bottomSheetOverlay = document.getElementById('bottomSheetOverlay');
@@ -651,7 +501,11 @@
     var currentShortTitle = '';
     var currentVideoUrl = '';
 
-    // ===== HELPER FUNCTIONS =====
+    // ===== DEEP LINK: ?id=xxxx =====
+    var params = new URLSearchParams(window.location.search);
+    var deepLinkId = params.get('id');
+
+    // ===== HELPERS =====
     function escapeHtml(str) {
       var div = document.createElement('div');
       div.innerText = str == null ? '' : str;
@@ -660,8 +514,8 @@
 
     function formatViews(n) {
       n = n || 0;
-      if (n >= 1000000) { return (n / 1000000).toFixed(1) + 'M'; }
-      if (n >= 1000) { return (n / 1000).toFixed(1) + 'K'; }
+      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
       return n.toString();
     }
 
@@ -676,7 +530,6 @@
       return colors[subject] || '#4a8ab5';
     }
 
-    // ===== TOAST =====
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add('show');
@@ -686,7 +539,7 @@
       }, 3000);
     }
 
-    // ===== SHARE FUNCTIONS =====
+    // ===== SHARE (points back to /shorts/<id> so 404.html can redirect) =====
     function getShortUrl(shortId) {
       return 'https://adarshghimire1.com.np/shorts/' + shortId;
     }
@@ -697,9 +550,7 @@
         navigator.clipboard.writeText(url).then(function() {
           showToast('✅ Link copied to clipboard!');
           closeBottomSheet();
-        }).catch(function() {
-          copyFallback(url);
-        });
+        }).catch(function() { copyFallback(url); });
       } else {
         copyFallback(url);
       }
@@ -740,16 +591,13 @@
     window.shareWhatsApp = function() {
       var url = getShortUrl(currentShortId);
       var text = '📱 Check out this short: ' + currentShortTitle + '\n\n' + url;
-      var encodedText = encodeURIComponent(text);
-      var whatsappUrl = 'https://api.whatsapp.com/send?text=' + encodedText;
-      window.open(whatsappUrl, '_blank');
+      window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(text), '_blank');
       closeBottomSheet();
     };
 
     window.shareNative = function() {
       var url = getShortUrl(currentShortId);
       var text = '📱 Check out this short: ' + currentShortTitle + '\n\n' + url;
-      
       if (navigator.share) {
         navigator.share({
           title: currentShortTitle || 'Durbar Short',
@@ -762,16 +610,15 @@
       }
     };
 
-    // ===== OPEN BOTTOM SHEET =====
     function openBottomSheet(shortId, title, videoUrl) {
       currentShortId = shortId;
       currentShortTitle = title || 'Untitled';
       currentVideoUrl = videoUrl || '';
-      
       sheetSubtitle.textContent = 'Share: ' + currentShortTitle;
       bottomSheetOverlay.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
+    window.openBottomSheet = openBottomSheet;
 
     window.closeBottomSheet = function(event) {
       if (event && event.target !== event.currentTarget) return;
@@ -779,8 +626,8 @@
       document.body.style.overflow = '';
     };
 
-    // ===== SOUND TOGGLE =====
     function toggleSound(video, button) {
+      if (!video) return;
       if (video.muted) {
         video.muted = false;
         button.classList.remove('muted');
@@ -793,12 +640,11 @@
         showToast('🔇 Sound off');
       }
     }
+    window.toggleSound = toggleSound;
 
-    // ===== RENDER SHORTS =====
+    // ===== RENDER =====
     function renderShorts(shorts) {
-      if (loadingState) {
-        loadingState.remove();
-      }
+      if (loadingState && loadingState.parentNode) loadingState.remove();
 
       if (!shorts || shorts.length === 0) {
         feed.innerHTML = `
@@ -817,13 +663,14 @@
         var item = document.createElement('div');
         item.className = 'short-item';
         item.dataset.index = index;
+        item.dataset.shortId = short.shortId;
 
         var title = escapeHtml(short.title || 'Untitled');
         var subject = escapeHtml(short.relatedSubject || '');
         var views = formatViews(short.views);
         var subjectColor = getSubjectColor(short.relatedSubject);
 
-        var videoHtml = short.videoUrl ? 
+        var videoHtml = short.videoUrl ?
           `<video src="${escapeHtml(short.videoUrl)}" preload="metadata" playsinline></video>` :
           `<div style="width:100%;height:100%;background:linear-gradient(145deg,#1a1a2e,#16213e);display:flex;align-items:center;justify-content:center;font-size:64px;color:rgba(255,255,255,0.1);">
             <i class="fas fa-film"></i>
@@ -837,7 +684,7 @@
             <i class="fas fa-bolt"></i> ${index + 1}/${shorts.length}
           </div>
           ${videoHtml}
-          <button class="sound-toggle muted" onclick="toggleSound(this.parentElement.querySelector('video'), this)">
+          <button class="sound-toggle muted">
             <i class="fas fa-volume-mute"></i>
           </button>
           <div class="short-overlay">
@@ -850,7 +697,7 @@
             </div>
           </div>
           <div class="short-actions">
-            <button class="action-btn" onclick="openBottomSheet('${short.shortId}', '${title.replace(/'/g, "\\'")}', '${escapeHtml(short.videoUrl || '')}')">
+            <button class="action-btn share-btn">
               <i class="fas fa-share-alt"></i>
               <span class="count">Share</span>
             </button>
@@ -859,39 +706,35 @@
 
         var video = item.querySelector('video');
         var soundBtn = item.querySelector('.sound-toggle');
-        
-        if (video) {
-          // Start muted by default
-          video.muted = true;
-          
-          // Click to toggle play/pause
-          video.addEventListener('click', function(e) {
+        var shareBtn = item.querySelector('.share-btn');
+
+        if (shareBtn) {
+          shareBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (this.paused) {
-              this.play().catch(function() {});
-            } else {
-              this.pause();
-            }
+            openBottomSheet(short.shortId, short.title || 'Untitled', short.videoUrl || '');
+          });
+        }
+
+        if (soundBtn) {
+          soundBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (video) toggleSound(video, soundBtn);
+          });
+        }
+
+        if (video) {
+          video.muted = true;
+
+          video.addEventListener('click', function() {
+            if (this.paused) this.play().catch(function(){});
+            else this.pause();
           });
 
-          // When video starts playing, try to unmute if user has interacted
           video.addEventListener('play', function() {
-            // Check if user has previously unmuted
-            if (!soundBtn.classList.contains('muted')) {
+            if (soundBtn && !soundBtn.classList.contains('muted')) {
               this.muted = false;
             }
           });
-
-          // Handle audio context for iOS
-          if (typeof AudioContext !== 'undefined') {
-            var audioCtx = new AudioContext();
-            if (audioCtx.state === 'suspended') {
-              document.addEventListener('click', function resumeAudio() {
-                audioCtx.resume();
-                document.removeEventListener('click', resumeAudio);
-              }, { once: true });
-            }
-          }
         }
 
         feed.appendChild(item);
@@ -900,20 +743,17 @@
       setupAutoplay();
     }
 
-    // ===== TIME AGO =====
     function timeAgo(ts) {
-      if (!ts) { return ''; }
+      if (!ts) return '';
       var diff = Math.floor((Date.now() - ts) / 1000);
-      if (diff < 60) { return 'Just now'; }
-      if (diff < 3600) { return Math.floor(diff / 60) + 'm ago'; }
-      if (diff < 86400) { return Math.floor(diff / 3600) + 'h ago'; }
-      if (diff < 604800) { return Math.floor(diff / 86400) + 'd ago'; }
-      if (diff < 2592000) { return Math.floor(diff / 604800) + 'w ago'; }
-      var d = new Date(ts);
-      return d.toLocaleDateString();
+      if (diff < 60) return 'Just now';
+      if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+      if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+      if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+      if (diff < 2592000) return Math.floor(diff / 604800) + 'w ago';
+      return new Date(ts).toLocaleDateString();
     }
 
-    // ===== AUTOPLAY SETUP =====
     function setupAutoplay() {
       var videos = feed.querySelectorAll('video');
       var observer = new IntersectionObserver(function(entries) {
@@ -921,31 +761,20 @@
           var video = entry.target;
           var item = video.closest('.short-item');
           var soundBtn = item ? item.querySelector('.sound-toggle') : null;
-          
+
           if (entry.isIntersecting) {
-            // Play the video
             video.play().catch(function() {});
-            
-            // Check if sound was previously on
-            if (soundBtn && !soundBtn.classList.contains('muted')) {
-              video.muted = false;
-            } else if (soundBtn) {
-              video.muted = true;
-            }
-            
-            // Pause all other videos
+            if (soundBtn && !soundBtn.classList.contains('muted')) video.muted = false;
+            else video.muted = true;
+
             document.querySelectorAll('video').forEach(function(v) {
-              if (v !== video) {
-                v.pause();
-              }
+              if (v !== video) v.pause();
             });
           } else {
             video.pause();
           }
         });
-      }, {
-        threshold: 0.5
-      });
+      }, { threshold: 0.5 });
 
       videos.forEach(function(video) {
         observer.observe(video);
@@ -953,48 +782,36 @@
       });
     }
 
-    // ===== KEYBOARD NAVIGATION =====
+    // ===== KEYBOARD NAV =====
     document.addEventListener('keydown', function(e) {
       if (bottomSheetOverlay.classList.contains('active')) {
-        if (e.key === 'Escape') {
-          closeBottomSheet();
-        }
+        if (e.key === 'Escape') closeBottomSheet();
         return;
       }
-
       var items = feed.querySelectorAll('.short-item');
       var currentIndex = -1;
-
       items.forEach(function(item, index) {
         var rect = item.getBoundingClientRect();
-        if (rect.top >= -50 && rect.top < window.innerHeight / 2) {
-          currentIndex = index;
-        }
+        if (rect.top >= -50 && rect.top < window.innerHeight / 2) currentIndex = index;
       });
-
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
         e.preventDefault();
-        if (currentIndex < items.length - 1) {
-          items[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
-        }
+        if (currentIndex < items.length - 1) items[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
       } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
         e.preventDefault();
-        if (currentIndex > 0) {
-          items[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
-        }
+        if (currentIndex > 0) items[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
       }
     });
 
-    // ===== GO BACK =====
     window.goBack = function() {
       if (document.referrer && document.referrer.includes(window.location.hostname)) {
         window.history.back();
       } else {
-        window.location.href = 'index.html';
+        window.location.href = '/';
       }
     };
 
-    // ===== LOAD SHORTS FROM FIREBASE =====
+    // ===== LOAD FROM FIREBASE =====
     function loadShorts() {
       db.ref('shorts').on('value', function(snapshot) {
         var raw = snapshot.val();
@@ -1013,8 +830,28 @@
           return (b.uploadedDate || 0) - (a.uploadedDate || 0);
         });
 
+        // ===== DEEP LINK HANDLING =====
+        if (deepLinkId) {
+          var target = shorts.find(function(s) { return s.shortId === deepLinkId; });
+          if (target) {
+            // Reorder so target is first, keeping the rest in order
+            shorts = [target].concat(shorts.filter(function(s) { return s.shortId !== deepLinkId; }));
+          }
+        }
+
         renderShorts(shorts);
-      }, function(error) {
+
+        // Scroll to first item (the deep-linked one is already first)
+        if (deepLinkId) {
+          var first = feed.querySelector('.short-item');
+          if (first) {
+            // Ensure it starts at the top
+            setTimeout(function() {
+              feed.scrollTop = 0;
+            }, 50);
+          }
+        }
+      }, function() {
         feed.innerHTML = `
           <div class="empty-state">
             <i class="fas fa-exclamation-triangle"></i>
@@ -1025,40 +862,26 @@
       });
     }
 
-    // ===== AUDIO CONTEXT UNLOCK FOR IOS =====
+    // ===== AUDIO UNLOCK (iOS) =====
     function unlockAudio() {
-      // Create a silent audio context to unlock audio on iOS
-      var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume().then(function() {
-          console.log('AudioContext resumed');
-        }).catch(function(err) {
-          console.log('AudioContext resume failed:', err);
-        });
-      }
-      
-      // Also try to play a silent buffer
       try {
+        var Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        var audioCtx = new Ctx();
+        if (audioCtx.state === 'suspended') audioCtx.resume().catch(function(){});
         var buffer = audioCtx.createBuffer(1, 1, 22050);
         var source = audioCtx.createBufferSource();
         source.buffer = buffer;
         source.connect(audioCtx.destination);
         source.start(0);
         source.stop(0.001);
-      } catch(e) {
-        console.log('Silent buffer play failed:', e);
-      }
+      } catch (e) {}
     }
-
-    // Try to unlock audio on user interaction
     document.addEventListener('click', unlockAudio, { once: true });
     document.addEventListener('touchstart', unlockAudio, { once: true });
 
-    // ===== INIT =====
     document.addEventListener('DOMContentLoaded', function() {
       loadShorts();
-      
-      // Try to unlock audio on load
       setTimeout(unlockAudio, 1000);
     });
 
