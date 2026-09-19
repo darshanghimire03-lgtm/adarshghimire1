@@ -3,11 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>darshang404</title>
+    <title>Darshan Ghimire · @darshang404</title>
+
+    <!-- ===== FAVICON (uses profile.png) ===== -->
+    <link rel="icon" type="image/png" href="profile.png">
+    <link rel="shortcut icon" type="image/png" href="profile.png">
+    <link rel="apple-touch-icon" href="profile.png">
+    <link rel="mask-icon" href="profile.png" color="#0b1a2b">
+
+    <!-- ===== SEO / SOCIAL META ===== -->
+    <meta name="description" content="Check out Darshan Ghimire (@darshang404) — creator & developer.">
+    <meta name="theme-color" content="#0b1a2b">
+    <meta property="og:title" content="Darshan Ghimire · @darshang404">
+    <meta property="og:description" content="Check out Darshan Ghimire (@darshang404) — creator & developer.">
+    <meta property="og:type" content="profile">
+    <meta property="og:url" content="https://adarshghimire1.com.np/">
+    <meta property="og:image" content="https://adarshghimire1.com.np/profile.png">
+    <meta property="og:site_name" content="Darshan Ghimire">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Darshan Ghimire · @darshang404">
+    <meta name="twitter:description" content="Check out Darshan Ghimire (@darshang404) — creator & developer.">
+    <meta name="twitter:image" content="https://adarshghimire1.com.np/profile.png">
+
+    <!-- ===== JSON-LD STRUCTURED DATA ===== -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Darshan Ghimire",
+        "url": "https://adarshghimire1.com.np/",
+        "description": "Check out Darshan Ghimire (@darshang404) — creator & developer.",
+        "image": "https://adarshghimire1.com.np/profile.png",
+        "author": {
+            "@type": "Person",
+            "name": "Darshan Ghimire",
+            "alternateName": "@darshang404",
+            "url": "https://adarshghimire1.com.np/"
+        }
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="icon" href="../profile.png" type="image/png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -272,14 +310,14 @@
     <!-- ===== PROFILE INFO ===== -->
     <section class="profile-info-section">
         <div class="profile-text">
-            <h1 class="profile-name" id="profileName">Loading…</h1>
+            <h1 class="profile-name" id="profileName">Darshan Ghimire</h1>
             <div class="profile-username-row">
-                <span class="profile-username" id="profileUsername">@…</span>
+                <span class="profile-username" id="profileUsername">@darshang404</span>
                 <span class="verified-badge"><i class="fa-solid fa-circle-check"></i></span>
             </div>
         </div>
-        <img class="profile-avatar-large" id="profileAvatar" src="profile.png" alt="Profile"
-             onerror="this.src='https://ui-avatars.com/api/?name=User&size=120&background=0b1a2b&color=fff&bold=true'">
+        <img class="profile-avatar-large" id="profileAvatar" src="profile.png" alt="Darshan Ghimire"
+             onerror="this.src='https://ui-avatars.com/api/?name=Darshan+Ghimire&size=120&background=0b1a2b&color=fff&bold=true'">
     </section>
 
     <!-- ===== ACTION BUTTONS ===== -->
@@ -381,10 +419,8 @@
         }
     }
 
-    // ✅ Website icon — priority: separate folder → favicon → FA icon
     function buildWebsiteIconHTML(item) {
         const iconField = (item.icon || '').trim();
-
         const isImagePath = /\.(png|jpe?g|gif|svg|webp|ico|bmp|avif)(\?.*)?$/i.test(iconField)
             || iconField.startsWith('./')
             || iconField.startsWith('../')
@@ -408,10 +444,8 @@
         return `<i class="fas ${escapeHTML(faClass)}"></i>`;
     }
 
-    // ✅ App icon — priority: separate folder → FA icon
     function buildAppIconHTML(item) {
         const iconField = (item.icon || '').trim();
-
         const isImagePath = /\.(png|jpe?g|gif|svg|webp|ico|bmp|avif)(\?.*)?$/i.test(iconField)
             || iconField.startsWith('./')
             || iconField.startsWith('../')
@@ -453,48 +487,19 @@
         `
     };
 
-    // ============ PLATFORMS (WhatsApp removed, Threads added, X icon fixed) ============
-    // Using inline SVG strings for X and Threads to guarantee correct icons render
+    // ============ PLATFORMS ============
     const PLATFORMS = [
-        {
-            key: 'facebook',
-            label: 'Facebook',
-            iconHTML: `<i class="fab fa-facebook-f"></i>`
-        },
-        {
-            key: 'tiktok',
-            label: 'TikTok',
-            iconHTML: `<i class="fab fa-tiktok"></i>`
-        },
-        {
-            key: 'instagram',
-            label: 'Instagram',
-            iconHTML: `<i class="fab fa-instagram"></i>`
-        },
-        {
-            key: 'twitter',
-            label: 'X',
-            // Inline SVG for X — more reliable than fa-x-twitter
-            iconHTML: `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`
-        },
-        {
-            key: 'threads',
-            label: 'Threads',
-            // Inline SVG for Threads
-            iconHTML: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></svg>`
-        },
-        {
-            key: 'telegram',
-            label: 'Telegram',
-            iconHTML: `<i class="fab fa-telegram"></i>`
-        }
+        { key: 'facebook',  label: 'Facebook',  iconHTML: `<i class="fab fa-facebook-f"></i>` },
+        { key: 'tiktok',    label: 'TikTok',    iconHTML: `<i class="fab fa-tiktok"></i>` },
+        { key: 'instagram', label: 'Instagram', iconHTML: `<i class="fab fa-instagram"></i>` },
+        { key: 'twitter',   label: 'X',         iconHTML: `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>` },
+        { key: 'threads',   label: 'Threads',   iconHTML: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></svg>` },
+        { key: 'telegram',  label: 'Telegram',  iconHTML: `<i class="fab fa-telegram"></i>` }
     ];
 
     // ============ SOCIAL SUGGESTIONS ============
     function buildSocialSuggestions(links) {
         socialScroll.innerHTML = '';
-
-        // Exclude WhatsApp entirely from suggestions
         const available = PLATFORMS.filter(p => p.key !== 'whatsapp' && links && links[p.key]);
 
         if (!available.length) {
@@ -534,8 +539,8 @@
         if (!data) return;
         profileData = data;
 
-        profileName.textContent = data.name || 'Unnamed';
-        profileUsername.textContent = '@' + (data.username || 'unknown');
+        profileName.textContent = data.name || 'Darshan Ghimire';
+        profileUsername.textContent = '@' + (data.username || 'darshang404');
 
         if (data.avatar && data.avatar.trim() !== '') {
             profileAvatar.src = data.avatar;
@@ -543,7 +548,7 @@
             profileAvatar.src = 'profile.png';
         }
         profileAvatar.onerror = function() {
-            this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.name || 'User') + '&size=120&background=0b1a2b&color=fff&bold=true';
+            this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.name || 'Darshan Ghimire') + '&size=120&background=0b1a2b&color=fff&bold=true';
         };
 
         buildSocialSuggestions(data.links || {});
@@ -563,9 +568,9 @@
             <article class="post-card">
                 <div class="post-header">
                     <img class="post-avatar" src="${post.avatar || profileAvatar.src}" 
-                         onerror="this.src='https://ui-avatars.com/api/?name=User&size=80&background=0b1a2b&color=fff&bold=true'">
+                         onerror="this.src='https://ui-avatars.com/api/?name=Darshan+Ghimire&size=80&background=0b1a2b&color=fff&bold=true'">
                     <div class="post-user-info">
-                        <span class="post-username">${escapeHTML(post.username || 'user')}</span>
+                        <span class="post-username">${escapeHTML(post.username || 'darshang404')}</span>
                         <span class="post-verified"><i class="fa-solid fa-circle-check"></i></span>
                         <span class="post-time">${escapeHTML(post.time || 'now')}</span>
                     </div>
@@ -661,8 +666,8 @@
             renderProfile(data);
             console.log('✅ Profile loaded:', data);
         } else {
-            profileName.textContent = 'Profile not set';
-            profileUsername.textContent = '—';
+            profileName.textContent = 'Darshan Ghimire';
+            profileUsername.textContent = '@darshang404';
             postsContainer.innerHTML = EMPTY_STATES.posts;
             appsContainer.innerHTML = EMPTY_STATES.apps;
             websitesContainer.innerHTML = EMPTY_STATES.websites;
