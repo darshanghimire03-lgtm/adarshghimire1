@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dorobox · Demo Movie Streaming</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0f17;
+            color: #eef2f6;
+            transition: background 0.2s;
+            padding-bottom: 75px;
+        }
+
+        /* ----- GLOBAL & HEADER ----- */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2rem 2rem;
+            background: rgba(10, 15, 22, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #1e2a3a;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #f5b042;
+        }
+
+        .logo span {
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #b0c4de 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .demo-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #1e2a3a;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid #2d4055;
+            color: #f5b042;
+        }
+
+        /* ----- MAIN CONTAINER ----- */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-title i {
+            color: #f5b042;
+        }
+
+        .subhead {
+            color: #8b9eb0;
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
+            border-left: 3px solid #f5b042;
+            padding-left: 1rem;
+        }
+
+        /* ----- YOUTUBE-STYLE THUMBNAIL GRID ----- */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem 1.5rem;
+        }
+
+        .video-card {
+            background: transparent;
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .thumbnail-container {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: #1b2533;
+            overflow: hidden;
+            border-radius: 1rem;
+            border: 1px solid #1e2a3a;
+        }
+
+        .thumbnail-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.35s;
+        }
+
+        .video-card:hover .thumbnail-container img {
+            transform: scale(1.05);
+        }
+
+        .duration-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .video-card-info {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.85rem 0.2rem 0;
+        }
+
+        .channel-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f5b042, #e08e1a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #0b0f17;
+            flex-shrink: 0;
+        }
+
+        .video-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .video-text h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 0.3rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-text .meta-line {
+            color: #8b9eb0;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+        }
+
+        .video-text .meta-line .dot {
+            font-size: 0.5rem;
+        }
+
+        /* ----- SEARCH TAB STYLES (ONLY BAR + HISTORY) ----- */
+        .search-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 1rem 0 2rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #121a24;
+            border: 1px solid #1e2a3a;
+            border-radius: 60px;
+            padding: 0.5rem 1.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            margin-bottom: 2rem;
+        }
+
+        .search-box:focus-within {
+            border-color: #f5b04280;
+            box-shadow: 0 0 0 4px #f5b04215;
+        }
+
+        .search-box i {
+            color: #6c819a;
+            font-size: 1.2rem;
+            margin-right: 0.8rem;
+        }
+
+        .search-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #eef2f6;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            padding: 0.6rem 0;
+        }
+
+        .search-box input::placeholder {
+            color: #6c819a;
+        }
+
+        .search-box button {
+            background: transparent;
+            border: none;
+            color: #6c819a;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .search-box button:hover {
+            color: #f5b042;
+        }
+
+        .history-section {
+            margin-top: 1rem;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0 0.5rem;
+        }
+
+        .history-header h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #8b9eb0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .history-header button {
+            background: transparent;
+            border: none;
+            color: #f5b042;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            transition: background 0.2s;
+        }
+
+        .history-header button:hover {
+            background: #f5b04215;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem 1rem;
+            background: transparent;
+            border: none;
+            color: #eef2f6;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 400;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: background 0.2s;
+            text-align: left;
+            width: 100%;
+        }
+
+        .history-item:hover {
+            background: #121a24;
+        }
+
+        .history-item i {
+            color: #6c819a;
+            font-size: 0.9rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .history-item .history-text {
+            flex: 1;
+        }
+
+        .history-item .remove-history {
+            color: #6c819a;
+            font-size: 0.8rem;
+            padding: 0.3rem;
+            border-radius: 50%;
+            transition: color 0.2s, background 0.2s;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+        }
+
+        .history-item .remove-history:hover {
+            color: #e74c3c;
+            background: #e74c3c15;
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: #6c819a;
+            font-size: 0.9rem;
+        }
+
+        .history-empty i {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+            color: #1e2a3a;
+            display: block;
+        }
+
+        /* ----- BOTTOM NAVIGATION ----- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 15, 22, 0.95);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid #1e2a3a;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0.6rem 0.5rem 0.8rem;
+            z-index: 200;
+            box-shadow: 0 -8px 20px -10px rgba(0,0,0,0.7);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            background: transparent;
+            border: none;
+            color: #6c819a;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            transition: color 0.2s, background 0.2s;
+            min-width: 70px;
+        }
+
+        .nav-item i {
+            font-size: 1.4rem;
+            transition: transform 0.2s, color 0.2s;
+        }
+
+        .nav-item.active {
+            color: #f5b042;
+            background: #f5b04212;
+        }
+
+        .nav-item.active i {
+            transform: translateY(-2px);
+            color: #f5b042;
+        }
+
+        .nav-item:hover {
+            color: #d0dce8;
+        }
+
+        .nav-item.active:hover {
+            color: #f5b042;
+        }
+
+        /* ----- TAB CONTENT ----- */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ----- PROFILE TAB STYLES ----- */
+        .profile-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .profile-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f5b042, #e08e1a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #0b0f17;
+            margin-bottom: 1rem;
+            box-shadow: 0 12px 24px -8px #f5b04250;
+            border: 3px solid #1e2a3a;
+        }
+
+        .profile-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .profile-header p {
+            color: #8b9eb0;
+            font-size: 0.95rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            background: #121a24;
+            border: 1px solid #1e2a3a;
+            border-radius: 1.5rem;
+            padding: 1.5rem 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .stat-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #f5b042;
+        }
+
+        .stat-item .stat-label {
+            font-size: 0.8rem;
+            color: #8b9eb0;
+            margin-top: 0.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-menu {
+            background: #121a24;
+            border: 1px solid #1e2a3a;
+            border-radius: 1.5rem;
+            overflow: hidden;
+        }
+
+        .profile-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.1rem 1.5rem;
+            color: #eef2f6;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-bottom: 1px solid #1e2a3a;
+            transition: background 0.2s;
+            cursor: pointer;
+            background: transparent;
+            border-left: none;
+            border-right: none;
+            border-top: none;
+            width: 100%;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .profile-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .profile-menu-item:hover {
+            background: #1a2535;
+        }
+
+        .profile-menu-item i {
+            color: #f5b042;
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .profile-menu-item .arrow {
+            margin-left: auto;
+            color: #6c819a;
+            font-size: 0.9rem;
+        }
+
+        /* ----- PLAYER PAGE ----- */
+        .player-page {
+            display: none;
+            min-height: 100vh;
+            background: #070b10;
+        }
+
+        .player-header {
+            padding: 1.2rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: #0b0f17;
+            border-bottom: 1px solid #1e2a3a;
+        }
+
+        .back-btn {
+            background: #1e2a3a;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #2d4055;
+        }
+
+        .player-header h2 {
+            font-weight: 500;
+            font-size: 1.4rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70%;
+        }
+
+        .video-wrapper {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem 2rem;
+        }
+
+        .video-container {
+            background: #000;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 25px 40px -12px #00000080;
+            border: 1px solid #1e2a3a;
+            position: relative;
+            aspect-ratio: 16 / 9;
+            width: 100%;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .video-info {
+            margin-top: 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0.2rem;
+        }
+
+        .video-info .title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .video-info .badge {
+            background: #1e2a3a;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            color: #f5b042;
+            font-weight: 600;
+        }
+
+        .placeholder-player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #6c819a;
+            background: #0f151f;
+        }
+
+        .placeholder-player i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #2d4055;
+        }
+
+        /* demo toast */
+        .demo-toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e2a3a;
+            color: #f5b042;
+            padding: 0.8rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: 1px solid #f5b04250;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            z-index: 999;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.25s;
+            pointer-events: none;
+        }
+
+        .demo-toast.show {
+            opacity: 1;
+        }
+
+        /* responsive */
+        @media (max-width: 700px) {
+            .app-header { padding: 1rem; }
+            .logo span { font-size: 1.3rem; }
+            .container { padding: 1.5rem 1rem; }
+            .video-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .player-header { padding: 1rem; }
+            .player-header h2 { font-size: 1.1rem; }
+            .video-info .title { font-size: 1.4rem; }
+            .nav-item { padding: 0.4rem 0.8rem; min-width: 60px; font-size: 0.7rem; }
+            .nav-item i { font-size: 1.2rem; }
+            .profile-stats { padding: 1.2rem 0.5rem; }
+            .stat-item .stat-value { font-size: 1.3rem; }
+        }
+
+        @media (min-width: 701px) and (max-width: 1000px) {
+            .video-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (min-width: 1001px) {
+            .video-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (min-width: 1400px) {
+            .video-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== INDEX VIEW (with tabs) ========== -->
+    <div id="indexView">
+        <header class="app-header">
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <span>Dorobox</span>
+            </div>
+            <div class="demo-badge">
+                <i class="fas fa-flask"></i> Demo
+            </div>
+        </header>
+
+        <!-- HOME TAB -->
+        <div id="homeTab" class="tab-content active">
+            <div class="container">
+                <div class="page-title">
+                    <i class="fas fa-video"></i> Now streaming
+                </div>
+                <div class="subhead">Click any video to start watching — demo experience</div>
+
+                <div id="videoGrid" class="video-grid">
+                    <!-- JS will fill this with demo videos -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SEARCH TAB (ONLY BAR + HISTORY) -->
+        <div id="searchTab" class="tab-content">
+            <div class="container">
+                <div class="page-title">
+                    <i class="fas fa-search"></i> Search
+                </div>
+                <div class="subhead">Find your next favorite film</div>
+
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search movies…" autocomplete="off">
+                        <button id="clearSearchBtn" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="history-section" id="historySection">
+                        <div class="history-header">
+                            <h4><i class="fas fa-history" style="margin-right: 6px;"></i>Recent searches</h4>
+                            <button id="clearHistoryBtn">Clear all</button>
+                        </div>
+                        <div id="historyList" class="history-list">
+                            <!-- History items will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROFILE TAB -->
+        <div id="profileTab" class="tab-content">
+            <div class="container">
+                <div class="page-title">
+                    <i class="fas fa-user-circle"></i> Profile
+                </div>
+                <div class="subhead">Your account & preferences</div>
+
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">D</div>
+                        <h2>Demo User</h2>
+                        <p>demo@dorobox.app</p>
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Videos</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Watchlist</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">4.8</div>
+                            <div class="stat-label">Rating</div>
+                        </div>
+                    </div>
+
+                    <div class="profile-menu">
+                        <button class="profile-menu-item" onclick="alert('Demo: Watchlist page would open here.')">
+                            <i class="fas fa-bookmark"></i> My Watchlist
+                            <i class="fas fa-chevron-right arrow"></i>
+                        </button>
+                        <button class="profile-menu-item" onclick="alert('Demo: Download history would show here.')">
+                            <i class="fas fa-download"></i> Downloads
+                            <i class="fas fa-chevron-right arrow"></i>
+                        </button>
+                        <button class="profile-menu-item" onclick="alert('Demo: Settings page would open here.')">
+                            <i class="fas fa-cog"></i> Settings
+                            <i class="fas fa-chevron-right arrow"></i>
+                        </button>
+                        <button class="profile-menu-item" onclick="alert('Demo: This is a demo app. No real account.')">
+                            <i class="fas fa-info-circle"></i> About Dorobox
+                            <i class="fas fa-chevron-right arrow"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-tab="homeTab" id="navHome">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-tab="searchTab" id="navSearch">
+                <i class="fas fa-search"></i>
+                <span>Search</span>
+            </button>
+            <button class="nav-item" data-tab="profileTab" id="navProfile">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- ========== PLAYER VIEW (HIDDEN) ========== -->
+    <div id="playerView" class="player-page">
+        <div class="player-header">
+            <button class="back-btn" id="backToHomeBtn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2 id="playerTitle">Now playing</h2>
+        </div>
+
+        <div class="video-wrapper">
+            <div class="video-container" id="videoContainer">
+                <div class="placeholder-player">
+                    <i class="fas fa-play-circle"></i>
+                    <p>Select a video to start streaming</p>
+                </div>
+            </div>
+
+            <div class="video-info">
+                <div class="title" id="videoTitle">—</div>
+                <div class="badge" id="videoGenre">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- demo toast -->
+    <div id="demoToast" class="demo-toast">
+        <i class="fas fa-info-circle"></i> This is a demo — video is a placeholder
+    </div>
+
+    <!-- ========== APP LOGIC ========== -->
+    <script>
+        (function() {
+            // --------------------------------------------------------------
+            // 1. DEMO VIDEO DATA (YouTube-style thumbnails)
+            // --------------------------------------------------------------
+            const demoVideos = [
+                {
+                    id: "v1",
+                    title: "Inception — Official Trailer",
+                    channel: "Warner Bros. Pictures",
+                    poster: "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg",
+                    genre: "Sci-Fi",
+                    rating: "8.8",
+                    duration: "2:34",
+                    views: "12M views",
+                    time: "13 years ago",
+                    videoUrl: "https://www.youtube.com/embed/YoHD9XEInc0"
+                },
+                {
+                    id: "v2",
+                    title: "The Dark Knight — Official Trailer",
+                    channel: "Warner Bros. Pictures",
+                    poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+                    genre: "Action",
+                    rating: "9.0",
+                    duration: "2:29",
+                    views: "28M views",
+                    time: "17 years ago",
+                    videoUrl: "https://www.youtube.com/embed/EXeTwQWrcwY"
+                },
+                {
+                    id: "v3",
+                    title: "Interstellar — Official Trailer",
+                    channel: "Paramount Pictures",
+                    poster: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+                    genre: "Adventure",
+                    rating: "8.7",
+                    duration: "2:28",
+                    views: "22M views",
+                    time: "10 years ago",
+                    videoUrl: "https://www.youtube.com/embed/zSWdZVtXT7E"
+                },
+                {
+                    id: "v4",
+                    title: "Dune: Part Two — Official Trailer",
+                    channel: "Warner Bros. Pictures",
+                    poster: "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
+                    genre: "Sci-Fi",
+                    rating: "8.6",
+                    duration: "3:08",
+                    views: "35M views",
+                    time: "1 year ago",
+                    videoUrl: "https://www.youtube.com/embed/Way9Dexny3w"
+                },
+                {
+                    id: "v5",
+                    title: "Oppenheimer — Official Trailer",
+                    channel: "Universal Pictures",
+                    poster: "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+                    genre: "Drama",
+                    rating: "8.9",
+                    duration: "2:16",
+                    views: "18M views",
+                    time: "1 year ago",
+                    videoUrl: "https://www.youtube.com/embed/uYPbbksJxIg"
+                },
+                {
+                    id: "v6",
+                    title: "The Matrix — Official Trailer",
+                    channel: "Warner Bros. Pictures",
+                    poster: "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
+                    genre: "Sci-Fi",
+                    rating: "8.7",
+                    duration: "2:26",
+                    views: "9M views",
+                    time: "25 years ago",
+                    videoUrl: "https://www.youtube.com/embed/vKQi3bBA1y8"
+                },
+                {
+                    id: "v7",
+                    title: "Pulp Fiction — Official Trailer",
+                    channel: "Miramax",
+                    poster: "https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg",
+                    genre: "Crime",
+                    rating: "8.9",
+                    duration: "2:48",
+                    views: "11M views",
+                    time: "30 years ago",
+                    videoUrl: "https://www.youtube.com/embed/s7EdQ4FqbhY"
+                },
+                {
+                    id: "v8",
+                    title: "Spirited Away — Official Trailer",
+                    channel: "Studio Ghibli",
+                    poster: "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",
+                    genre: "Animation",
+                    rating: "8.6",
+                    duration: "2:14",
+                    views: "7M views",
+                    time: "22 years ago",
+                    videoUrl: "https://www.youtube.com/embed/ByXuk9QqQkk"
+                }
+            ];
+
+            // --------------------------------------------------------------
+            // 2. DOM ELEMENTS
+            // --------------------------------------------------------------
+            const indexView = document.getElementById('indexView');
+            const playerView = document.getElementById('playerView');
+            const videoGrid = document.getElementById('videoGrid');
+            const backToHomeBtn = document.getElementById('backToHomeBtn');
+            const videoContainer = document.getElementById('videoContainer');
+            const playerTitle = document.getElementById('playerTitle');
+            const videoTitle = document.getElementById('videoTitle');
+            const videoGenre = document.getElementById('videoGenre');
+            const demoToast = document.getElementById('demoToast');
+
+            // Tab elements
+            const navHome = document.getElementById('navHome');
+            const navSearch = document.getElementById('navSearch');
+            const navProfile = document.getElementById('navProfile');
+            const homeTab = document.getElementById('homeTab');
+            const searchTab = document.getElementById('searchTab');
+            const profileTab = document.getElementById('profileTab');
+            const searchInput = document.getElementById('searchInput');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            const historyList = document.getElementById('historyList');
+            const historySection = document.getElementById('historySection');
+            const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+            // --------------------------------------------------------------
+            // 3. TAB SWITCHING
+            // --------------------------------------------------------------
+            const tabContents = {
+                homeTab: homeTab,
+                searchTab: searchTab,
+                profileTab: profileTab
+            };
+
+            const navButtons = {
+                homeTab: navHome,
+                searchTab: navSearch,
+                profileTab: navProfile
+            };
+
+            function switchTab(tabId) {
+                Object.values(tabContents).forEach(tab => tab.classList.remove('active'));
+                if (tabContents[tabId]) tabContents[tabId].classList.add('active');
+
+                Object.values(navButtons).forEach(btn => btn.classList.remove('active'));
+                if (navButtons[tabId]) navButtons[tabId].classList.add('active');
+
+                if (tabId === 'searchTab') {
+                    searchInput.focus();
+                }
+            }
+
+            navHome.addEventListener('click', () => switchTab('homeTab'));
+            navSearch.addEventListener('click', () => switchTab('searchTab'));
+            navProfile.addEventListener('click', () => switchTab('profileTab'));
+
+            // --------------------------------------------------------------
+            // 4. RENDER YOUTUBE-STYLE VIDEO GRID
+            // --------------------------------------------------------------
+            function renderVideos(videosArray) {
+                if (!videosArray.length) {
+                    videoGrid.innerHTML = `
+                        <div style="grid-column:1/-1; text-align:center; padding:3rem; color:#6c819a;">
+                            <i class="fas fa-film" style="font-size:2.5rem; opacity:0.5; margin-bottom:1rem; display:block;"></i>
+                            <p>No videos available.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                videosArray.forEach(video => {
+                    // Get first letter for avatar
+                    const avatarLetter = video.channel ? video.channel.charAt(0).toUpperCase() : 'D';
+                    html += `
+                        <div class="video-card" data-id="${video.id}">
+                            <div class="thumbnail-container">
+                                <img src="${video.poster}" alt="${video.title}" loading="lazy" 
+                                     onerror="this.src='https://via.placeholder.com/480x270/1e2a3a/8b9eb0?text=No+Thumbnail'">
+                                <div class="duration-badge">${video.duration}</div>
+                            </div>
+                            <div class="video-card-info">
+                                <div class="channel-avatar">${avatarLetter}</div>
+                                <div class="video-text">
+                                    <h3>${video.title}</h3>
+                                    <div class="meta-line">
+                                        <span>${video.channel}</span>
+                                        <span class="dot">•</span>
+                                        <span>${video.views}</span>
+                                        <span class="dot">•</span>
+                                        <span>${video.time}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                videoGrid.innerHTML = html;
+
+                document.querySelectorAll('#videoGrid .video-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const videoId = card.dataset.id;
+                        const video = demoVideos.find(v => v.id === videoId);
+                        if (video) openPlayer(video);
+                    });
+                });
+            }
+
+            // --------------------------------------------------------------
+            // 5. SEARCH HISTORY (localStorage + UI)
+            // --------------------------------------------------------------
+            const STORAGE_KEY = 'dorobox_search_history';
+
+            function getSearchHistory() {
+                try {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    return stored ? JSON.parse(stored) : [];
+                } catch {
+                    return [];
+                }
+            }
+
+            function saveSearchHistory(history) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                } catch {
+                    // ignore
+                }
+            }
+
+            function addToHistory(query) {
+                const trimmed = query.trim();
+                if (!trimmed) return;
+                let history = getSearchHistory();
+                // Remove if already exists (to move to top)
+                history = history.filter(item => item.toLowerCase() !== trimmed.toLowerCase());
+                // Add to beginning
+                history.unshift(trimmed);
+                // Keep only last 10
+                if (history.length > 10) history = history.slice(0, 10);
+                saveSearchHistory(history);
+                renderHistory();
+            }
+
+            function removeFromHistory(query) {
+                let history = getSearchHistory();
+                history = history.filter(item => item.toLowerCase() !== query.toLowerCase());
+                saveSearchHistory(history);
+                renderHistory();
+            }
+
+            function clearAllHistory() {
+                saveSearchHistory([]);
+                renderHistory();
+            }
+
+            function renderHistory() {
+                const history = getSearchHistory();
+
+                if (!history.length) {
+                    historyList.innerHTML = `
+                        <div class="history-empty">
+                            <i class="fas fa-search"></i>
+                            <p>No recent searches</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                history.forEach(query => {
+                    html += `
+                        <div class="history-item" data-query="${query.replace(/"/g, '&quot;')}">
+                            <i class="fas fa-clock"></i>
+                            <span class="history-text">${query}</span>
+                            <button class="remove-history" data-query="${query.replace(/"/g, '&quot;')}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+
+                historyList.innerHTML = html;
+
+                // Click on history item -> fill search bar (no results shown)
+                document.querySelectorAll('.history-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        // Don't trigger if clicking remove button
+                        if (e.target.closest('.remove-history')) return;
+                        const query = item.dataset.query;
+                        searchInput.value = query;
+                        updateClearButton();
+                        // Don't perform search - just fill the bar
+                        searchInput.focus();
+                    });
+                });
+
+                // Remove individual history items
+                document.querySelectorAll('.remove-history').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const query = btn.dataset.query;
+                        removeFromHistory(query);
+                    });
+                });
+            }
+
+            function updateClearButton() {
+                clearSearchBtn.style.display = searchInput.value.trim() ? 'flex' : 'none';
+            }
+
+            // Clear search input
+            clearSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                updateClearButton();
+                searchInput.focus();
+            });
+
+            // Search input events - save to history on Enter
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const query = searchInput.value.trim();
+                    if (query) {
+                        addToHistory(query);
+                    }
+                }
+            });
+
+            // Clear all history
+            clearHistoryBtn.addEventListener('click', clearAllHistory);
+
+            // Initialize history display
+            renderHistory();
+
+            // --------------------------------------------------------------
+            // 6. OPEN PLAYER
+            // --------------------------------------------------------------
+            function openPlayer(video) {
+                indexView.style.display = 'none';
+                playerView.style.display = 'block';
+
+                playerTitle.textContent = video.title;
+                videoTitle.textContent = video.title;
+                videoGenre.textContent = video.genre;
+
+                showToast('Demo mode — video is a placeholder trailer');
+
+                if (video.videoUrl && video.videoUrl.trim() !== '') {
+                    videoContainer.innerHTML = `<iframe src="${video.videoUrl}?autoplay=1&rel=0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen></iframe>`;
+                } else {
+                    videoContainer.innerHTML = `
+                        <div class="placeholder-player">
+                            <i class="fas fa-exclamation-triangle" style="color:#f5b042;"></i>
+                            <p>No video stream available.</p>
+                        </div>
+                    `;
+                }
+            }
+
+            // --------------------------------------------------------------
+            // 7. BACK TO HOME
+            // --------------------------------------------------------------
+            function goToHome() {
+                videoContainer.innerHTML = `
+                    <div class="placeholder-player">
+                        <i class="fas fa-play-circle"></i>
+                        <p>Select a video to start streaming</p>
+                    </div>
+                `;
+                playerView.style.display = 'none';
+                indexView.style.display = 'block';
+
+                playerTitle.textContent = 'Now playing';
+                videoTitle.textContent = '—';
+                videoGenre.textContent = '—';
+
+                hideToast();
+                switchTab('homeTab');
+            }
+
+            backToHomeBtn.addEventListener('click', goToHome);
+
+            // --------------------------------------------------------------
+            // 8. TOAST NOTIFICATION
+            // --------------------------------------------------------------
+            let toastTimeout;
+            function showToast(message) {
+                demoToast.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+                demoToast.classList.add('show');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    demoToast.classList.remove('show');
+                }, 3000);
+            }
+
+            function hideToast() {
+                demoToast.classList.remove('show');
+                clearTimeout(toastTimeout);
+            }
+
+            // --------------------------------------------------------------
+            // 9. INIT
+            // --------------------------------------------------------------
+            renderVideos(demoVideos);
+            updateClearButton();
+
+            // Expose for debugging
+            window.demoVideos = demoVideos;
+            window.searchHistory = { get: getSearchHistory, add: addToHistory, clear: clearAllHistory };
+        })();
+    </script>
+</body>
+</html>
