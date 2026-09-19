@@ -14,35 +14,26 @@
     overflow: hidden;
   }
   #redirecting, #genericNotFound {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 14px;
-    text-align: center;
-    padding: 32px;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 14px;
+    text-align: center; padding: 32px;
   }
   #redirecting.show, #genericNotFound.show { display: flex; }
   .spinner {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
+    width: 34px; height: 34px; border-radius: 50%;
     border: 3px solid rgba(255,255,255,0.25);
     border-top-color: #fff;
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   #redirecting p { opacity: 0.75; font-size: 14px; }
+  #redirecting a, #genericNotFound a {
+    color: #fff; font-size: 14px; text-decoration: underline;
+  }
   #genericNotFound h1 { font-size: 26px; }
   #genericNotFound p { opacity: 0.7; font-size: 14.5px; }
-  #genericNotFound a {
-    margin-top: 10px;
-    color: #fff;
-    font-size: 14px;
-    text-decoration: underline;
-  }
 </style>
 </head>
 <body>
@@ -50,6 +41,7 @@
 <div id="redirecting">
   <div class="spinner"></div>
   <p>Opening short…</p>
+  <a id="manualLink" href="#">Tap here if not redirected</a>
 </div>
 
 <div id="genericNotFound">
@@ -61,18 +53,30 @@
 <script>
 (function () {
   var path = window.location.pathname || "";
+  var search = window.location.search || "";
 
-  // Match: /shorts/<id>  OR  /durbar/shorts/<id>
+  // Match: /durbar/shorts/<id>  OR  /shorts/<id>  (in case)
   var match = path.match(/\/shorts\/([^\/?#]+)/i);
+  var shortId = match ? decodeURIComponent(match[1]) : null;
 
-  if (match && match[1]) {
-    var shortId = decodeURIComponent(match[1]);
+  // Fallback: ?id=<id>
+  if (!shortId) {
+    var q = new URLSearchParams(search);
+    if (q.get("id")) shortId = q.get("id");
+  }
+
+  if (shortId) {
     var target = "/durbar/shorts/?id=" + encodeURIComponent(shortId);
 
-    document.getElementById("redirecting").classList.add("show");
+    var redir = document.getElementById("redirecting");
+    redir.classList.add("show");
+    document.getElementById("manualLink").href = target;
 
-    // Use replace so the 404 doesn't stay in history
-    window.location.replace(target);
+    try {
+      window.location.replace(target);
+    } catch (e) {
+      window.location.href = target;
+    }
   } else {
     document.getElementById("genericNotFound").classList.add("show");
   }
