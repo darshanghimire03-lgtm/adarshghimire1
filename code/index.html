@@ -2,249 +2,360 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love Animation</title>
+    <!-- Dynamic viewport height for mobile browsers (fixes the URL bar issue) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Log in to Facebook</title>
     <style>
-        * {
+        /* =========================================
+           1. DESIGN TOKENS & CSS VARIABLES
+           ========================================= */
+        :root {
+            /* Colors */
+            --bg-body: #f0f2f5;
+            --bg-app: #ffffff;
+            --text-primary: #1c1e21;
+            --text-secondary: #65676b;
+            --text-placeholder: #8d949e;
+            --brand-blue: #0064e0;
+            --brand-blue-active: #0052b8;
+            --border-color: #ccd0d5;
+            --border-focus: #1877f2;
+            
+            /* Spacing */
+            --spacing-sm: 12px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            /* Border Radius */
+            --radius-input: 12px;
+            --radius-button: 24px;
+            
+            /* Transitions */
+            --transition-fast: 0.2s ease;
+        }
+
+        /* =========================================
+           2. CSS RESET & BASE STYLES
+           ========================================= */
+        *, *::before, *::after {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: #0b0b1f;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            /* Use dynamic viewport height for mobile */
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Prevent overscroll bounce on desktop */
+            overscroll-behavior: none;
+        }
+
+        /* =========================================
+           3. APP CONTAINER (Responsive Mobile Frame)
+           ========================================= */
+        .app-container {
+            width: 100%;
+            height: 100dvh; /* Takes full height on mobile */
+            background-color: var(--bg-app);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Desktop / Tablet Responsive Framing */
+        @media (min-width: 480px) {
+            .app-container {
+                max-width: 420px;
+                height: 90dvh;
+                max-height: 850px;
+                border-radius: 20px;
+                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+            }
+        }
+
+        /* =========================================
+           4. HEADER COMPONENT
+           ========================================= */
+        .app-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-lg);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .btn-close {
+            position: absolute;
+            left: var(--spacing-lg);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-            overflow: hidden;
+            border-radius: 50%;
+            transition: background-color var(--transition-fast);
+        }
+
+        .btn-close:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-close svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-primary);
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 15px;
+            cursor: pointer;
+            gap: 4px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color var(--transition-fast);
+        }
+
+        .language-selector:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .language-selector svg {
+            width: 12px;
+            height: 12px;
+            fill: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* =========================================
+           5. MAIN CONTENT COMPONENT
+           ========================================= */
+        .app-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0 var(--spacing-lg);
+            justify-content: center;
+            /* Adjusts spacing to perfectly match screenshot */
+            margin-top: -5vh; 
+        }
+
+        .logo-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .logo-wrapper svg {
+            width: 68px;
+            height: 68px;
+        }
+
+        /* Form Styles */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .input-group {
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
-        body::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 50% 40%, #1e0f2e 0%, #0b0b1f 80%);
-            animation: breathe 8s infinite alternate ease-in-out;
-            z-index: 0;
-        }
-
-        @keyframes breathe {
-            0% { opacity: 0.7; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.05); }
-        }
-
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .input-field {
             width: 100%;
-            height: 100%;
+            padding: 16px;
+            font-size: 16px; /* Prevents iOS auto-zoom */
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-input);
+            color: var(--text-primary);
+            background-color: var(--bg-app);
+            outline: none;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-placeholder);
+        }
+
+        .input-field:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 1px var(--border-focus);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            background-color: var(--brand-blue);
+            color: var(--bg-app);
+            border: none;
+            border-radius: var(--radius-button);
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color var(--transition-fast), transform 0.1s;
+        }
+
+        .btn-primary:active {
+            background-color: var(--brand-blue-active);
+            transform: scale(0.98);
+        }
+
+        .link-forgot {
             display: block;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .love-message {
-            position: relative;
-            z-index: 2;
             text-align: center;
-            color: #fff0f5;
-            text-shadow: 0 0 20px #ff4d6d, 0 0 40px #b300b3;
-            animation: messagePulse 2s infinite alternate;
-            pointer-events: none;
-            user-select: none;
+            margin-top: var(--spacing-md);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 8px;
+            transition: color var(--transition-fast);
         }
 
-        .love-message h1 {
-            font-size: clamp(2.5rem, 12vw, 6rem);
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #ffe6f0, #ffb3c6, #ff4d6d);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            filter: drop-shadow(0 0 15px #ff4d6d);
-            margin-bottom: 0.2em;
+        .link-forgot:hover {
+            color: var(--brand-blue);
+            text-decoration: underline;
         }
 
-        .love-message p {
-            font-size: clamp(1rem, 3vw, 1.8rem);
-            letter-spacing: 0.3em;
-            color: #ffccd5;
-            opacity: 0.9;
-            text-shadow: 0 0 10px #ff4d6d, 0 0 30px #b300b3;
-            font-weight: 300;
+        /* =========================================
+           6. FOOTER COMPONENT
+           ========================================= */
+        .app-footer {
+            padding: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+            flex-shrink: 0;
+            /* Account for iPhone home indicator */
+            padding-bottom: max(var(--spacing-lg), env(safe-area-inset-bottom));
         }
 
-        @keyframes messagePulse {
-            0% { transform: scale(1); filter: brightness(1); }
-            100% { transform: scale(1.02); filter: brightness(1.2); }
+        .btn-outline {
+            width: 100%;
+            background-color: transparent;
+            color: var(--brand-blue);
+            border: 1px solid var(--brand-blue);
+            border-radius: var(--radius-button);
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color var(--transition-fast), transform 0.1s;
         }
 
-        .heart-icon {
-            display: inline-block;
-            animation: floatHeart 3s infinite ease-in-out;
+        .btn-outline:hover {
+            background-color: rgba(0, 100, 224, 0.04);
         }
 
-        @keyframes floatHeart {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-10px) scale(1.1); }
+        .btn-outline:active {
+            background-color: rgba(0, 100, 224, 0.1);
+            transform: scale(0.98);
+        }
+
+        .meta-branding {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .meta-branding svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--brand-blue);
+        }
+
+        .meta-text {
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
         }
     </style>
 </head>
 <body>
-    <div class="love-message">
-        <h1>love <span class="heart-icon">❤️</span></h1>
-        <p>always & forever</p>
+
+    <div class="app-container" role="main">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <button class="btn-close" aria-label="Close">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+            </button>
+            
+            <div class="language-selector" role="button" aria-haspopup="listbox" tabindex="0">
+                <span>English (UK)</span>
+                <svg viewBox="0 0 24 24">
+                    <path d="M7 10l5 5 5-5z"/>
+                </svg>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <div class="logo-wrapper">
+                <!-- Facebook Logo SVG -->
+                <svg viewBox="0 0 36 36" fill="#0064e0" aria-label="Facebook Logo">
+                    <path d="M18 0C8.06 0 0 8.06 0 18c0 8.95 6.54 16.38 15.1 17.74V23.1h-4.54v-5.27h4.54v-3.91c0-4.5 2.68-6.99 6.78-6.99 1.96 0 4.02.35 4.02.35v4.42h-2.27c-2.23 0-2.93 1.39-2.93 2.81v3.37h5.02l-.8 5.27h-4.22v12.64C29.46 34.38 36 26.95 36 18c0-9.94-8.06-18-18-18z"/>
+                </svg>
+            </div>
+
+            <form class="login-form" onsubmit="event.preventDefault();">
+                <div class="input-group">
+                    <input type="text" class="input-field" placeholder="Mobile number or email address" autocomplete="username" aria-label="Mobile number or email address">
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" class="input-field" placeholder="Password" autocomplete="current-password" aria-label="Password">
+                </div>
+                
+                <button type="submit" class="btn-primary">Log in</button>
+            </form>
+
+            <a href="#" class="link-forgot">Forgotten password?</a>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <button type="button" class="btn-outline">Create new account</button>
+            
+            <div class="meta-branding">
+                <!-- Meta Logo SVG -->
+                <svg viewBox="0 0 1000 1000" aria-label="Meta Logo">
+                    <path d="M500 250c-69.3 0-113.3 30-154.7 86.7L252 469.3C206.7 533.3 172 570 132 570c-48 0-85.3-38-85.3-94.7 0-56 37.3-94.7 85.3-94.7 38.7 0 69.3 24 105.3 70.7L280 408c-50.7-62.7-100-94.7-164.7-94.7C53.3 313.3 0 376 0 475.3 0 574.7 53.3 636 115.3 636c66.7 0 114.7-41.3 164.7-109.3l77.3-109.3C393.3 366.7 426.7 344 468 344c61.3 0 96 48 96 126.7 0 78.7-34.7 126.7-96 126.7-34.7 0-66.7-16-104.7-58.7l-47.3 56c52 56 96 81.3 152 81.3 106.7 0 180-78.7 180-205.3 0-126.7-73.3-205.3-180-205.3H468c-53.3 0-96 29.3-141.3 88l-64 84c-40 52-64 72-92 72-28 0-48-21.3-48-56 0-34.7 20-56 48-56 25.3 0 45.3 14.7 72 49.3l52-60C256 354.7 217.3 330 173.3 330 106.7 330 56 390.7 56 480c0 89.3 50.7 150 117.3 150 50.7 0 90.7-28 140-93.3l69.3-90.7C430.7 384 468 362.7 512 362.7c88 0 141.3 69.3 141.3 181.3 0 112-53.3 181.3-141.3 181.3-46.7 0-84-20-129.3-69.3l-48 56c56 60 109.3 85.3 174.7 85.3 128 0 218.7-101.3 218.7-253.3 0-152-90.7-253.3-218.7-253.3z"/>
+                </svg>
+                <span class="meta-text">Meta</span>
+            </div>
+        </footer>
+
     </div>
-    <canvas id="heartCanvas"></canvas>
 
-    <script>
-        (function() {
-            const canvas = document.getElementById('heartCanvas');
-            const ctx = canvas.getContext('2d');
-
-            let width, height;
-
-            class Heart {
-                constructor() {
-                    this.reset();
-                }
-
-                reset() {
-                    this.x = Math.random() * width;
-                    this.y = height + 20 + Math.random() * 100;
-                    this.size = 8 + Math.random() * 18;
-                    this.speedY = -(0.6 + Math.random() * 1.6);
-                    this.speedX = (Math.random() - 0.5) * 0.6;
-                    this.opacity = 0.5 + Math.random() * 0.5;
-                    this.angle = Math.random() * Math.PI * 2;
-                    this.rotationSpeed = (Math.random() - 0.5) * 0.02;
-                    const hue = 330 + Math.random() * 40;
-                    this.color = `hsl(${hue}, 85%, 70%)`;
-                    this.twinkle = Math.random() * Math.PI * 2;
-                }
-
-                update() {
-                    this.y += this.speedY;
-                    this.x += this.speedX;
-                    this.angle += this.rotationSpeed;
-
-                    if (this.y < height * 0.3) {
-                        this.opacity -= 0.002;
-                    }
-
-                    if (this.y < -50 || this.x < -50 || this.x > width + 50 || this.opacity <= 0.02) {
-                        this.reset();
-                        this.y = height + 20 + Math.random() * 80;
-                        this.opacity = 0.6 + Math.random() * 0.4;
-                    }
-                }
-
-                draw() {
-                    ctx.save();
-                    ctx.translate(this.x, this.y);
-                    ctx.rotate(this.angle);
-                    ctx.scale(1, 1);
-
-                    ctx.shadowColor = this.color;
-                    ctx.shadowBlur = 18 + Math.sin(this.twinkle) * 6;
-                    ctx.shadowOffsetX = 0;
-                    ctx.shadowOffsetY = 0;
-
-                    ctx.beginPath();
-                    const s = this.size;
-                    const topCurveHeight = s * 0.3;
-
-                    ctx.moveTo(0, s * 0.35);
-
-                    ctx.bezierCurveTo(
-                        -s * 0.5, -s * 0.1,
-                        -s * 0.8, -s * 0.5,
-                        -s * 0.3, -s * 0.8
-                    );
-
-                    ctx.bezierCurveTo(
-                        -s * 0.1, -s * 0.9,
-                         s * 0.1, -s * 0.9,
-                         s * 0.3, -s * 0.8
-                    );
-
-                    ctx.bezierCurveTo(
-                        s * 0.8, -s * 0.5,
-                        s * 0.5, -s * 0.1,
-                        0, s * 0.35
-                    );
-
-                    ctx.closePath();
-
-                    const gradient = ctx.createRadialGradient(-s*0.2, -s*0.2, s*0.1, 0, 0, s*1.2);
-                    gradient.addColorStop(0, '#ffb3c6');
-                    gradient.addColorStop(0.6, this.color);
-                    gradient.addColorStop(1, '#ff4d6d');
-
-                    ctx.fillStyle = gradient;
-                    ctx.fill();
-
-                    ctx.shadowBlur = 25;
-                    ctx.strokeStyle = '#ffe6f0';
-                    ctx.lineWidth = 0.8;
-                    ctx.stroke();
-
-                    ctx.restore();
-                }
-            }
-
-            let hearts = [];
-            const HEART_COUNT = 70;
-
-            function initCanvas() {
-                width = window.innerWidth;
-                height = window.innerHeight;
-                canvas.width = width;
-                canvas.height = height;
-
-                hearts = [];
-                for (let i = 0; i < HEART_COUNT; i++) {
-                    const heart = new Heart();
-                    heart.y = Math.random() * height * 1.2 - 0.1 * height;
-                    heart.x = Math.random() * width;
-                    if (heart.y < height * 0.3) heart.opacity = 0.8;
-                    hearts.push(heart);
-                }
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
-
-                for (let heart of hearts) {
-                    heart.update();
-                    heart.draw();
-                }
-
-                requestAnimationFrame(animate);
-            }
-
-            function onResize() {
-                initCanvas();
-            }
-
-            initCanvas();
-            animate();
-
-            let resizeTimeout;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    onResize();
-                }, 150);
-            });
-
-        })();
-    </script>
 </body>
 </html>
