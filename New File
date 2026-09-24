@@ -1,0 +1,9 @@
+const firebaseConfig = {
+    apiKey: "AIzaSyCpz_uWtq7U7x7FklxB5VTTqSuqTaB00LU",
+    authDomain: "lg-chem-9fc35.firebaseapp.com",
+    projectId: "lg-chem-9fc35",
+    storageBucket: "lg-chem-9fc35.firebasestorage.app",
+    messagingSenderId: "137893448433",
+    appId: "1:137893448433:web:6622da8886a7c696d0b750",
+    databaseURL: "https://lg-chem-9fc35-default-rtdb.firebaseio.com"
+  };

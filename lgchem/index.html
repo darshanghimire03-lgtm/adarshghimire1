@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lgchem — Sign in</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --ink: #1c1b19;
+    --paper: #faf8f4;
+    --line: #ddd7cb;
+    --accent: #2f5d4e;
+    --accent-dim: #4d7e6c;
+    --danger: #a3382f;
+    --muted: #7a7468;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #f2efe9;
+      --paper: #16150f;
+      --line: #34312a;
+      --accent: #7fbfa4;
+      --accent-dim: #5e937f;
+      --danger: #e08277;
+      --muted: #9a9282;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #f2efe9;
+    --paper: #16150f;
+    --line: #34312a;
+    --accent: #7fbfa4;
+    --accent-dim: #5e937f;
+    --danger: #e08277;
+    --muted: #9a9282;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+  .card {
+    width: 100%;
+    max-width: 380px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 36px 32px;
+    background: var(--paper);
+  }
+  @media (max-width: 420px) {
+    body { padding: 0; align-items: flex-start; }
+    .card {
+      max-width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      border: none;
+      padding: 32px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+  @media (max-width: 340px) {
+    h1 { font-size: 22px; }
+    .card { padding: 28px 18px; }
+  }
+  .brand {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    margin: 0 0 6px;
+  }
+  h1 {
+    font-size: 26px;
+    font-weight: 500;
+    margin: 0 0 28px;
+    line-height: 1.25;
+  }
+  .field {
+    margin-bottom: 16px;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input:focus {
+    border-color: var(--accent);
+  }
+  .primary-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--paper);
+    background: var(--accent);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .primary-btn:hover { background: var(--accent-dim); }
+  .primary-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .google-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 11px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .google-btn:hover { border-color: var(--accent-dim); }
+  .google-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .switch {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .switch button {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
+
+  .msg {
+    font-size: 13px;
+    margin-bottom: 16px;
+    padding: 10px 12px;
+    border-radius: 2px;
+    display: none;
+  }
+  .msg.error { display: block; background: rgba(163,56,47,0.1); color: var(--danger); }
+  .msg.ok { display: block; background: rgba(47,93,78,0.1); color: var(--accent); }
+
+  .session {
+    text-align: center;
+  }
+  .session p { color: var(--muted); font-size: 14px; margin: 4px 0 24px; word-break: break-word; }
+  .session strong { color: var(--ink); }
+  .signout-btn {
+    width: 100%;
+    padding: 11px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .signout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+  .hidden { display: none !important; }
+
+  #boot-check { text-align: center; color: var(--muted); font-size: 14px; padding: 20px 0; }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div id="boot-check">
+    <p class="brand">LGCHEM</p>
+    <p>Loading…</p>
+  </div>
+
+  <!-- Signed-out view -->
+  <div id="auth-view" class="hidden">
+    <p class="brand">LGCHEM</p>
+    <h1 id="form-title">Sign in to your account</h1>
+
+    <div id="msg" class="msg"></div>
+
+    <form id="auth-form">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" autocomplete="current-password" required minlength="6">
+      </div>
+      <button type="submit" class="primary-btn" id="submit-btn">Sign in</button>
+    </form>
+
+    <div class="divider">or</div>
+
+    <button type="button" class="google-btn" id="google-btn">
+      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 18.9 13 24 13c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.5 0-13.9 4.2-17.2 10.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.1-5.1l-6.5-5.5c-2 1.5-4.6 2.5-7.6 2.5-5.3 0-9.7-3.1-11.3-7.6l-6.6 5.1C9.9 39.6 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.5 5.5C41.4 36.4 44 30.7 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+      Continue with Google
+    </button>
+
+    <p class="switch">
+      <span id="switch-text">Don't have an account?</span>
+      <button type="button" id="switch-btn">Create one</button>
+    </p>
+  </div>
+
+  <!-- Signed-in view -->
+  <div id="session-view" class="session hidden">
+    <p class="brand">LGCHEM</p>
+    <h1>You're signed in</h1>
+    <p>Signed in as<br><strong id="user-email"></strong></p>
+    <button class="signout-btn" id="signout-btn">Sign out</button>
+  </div>
+
+</div>
+
+<script>
+  const SUPABASE_URL = "https://gtpujdcpsaugfttmfnbr.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_BQ0YOVPnVPz7tOnYa06K0A_SVLTnssP";
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let mode = "signin"; // or "signup"
+
+  const bootCheck = document.getElementById("boot-check");
+  const authView = document.getElementById("auth-view");
+  const sessionView = document.getElementById("session-view");
+  const form = document.getElementById("auth-form");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const submitBtn = document.getElementById("submit-btn");
+  const formTitle = document.getElementById("form-title");
+  const switchText = document.getElementById("switch-text");
+  const switchBtn = document.getElementById("switch-btn");
+  const googleBtn = document.getElementById("google-btn");
+  const msg = document.getElementById("msg");
+  const userEmail = document.getElementById("user-email");
+  const signoutBtn = document.getElementById("signout-btn");
+
+  function showMsg(text, type) {
+    msg.textContent = text;
+    msg.className = "msg " + type;
+  }
+  function clearMsg() {
+    msg.className = "msg";
+    msg.textContent = "";
+  }
+
+  function setMode(newMode) {
+    mode = newMode;
+    clearMsg();
+    if (mode === "signin") {
+      formTitle.textContent = "Sign in to your account";
+      submitBtn.textContent = "Sign in";
+      switchText.textContent = "Don't have an account?";
+      switchBtn.textContent = "Create one";
+      passwordInput.autocomplete = "current-password";
+    } else {
+      formTitle.textContent = "Create your account";
+      submitBtn.textContent = "Sign up";
+      switchText.textContent = "Already have an account?";
+      switchBtn.textContent = "Sign in";
+      passwordInput.autocomplete = "new-password";
+    }
+  }
+
+  switchBtn.addEventListener("click", () => {
+    setMode(mode === "signin" ? "signup" : "signin");
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearMsg();
+    submitBtn.disabled = true;
+    submitBtn.textContent = mode === "signin" ? "Signing in…" : "Signing up…";
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    try {
+      if (mode === "signin") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        // onAuthStateChange will update the UI
+      } else {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        showMsg("Account created. Check your email to confirm, then sign in.", "ok");
+        setMode("signin");
+      }
+    } catch (err) {
+      showMsg(err.message || "Something went wrong.", "error");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = mode === "signin" ? "Sign in" : "Sign up";
+    }
+  });
+
+  googleBtn.addEventListener("click", async () => {
+    clearMsg();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.href }
+    });
+    if (error) showMsg(error.message, "error");
+  });
+
+  signoutBtn.addEventListener("click", async () => {
+    await supabase.auth.signOut();
+  });
+
+  function renderSession(session) {
+    bootCheck.classList.add("hidden");
+    if (session && session.user) {
+      authView.classList.add("hidden");
+      sessionView.classList.remove("hidden");
+      userEmail.textContent = session.user.email || session.user.id;
+    } else {
+      sessionView.classList.add("hidden");
+      authView.classList.remove("hidden");
+    }
+  }
+
+  supabase.auth.onAuthStateChange((_event, session) => {
+    renderSession(session);
+  });
+
+  supabase.auth.getSession().then(({ data }) => {
+    renderSession(data.session);
+  });
+</script>
+
+</body>
+</html>
