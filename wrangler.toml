@@ -1,7 +1,0 @@
-name = "durbar-post-preview"
-main = "worker.js"
-compatibility_date = "2025-01-01"
-routes = [
-  { pattern = "adarshghimire1.com.np/post/*", zone_name = "adarshghimire1.com.np" },
-  { pattern = "adarshghimire1.com.np/durbar/post/*", zone_name = "adarshghimire1.com.np" }
-]

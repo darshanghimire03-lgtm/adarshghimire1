@@ -1,604 +1,461 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Durbar - Notes</title>
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="apple-touch-icon" href="favicon.png">
-  
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Durbar</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0c1f4a;
+    --muted: #8a96b0;
+    --tint: #e6eefc;
+    --card: #f3f7ff;
+    --line: #dfe6f3;
+  }
 
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #f0f4fa;
-      color: #0b1b33;
-      padding: 2rem 1.5rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      line-height: 1.5;
-      min-height: 100vh;
-    }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 500;
-      font-size: 0.9rem;
-      color: #1e4b7a;
-      text-decoration: none;
-      background: #e9eef4;
-      padding: 0.4rem 1.2rem 0.4rem 1rem;
-      border-radius: 40px;
-      transition: all 0.2s;
-      margin-bottom: 1.5rem;
-    }
-    .back-link:hover {
-      background: #d0dceb;
-      color: #0a2a4a;
-      transform: translateX(-3px);
-    }
-    .back-link i {
-      font-size: 0.9rem;
-    }
+  html, body {
+    background: #ffffff;
+  }
 
-    .page-header {
-      display: flex;
-      align-items: baseline;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      margin-bottom: 2.5rem;
-      border-bottom: 2px solid rgba(0, 40, 80, 0.06);
-      padding-bottom: 1.2rem;
-    }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #111827;
+    max-width: 520px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  }
 
-    .page-header h1 {
-      font-weight: 700;
-      font-size: 2.2rem;
-      letter-spacing: -0.02em;
-      color: #0b2a4a;
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-    }
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: calc(16px + env(safe-area-inset-top)) 16px 14px 16px;
+  }
 
-    .page-header h1 .unit-badge {
-      font-weight: 400;
-      font-size: 0.85rem;
-      color: #42648d;
-      background: #e2eaf3;
-      padding: 0.15rem 1rem;
-      border-radius: 30px;
-      letter-spacing: 0.01em;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
+  .round-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--tint);
+    border: none;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    text-decoration: none;
+  }
 
-    .note-count {
-      background: #dce5f0;
-      border-radius: 30px;
-      padding: 0.15rem 1.2rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: #1f4770;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .note-count i {
-      font-size: 0.8rem;
-    }
+  .round-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 
-    .coming-soon-card {
-      background: white;
-      border-radius: 28px;
-      padding: 4rem 2rem;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
-      border: 1px solid #e5edf5;
-    }
-    .coming-soon-card i {
-      font-size: 3rem;
-      color: #8aaac9;
-      margin-bottom: 1rem;
-    }
-    .coming-soon-card h2 {
-      font-weight: 500;
-      font-size: 1.8rem;
-      color: #3b5b7c;
-      margin-bottom: 0.5rem;
-    }
-    .coming-soon-card p {
-      color: #6d7f94;
-      max-width: 400px;
-      margin: 0 auto;
-    }
+  .page-title {
+    flex: 1;
+    min-width: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-    .notes-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 1.5rem;
-    }
+  .notes-list {
+    padding: 6px 16px 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
 
-    .note-card {
-      background: white;
-      border-radius: 24px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 16px rgba(0, 20, 40, 0.03);
-      border: 1px solid #e6edf6;
-      transition: all 0.25s ease;
-      display: flex;
-      flex-direction: column;
-      height: fit-content;
-    }
-    .note-card:hover {
-      border-color: #b8cfe3;
-      box-shadow: 0 12px 32px rgba(0, 30, 60, 0.07);
-      transform: translateY(-3px);
-    }
+  .note-card {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 20px 20px 20px 20px;
+  }
 
-    .note-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.8rem;
-      margin-bottom: 0.75rem;
-    }
+  .note-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.3;
+    word-break: break-word;
+  }
 
-    .note-number {
-      background: #eef4fa;
-      color: #4b6f92;
-      font-weight: 700;
-      font-size: 0.75rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 12px;
-      min-width: 28px;
-      text-align: center;
-      flex-shrink: 0;
-      margin-top: 0.1rem;
-    }
+  .note-divider {
+    height: 1.5px;
+    background: var(--line);
+    margin: 16px 0 16px 0;
+  }
 
-    .note-title {
-      font-weight: 700;
-      font-size: 1.2rem;
-      letter-spacing: -0.01em;
-      color: #0d2b47;
-      flex: 1;
-      line-height: 1.3;
-    }
+  .note-description {
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: #3a4560;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-bottom: 14px;
+  }
 
-    .note-description {
-      color: #3d5a78;
-      font-size: 0.92rem;
-      padding: 0.5rem 0 0.8rem 0;
-      border-bottom: 1px solid #eef4fa;
-      margin-bottom: 1rem;
-      line-height: 1.5;
-    }
+  .media-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-    .media-section {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin: 0.25rem 0 0.25rem 0;
-    }
+  .media-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-    .media-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
+  .media-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
 
-    .media-label {
-      font-weight: 600;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #5a7d9e;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .media-label i {
-      font-size: 0.8rem;
-      width: 1.1rem;
-      color: #4b7aa0;
-    }
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-    /* ===== PHOTO COLLAGE STYLES ===== */
-    .photo-collage {
-      display: grid;
-      gap: 4px;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #eef4fa;
-      cursor: pointer;
-      transition: all 0.3s;
-      position: relative;
-    }
+  .file-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+  }
 
-    .photo-collage:hover {
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    }
+  .file-row:active {
+    opacity: 0.7;
+  }
 
-    .photo-collage .collage-item {
-      position: relative;
-      overflow: hidden;
-      background: #dce8f2;
-      min-height: 120px;
-    }
+  .file-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #ff7a6b, #e53935);
+  }
 
-    .photo-collage .collage-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s;
-      display: block;
-    }
+  .file-icon.word {
+    background: linear-gradient(135deg, #5b8def, #2a56c6);
+  }
 
-    .photo-collage .collage-item:hover img {
-      transform: scale(1.05);
-    }
+  .file-icon.file {
+    background: linear-gradient(135deg, #8d9bb5, #5d6b88);
+  }
 
-    /* Collage Layouts */
-    .photo-collage.layout-1 {
-      grid-template-columns: 1fr;
-    }
-    .photo-collage.layout-1 .collage-item {
-      min-height: 200px;
-    }
+  .file-icon svg {
+    width: 26px;
+    height: 26px;
+    fill: #ffffff;
+  }
 
-    .photo-collage.layout-2 {
-      grid-template-columns: 1fr 1fr;
-    }
-    .photo-collage.layout-2 .collage-item {
-      min-height: 160px;
-    }
+  .file-info {
+    flex: 1;
+    min-width: 0;
+  }
 
-    .photo-collage.layout-3 {
-      grid-template-columns: 2fr 1fr;
-      grid-template-rows: 1fr 1fr;
-    }
-    .photo-collage.layout-3 .collage-item:first-child {
-      grid-row: 1 / 3;
-      min-height: 240px;
-    }
-    .photo-collage.layout-3 .collage-item:not(:first-child) {
-      min-height: 118px;
-    }
+  .file-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1.3;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
 
-    .photo-collage.layout-4 {
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-    }
-    .photo-collage.layout-4 .collage-item {
-      min-height: 140px;
-    }
+  .file-meta {
+    margin-top: 4px;
+    font-size: 0.92rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-    .photo-collage.layout-5 {
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: auto auto;
-    }
-    .photo-collage.layout-5 .collage-item:first-child {
-      grid-column: 1 / 3;
-      grid-row: 1 / 2;
-      min-height: 160px;
-    }
-    .photo-collage.layout-5 .collage-item:not(:first-child) {
-      min-height: 100px;
-    }
+  .file-meta .dot {
+    font-size: 0.7rem;
+  }
 
-    .photo-collage .photo-count-overlay {
-      position: absolute;
-      bottom: 8px;
-      right: 8px;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 0.2rem 0.8rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
+  .photo-collage {
+    display: grid;
+    gap: 4px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #e3ebf8;
+    cursor: pointer;
+    position: relative;
+  }
 
-    .photo-collage .photo-count-overlay i {
-      font-size: 0.65rem;
-    }
+  .photo-collage .collage-item {
+    position: relative;
+    overflow: hidden;
+    background: #d5e0f3;
+    min-height: 110px;
+  }
 
-    .photo-collage .view-all-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-      font-size: 1.2rem;
-      backdrop-filter: blur(2px);
-      gap: 0.5rem;
-    }
+  .photo-collage .collage-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 
-    .photo-collage .view-all-overlay i {
-      font-size: 1.4rem;
-    }
+  .photo-collage.layout-1 {
+    grid-template-columns: 1fr;
+  }
 
-    /* PDF Card Styles */
-    .pdf-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.6rem;
-    }
+  .photo-collage.layout-1 .collage-item {
+    min-height: 200px;
+  }
 
-    .pdf-card {
-      background: linear-gradient(135deg, #f8fcff 0%, #eef6fe 100%);
-      border-radius: 16px;
-      padding: 0.8rem 1rem;
-      border: 1px solid #dce8f5;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      cursor: pointer;
-    }
-    .pdf-card:hover {
-      border-color: #8ab0d3;
-      background: linear-gradient(135deg, #f5faff 0%, #e3effb 100%);
-      box-shadow: 0 4px 12px rgba(50, 100, 160, 0.08);
-      transform: translateX(3px);
-    }
+  .photo-collage.layout-2 {
+    grid-template-columns: 1fr 1fr;
+  }
 
-    .pdf-icon-wrapper {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 1.3rem;
-      background: white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
+  .photo-collage.layout-2 .collage-item {
+    min-height: 150px;
+  }
 
-    .pdf-icon-wrapper.pdf {
-      color: #d44c4c;
-      background: #fff0f0;
-    }
-    .pdf-icon-wrapper.word {
-      color: #2b5797;
-      background: #e8f0fe;
-    }
-    .pdf-icon-wrapper.file {
-      color: #6b8aa8;
-      background: #f0f5fa;
-    }
+  .photo-collage.layout-3 {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
 
-    .pdf-info {
-      flex: 1;
-      min-width: 0;
-    }
-    .pdf-info .pdf-name {
-      font-weight: 600;
-      font-size: 0.92rem;
-      color: #0d2b47;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      transition: color 0.2s;
-    }
-    .pdf-card:hover .pdf-info .pdf-name {
-      color: #1a5c8a;
-    }
-    .pdf-info .pdf-meta {
-      font-size: 0.7rem;
-      color: #6a89a8;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-top: 0.1rem;
-    }
-    .pdf-info .pdf-meta .dot {
-      color: #b8cee3;
-    }
-    .pdf-info .pdf-meta .badge {
-      background: #e4eefa;
-      padding: 0.05rem 0.6rem;
-      border-radius: 20px;
-      font-weight: 500;
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      color: #4b6f92;
-    }
+  .photo-collage.layout-3 .collage-item:first-child {
+    grid-row: 1 / 3;
+    min-height: 200px;
+  }
 
-    .pdf-open-icon {
-      color: #6a8aa8;
-      font-size: 0.9rem;
-      opacity: 0.5;
-      transition: all 0.2s;
-      flex-shrink: 0;
-    }
-    .pdf-card:hover .pdf-open-icon {
-      opacity: 1;
-      color: #1a5c8a;
-      transform: translateX(2px);
-    }
+  .photo-collage.layout-3 .collage-item:not(:first-child) {
+    min-height: 98px;
+  }
 
-    /* YouTube Cards */
-    .yt-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-    }
-    .yt-card {
-      background: #f1f7fe;
-      border-radius: 16px;
-      padding: 0.5rem 0.8rem 0.5rem 0.5rem;
-      border: 1px solid #d6e4f0;
-      transition: all 0.2s;
-      flex: 1;
-      min-width: 140px;
-      max-width: 220px;
-    }
-    .yt-card:hover {
-      border-color: #8ab0d3;
-      background: #ecf4fd;
-      transform: scale(1.02);
-    }
-    .yt-card a {
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      text-decoration: none;
-      color: #003b6b;
-      font-weight: 500;
-      font-size: 0.85rem;
-    }
-    .yt-card img {
-      width: 80px;
-      height: 50px;
-      object-fit: cover;
-      border-radius: 12px;
-      border: 2px solid white;
-      background: #b7cfe3;
-      flex-shrink: 0;
-    }
-    .yt-badge {
-      background: #003b6b;
-      color: white;
-      font-weight: 600;
-      font-size: 0.55rem;
-      padding: 0.1rem 0.6rem;
-      border-radius: 30px;
-      letter-spacing: 0.03em;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-    .yt-badge i {
-      font-size: 0.5rem;
-    }
-    .yt-card .yt-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-      flex: 1;
-      min-width: 0;
-    }
-    .yt-card .yt-info .yt-label {
-      font-size: 0.65rem;
-      color: #5a7d9e;
-    }
+  .photo-collage.layout-4 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
 
-    @media (max-width: 768px) {
-      body { padding: 1rem; }
-      .page-header h1 { font-size: 1.7rem; }
-      .notes-grid { grid-template-columns: 1fr; }
-      
-      .photo-collage.layout-1 .collage-item { min-height: 160px; }
-      .photo-collage.layout-2 .collage-item { min-height: 130px; }
-      .photo-collage.layout-3 .collage-item:first-child { min-height: 180px; }
-      .photo-collage.layout-3 .collage-item:not(:first-child) { min-height: 90px; }
-      .photo-collage.layout-4 .collage-item { min-height: 110px; }
-      .photo-collage.layout-5 .collage-item:first-child { min-height: 130px; }
-      .photo-collage.layout-5 .collage-item:not(:first-child) { min-height: 80px; }
-      
-      .yt-card { max-width: 100%; }
-      .yt-card img { width: 70px; height: 44px; }
-    }
+  .photo-collage.layout-4 .collage-item {
+    min-height: 110px;
+  }
 
-    @media (max-width: 480px) {
-      .pdf-card { flex-wrap: wrap; padding: 0.7rem; }
-      .pdf-info .pdf-name { white-space: normal; }
-    }
-  </style>
+  .photo-collage.layout-5 {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .photo-collage.layout-5 .collage-item:first-child {
+    grid-column: 1 / 3;
+    grid-row: 1 / 2;
+    min-height: 140px;
+  }
+
+  .photo-collage.layout-5 .collage-item:not(:first-child) {
+    min-height: 86px;
+  }
+
+  .photo-count-overlay {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(12, 31, 74, 0.72);
+    color: #ffffff;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+  }
+
+  .view-all-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(12, 31, 74, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .yt-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .yt-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 8px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .yt-card:active {
+    opacity: 0.7;
+  }
+
+  .yt-thumb {
+    width: 96px;
+    height: 58px;
+    border-radius: 12px;
+    background: #d5e0f3;
+    object-fit: cover;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .yt-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .yt-badge {
+    align-self: flex-start;
+    background: var(--navy);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.62rem;
+    padding: 2px 10px;
+    border-radius: 30px;
+    letter-spacing: 0.04em;
+  }
+
+  .yt-text {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .skeleton {
+    height: 150px;
+    border-radius: 28px;
+    background: linear-gradient(100deg, #f3f7ff 30%, #fafcff 50%, #f3f7ff 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite linear;
+  }
+
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+
+  .empty {
+    display: none;
+    text-align: center;
+    color: var(--muted);
+    padding: 70px 24px;
+  }
+
+  .empty h2 {
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .empty p {
+    font-size: 0.95rem;
+  }
+</style>
 </head>
 <body>
 
-<a id="backLink" class="back-link"><i class="fas fa-arrow-left"></i> Back to Units</a>
+<header class="top-bar">
+  <a class="round-btn" id="backLink" href="index.html#subject" aria-label="Back">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+  </a>
+  <h1 class="page-title" id="unitName">Unit</h1>
+</header>
 
-<div class="page-header">
-  <h1 id="unitName">Unit <span class="unit-badge"><i class="far fa-file-alt"></i> Notes</span></h1>
-  <span id="noteCounter" class="note-count"><i class="far fa-copy"></i> 0 notes</span>
-</div>
-
-<div id="comingSoon" class="coming-soon-card" style="display: none;">
-  <i class="far fa-folder-open"></i>
+<div class="empty" id="comingSoon">
   <h2>No notes yet</h2>
   <p>This unit is still empty. Check back later for new content.</p>
 </div>
 
-<div id="notesList" class="notes-grid"></div>
+<div class="notes-list" id="notesList">
+  <div class="skeleton"></div>
+  <div class="skeleton"></div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
-  (function() {
+  (function () {
     "use strict";
 
-    // --- Helper Functions ---
+    var SVG_NS = "http://www.w3.org/2000/svg";
+    var FILE_PATH = "M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z";
+
     function extensionOf(name) {
-      const dot = name.lastIndexOf(".");
+      var dot = name.lastIndexOf(".");
       if (dot === -1 || dot === name.length - 1) return "";
       return name.substring(dot + 1).toLowerCase();
     }
 
     function getFileType(name) {
-      const ext = extensionOf(name);
+      var ext = extensionOf(name);
       if (ext === "pdf") return "pdf";
       if (ext === "doc" || ext === "docx") return "word";
       return "file";
     }
 
-    function getFileIcon(type) {
-      if (type === "pdf") return '<i class="fas fa-file-pdf"></i>';
-      if (type === "word") return '<i class="fas fa-file-word"></i>';
-      return '<i class="fas fa-file-alt"></i>';
-    }
-
-    function getFileColor(type) {
-      if (type === "pdf") return "pdf";
-      if (type === "word") return "word";
-      return "file";
-    }
-
     function cleanTitle(name) {
-      const ext = extensionOf(name);
+      var ext = extensionOf(name);
       if (!ext) return name;
       if (name.endsWith("." + ext)) return name.slice(0, -(ext.length + 1));
-      const upper = ext.toUpperCase();
+      var upper = ext.toUpperCase();
       if (name.endsWith("." + upper)) return name.slice(0, -(upper.length + 1));
       return name;
     }
 
     function formatFileSize(bytes) {
       if (bytes <= 0) return "0 B";
-      const units = ["B", "KB", "MB", "GB"];
-      let size = bytes;
-      let unitIndex = 0;
+      var units = ["B", "KB", "MB", "GB"];
+      var size = bytes;
+      var unitIndex = 0;
       while (size >= 1024 && unitIndex < units.length - 1) {
         size /= 1024;
         unitIndex++;
@@ -608,278 +465,208 @@
     }
 
     function getFileLabel(name) {
-      const ext = extensionOf(name);
+      var ext = extensionOf(name);
       if (ext === "pdf") return "PDF";
       if (ext === "doc" || ext === "docx") return "DOC";
       return "FILE";
     }
 
-    const YT_ID_PATTERN = /(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    var YT_ID_PATTERN = /(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+
     function extractVideoId(url) {
-      const m = YT_ID_PATTERN.exec(url || "");
+      var m = YT_ID_PATTERN.exec(url || "");
       return m ? m[1] : null;
     }
+
     function youtubeThumbUrl(videoId) {
       return "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
     }
 
-    // --- DOM References ---
-    const listEl = document.getElementById("notesList");
-    const comingSoonEl = document.getElementById("comingSoon");
-    const unitNameEl = document.getElementById("unitName");
-    const noteCounter = document.getElementById("noteCounter");
-    const backLink = document.getElementById("backLink");
+    function el(tag, className, text) {
+      var node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
 
-    // --- Get Query Parameters ---
-    const unitId = qs("unitId") || "";
-    let unitName = qs("unitName") ? decodeURIComponent(qs("unitName")) : "Unit";
-    const subjectName = qs("subjectName") ? decodeURIComponent(qs("subjectName")) : "";
-    const subjectKey = qs("subjectKey") || sanitizeKey(subjectName.toLowerCase().replaceAll(" ", "_"));
+    function fileIconSvg() {
+      var s = document.createElementNS(SVG_NS, "svg");
+      s.setAttribute("viewBox", "0 0 24 24");
+      var p = document.createElementNS(SVG_NS, "path");
+      p.setAttribute("d", FILE_PATH);
+      s.appendChild(p);
+      return s;
+    }
 
-    // --- Update UI ---
-    unitNameEl.innerHTML = unitName + ' <span class="unit-badge"><i class="far fa-file-alt"></i> Notes</span>';
-    document.title = "Durbar · " + unitName;
+    var listEl = document.getElementById("notesList");
+    var comingSoonEl = document.getElementById("comingSoon");
+    var unitNameEl = document.getElementById("unitName");
+    var backLink = document.getElementById("backLink");
+
+    var unitId = qs("unitId") || "";
+    var unitName = qs("unitName") ? decodeURIComponent(qs("unitName")) : "Unit";
+    var subjectName = qs("subjectName") ? decodeURIComponent(qs("subjectName")) : "";
+    var subjectKey = qs("subjectKey") || sanitizeKey(subjectName.toLowerCase().replaceAll(" ", "_"));
+
+    unitNameEl.textContent = unitName;
+    document.title = "Durbar \u00B7 " + unitName;
 
     backLink.href = "unit.html?subjectName=" + encodeURIComponent(subjectName) +
                     "&subjectKey=" + encodeURIComponent(subjectKey);
 
-    // --- PHOTO COLLAGE RENDERER ---
     function renderPhotoCollage(container, photos, noteId, position) {
       if (!photos || photos.length === 0) return;
 
-      const count = photos.length;
-      let layoutClass = 'layout-1';
-      if (count === 2) layoutClass = 'layout-2';
-      else if (count === 3) layoutClass = 'layout-3';
-      else if (count === 4) layoutClass = 'layout-4';
-      else if (count >= 5) layoutClass = 'layout-5';
+      var count = photos.length;
+      var layoutClass = "layout-1";
+      if (count === 2) layoutClass = "layout-2";
+      else if (count === 3) layoutClass = "layout-3";
+      else if (count === 4) layoutClass = "layout-4";
+      else if (count >= 5) layoutClass = "layout-5";
 
-      const collage = document.createElement('div');
-      collage.className = 'photo-collage ' + layoutClass;
+      var collage = el("div", "photo-collage " + layoutClass);
 
-      // Build URL for photo.html
-      const photoUrls = photos.map(p => encodeURIComponent(p.url)).join('||');
-      const photoPageUrl = 'photo.html?photos=' + photoUrls + 
-                          '&note=' + encodeURIComponent(noteId || '') +
-                          '&position=' + position;
+      var photoUrls = photos.map(function (p) {
+        return encodeURIComponent(p.url);
+      }).join("||");
+      var photoPageUrl = "photo.html?photos=" + photoUrls +
+                         "&note=" + encodeURIComponent(noteId || "") +
+                         "&position=" + position;
 
-      collage.addEventListener('click', function() {
+      collage.addEventListener("click", function () {
         window.location.href = photoPageUrl;
       });
 
-      // Determine how many to show
-      const displayCount = Math.min(count, 5);
-      const remaining = count - 5;
+      var displayCount = Math.min(count, 5);
+      var remaining = count - 5;
 
-      for (let i = 0; i < displayCount; i++) {
-        const item = document.createElement('div');
-        item.className = 'collage-item';
-        const img = document.createElement('img');
+      for (var i = 0; i < displayCount; i++) {
+        var item = el("div", "collage-item");
+        var img = document.createElement("img");
         img.src = photos[i].url;
-        img.alt = 'Photo ' + (i + 1);
-        img.loading = 'lazy';
+        img.alt = "Photo " + (i + 1);
+        img.loading = "lazy";
         item.appendChild(img);
 
-        // If this is the last visible item and there are more photos
         if (i === 4 && remaining > 0) {
-          const overlay = document.createElement('div');
-          overlay.className = 'view-all-overlay';
-          overlay.innerHTML = '<i class="fas fa-plus-circle"></i> ' + remaining + ' more';
-          item.appendChild(overlay);
-          item.style.position = 'relative';
+          item.appendChild(el("div", "view-all-overlay", "+" + remaining + " more"));
         }
 
         collage.appendChild(item);
       }
 
-      // Add photo count badge
-      const badge = document.createElement('div');
-      badge.className = 'photo-count-overlay';
-      badge.innerHTML = '<i class="fas fa-camera"></i> ' + count + ' photos';
-      collage.appendChild(badge);
-
+      collage.appendChild(el("div", "photo-count-overlay", count + (count === 1 ? " photo" : " photos")));
       container.appendChild(collage);
     }
 
-    // --- PDF RENDERER ---
     function renderPdfs(container, pdfs) {
       if (!pdfs || pdfs.length === 0) return;
-      const grid = document.createElement("div");
-      grid.className = "pdf-grid";
+      var list = el("div", "file-list");
 
-      pdfs.forEach(pdf => {
-        const rawName = pdf.name || "document.pdf";
-        const type = getFileType(rawName);
-        const colorClass = getFileColor(type);
-        const iconHtml = getFileIcon(type);
-        const sizeText = pdf.sizeBytes > 0 ? formatFileSize(pdf.sizeBytes) : null;
-        const label = getFileLabel(rawName);
-        const cleanName = cleanTitle(rawName);
+      pdfs.forEach(function (pdf) {
+        var rawName = pdf.name || "document.pdf";
+        var type = getFileType(rawName);
+        var sizeText = pdf.sizeBytes > 0 ? formatFileSize(pdf.sizeBytes) : null;
+        var label = getFileLabel(rawName);
 
-        const card = document.createElement("div");
-        card.className = "pdf-card";
-
-        card.addEventListener("click", function(e) {
+        var row = el("div", "file-row");
+        row.addEventListener("click", function (e) {
           e.stopPropagation();
-          const viewerUrl = "pdf.html?url=" + encodeURIComponent(pdf.url) +
-                            "&name=" + encodeURIComponent(rawName) +
-                            "&size=" + encodeURIComponent(sizeText || "—") +
-                            "&return=" + encodeURIComponent(window.location.pathname + window.location.search);
+          var viewerUrl = "pdf.html?url=" + encodeURIComponent(pdf.url) +
+                          "&name=" + encodeURIComponent(rawName) +
+                          "&size=" + encodeURIComponent(sizeText || "\u2014") +
+                          "&return=" + encodeURIComponent(window.location.pathname + window.location.search);
           window.location.href = viewerUrl;
         });
 
-        const iconWrapper = document.createElement("div");
-        iconWrapper.className = "pdf-icon-wrapper " + colorClass;
-        iconWrapper.innerHTML = iconHtml;
+        var icon = el("div", "file-icon " + type);
+        icon.appendChild(fileIconSvg());
 
-        const info = document.createElement("div");
-        info.className = "pdf-info";
+        var info = el("div", "file-info");
+        info.appendChild(el("div", "file-name", cleanTitle(rawName)));
 
-        const nameSpan = document.createElement("span");
-        nameSpan.className = "pdf-name";
-        nameSpan.textContent = cleanName;
-
-        const meta = document.createElement("div");
-        meta.className = "pdf-meta";
+        var meta = el("div", "file-meta");
         if (sizeText) {
-          const sizeSpan = document.createElement("span");
-          sizeSpan.textContent = sizeText;
-          meta.appendChild(sizeSpan);
-          const dot = document.createElement("span");
-          dot.className = "dot";
-          dot.textContent = "•";
-          meta.appendChild(dot);
+          meta.appendChild(el("span", "", sizeText));
+          meta.appendChild(el("span", "dot", "\u2022"));
         }
-        const badge = document.createElement("span");
-        badge.className = "badge";
-        badge.textContent = label;
-        meta.appendChild(badge);
-
-        info.appendChild(nameSpan);
+        meta.appendChild(el("span", "", label));
         info.appendChild(meta);
 
-        const openIcon = document.createElement("span");
-        openIcon.className = "pdf-open-icon";
-        openIcon.innerHTML = '<i class="fas fa-eye"></i>';
-
-        card.appendChild(iconWrapper);
-        card.appendChild(info);
-        card.appendChild(openIcon);
-        grid.appendChild(card);
+        row.appendChild(icon);
+        row.appendChild(info);
+        list.appendChild(row);
       });
-      container.appendChild(grid);
+
+      container.appendChild(list);
     }
 
-    // --- YOUTUBE RENDERER ---
     function renderYoutubeLinks(container, links) {
       if (!links || links.length === 0) return;
-      const grid = document.createElement("div");
-      grid.className = "yt-grid";
+      var list = el("div", "yt-list");
 
-      links.forEach(yt => {
-        const videoId = yt.videoId || extractVideoId(yt.url) || "";
-        const badge = yt.videoNumber > 0 ? ("VIDEO " + yt.videoNumber) : "VIDEO";
+      links.forEach(function (yt) {
+        var videoId = yt.videoId || extractVideoId(yt.url) || "";
+        var badge = yt.videoNumber > 0 ? ("VIDEO " + yt.videoNumber) : "VIDEO";
 
-        const card = document.createElement("div");
-        card.className = "yt-card";
-
-        const a = document.createElement("a");
+        var a = el("a", "yt-card");
         a.href = videoId ? ("https://www.youtube.com/watch?v=" + videoId) : yt.url;
         a.target = "_blank";
+        a.rel = "noopener noreferrer";
 
         if (videoId) {
-          const img = document.createElement("img");
+          var img = el("img", "yt-thumb");
           img.src = youtubeThumbUrl(videoId);
           img.alt = "youtube thumbnail";
           img.loading = "lazy";
           a.appendChild(img);
         }
 
-        const info = document.createElement("div");
-        info.className = "yt-info";
-
-        const label = document.createElement("span");
-        label.className = "yt-badge";
-        label.innerHTML = '<i class="fas fa-play"></i> ' + badge;
-
-        const title = document.createElement("span");
-        title.style.fontSize = "0.75rem";
-        title.style.color = "#3d5a78";
-        title.textContent = "Watch video";
-
-        info.appendChild(label);
-        info.appendChild(title);
+        var info = el("div", "yt-info");
+        info.appendChild(el("span", "yt-badge", badge));
+        info.appendChild(el("span", "yt-text", "Watch video"));
         a.appendChild(info);
-        card.appendChild(a);
-        grid.appendChild(card);
+
+        list.appendChild(a);
       });
-      container.appendChild(grid);
+
+      container.appendChild(list);
     }
 
-    // --- NOTE RENDERER ---
+    function mediaGroup(labelText) {
+      var group = el("div", "media-group");
+      if (labelText) group.appendChild(el("span", "media-label", labelText));
+      return group;
+    }
+
     function renderNote(note, position) {
-      const card = document.createElement("div");
-      card.className = "note-card";
+      var card = el("div", "note-card");
 
-      const header = document.createElement("div");
-      header.className = "note-header";
-
-      const num = document.createElement("span");
-      num.className = "note-number";
-      num.textContent = position + 1;
-
-      const title = document.createElement("div");
-      title.className = "note-title";
-      title.textContent = note.title || "Untitled";
-
-      header.appendChild(num);
-      header.appendChild(title);
-      card.appendChild(header);
+      card.appendChild(el("div", "note-title", (position + 1) + ". " + (note.title || "Untitled")));
+      card.appendChild(el("div", "note-divider"));
 
       if (note.description && note.description.trim() !== "") {
-        const desc = document.createElement("div");
-        desc.className = "note-description";
-        desc.textContent = note.description;
-        card.appendChild(desc);
+        card.appendChild(el("div", "note-description", note.description));
       }
 
-      const mediaSection = document.createElement("div");
-      mediaSection.className = "media-section";
+      var mediaSection = el("div", "media-section");
 
-      // Photos - Now in collage format
       if (note.photos && note.photos.length > 0) {
-        const group = document.createElement("div");
-        group.className = "media-group";
-        const label = document.createElement("span");
-        label.className = "media-label";
-        label.innerHTML = '<i class="fas fa-images"></i> Photos';
-        group.appendChild(label);
-        renderPhotoCollage(group, note.photos, note.id, position);
-        mediaSection.appendChild(group);
+        var photoGroup = mediaGroup("Photos");
+        renderPhotoCollage(photoGroup, note.photos, note.id, position);
+        mediaSection.appendChild(photoGroup);
       }
 
-      // YouTube
       if (note.youtubeLinks && note.youtubeLinks.length > 0) {
-        const group = document.createElement("div");
-        group.className = "media-group";
-        const label = document.createElement("span");
-        label.className = "media-label";
-        label.innerHTML = '<i class="fas fa-video"></i> Videos';
-        group.appendChild(label);
-        renderYoutubeLinks(group, note.youtubeLinks);
-        mediaSection.appendChild(group);
+        var videoGroup = mediaGroup("Videos");
+        renderYoutubeLinks(videoGroup, note.youtubeLinks);
+        mediaSection.appendChild(videoGroup);
       }
 
-      // PDFs
       if (note.pdfs && note.pdfs.length > 0) {
-        const group = document.createElement("div");
-        group.className = "media-group";
-        const label = document.createElement("span");
-        label.className = "media-label";
-        label.innerHTML = '<i class="fas fa-file-pdf"></i> Documents';
-        group.appendChild(label);
-        renderPdfs(group, note.pdfs);
-        mediaSection.appendChild(group);
+        var pdfGroup = mediaGroup("");
+        renderPdfs(pdfGroup, note.pdfs);
+        mediaSection.appendChild(pdfGroup);
       }
 
       if (mediaSection.children.length > 0) {
@@ -891,20 +678,20 @@
 
     function updateEmptyState(hasNotes) {
       listEl.style.display = hasNotes ? "" : "none";
-      comingSoonEl.style.display = hasNotes ? "none" : "";
-      noteCounter.innerHTML = hasNotes ? '<i class="far fa-copy"></i> ' + listEl.children.length + ' notes' : '<i class="far fa-copy"></i> 0 notes';
+      comingSoonEl.style.display = hasNotes ? "none" : "block";
     }
 
-    // --- Load Data from Firebase ---
     notesRef(subjectKey, unitId).once("value")
-      .then(snapshot => {
-        const notes = [];
-        snapshot.forEach(child => {
-          const noteData = child.val();
+      .then(function (snapshot) {
+        var notes = [];
+        snapshot.forEach(function (child) {
+          var noteData = child.val();
           noteData.id = child.key;
           notes.push(noteData);
         });
-        notes.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        notes.sort(function (a, b) {
+          return (a.createdAt || 0) - (b.createdAt || 0);
+        });
 
         listEl.innerHTML = "";
         if (notes.length === 0) {
@@ -912,16 +699,16 @@
           return;
         }
 
-        notes.forEach((note, position) => {
+        notes.forEach(function (note, position) {
           listEl.appendChild(renderNote(note, position));
         });
         updateEmptyState(true);
       })
-      .catch(err => {
+      .catch(function (err) {
         console.error("loadNotes cancelled: " + err.message);
+        listEl.innerHTML = "";
         updateEmptyState(false);
       });
-
   })();
 </script>
 

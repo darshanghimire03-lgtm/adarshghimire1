@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#dde9fb">
+<title>Login · Durbar</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0c1f4a;
+    --blue: #3d7be4;
+    --blue-dark: #2f66c9;
+    --muted: #8a96b0;
+    --field-bg: #f6f9ff;
+    --field-line: #d6e2f5;
+    --icon-box: #e3ecfb;
+    --hero: #dde9fb;
+    --error: #d93636;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    background: #f8fbff;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #111827;
+    max-width: 520px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero {
+    position: relative;
+    height: 310px;
+    flex-shrink: 0;
+  }
+
+  .hero svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .hero-text {
+    position: absolute;
+    left: 43px;
+    right: 24px;
+    top: 160px;
+  }
+
+  .hero-text h1 {
+    font-size: 2.75rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .hero-text p {
+    margin-top: 8px;
+    font-size: 1.05rem;
+    color: var(--muted);
+  }
+
+  .form {
+    margin: 43px 29px 0 29px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .field {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 56px;
+    padding: 0 12px 0 9px;
+    background: var(--field-bg);
+    border: 2px solid var(--field-line);
+    border-radius: 999px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .field:focus-within {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(61, 123, 228, 0.15);
+  }
+
+  .field.invalid {
+    border-color: var(--error);
+  }
+
+  .field-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--icon-box);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .field-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--blue);
+  }
+
+  .field input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 1.1rem;
+    color: var(--navy);
+  }
+
+  .field input::placeholder {
+    color: var(--muted);
+  }
+
+  .eye-btn {
+    border: none;
+    background: transparent;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .eye-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: #6b7a99;
+  }
+
+  .error {
+    display: none;
+    color: var(--error);
+    font-size: 0.92rem;
+    font-weight: 500;
+    text-align: center;
+    margin-top: -6px;
+  }
+
+  .error.visible {
+    display: block;
+  }
+
+  .login-btn {
+    height: 54px;
+    border: none;
+    border-radius: 999px;
+    background: var(--blue);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(61, 123, 228, 0.3);
+    transition: background 0.2s ease, transform 0.1s ease, opacity 0.2s ease;
+  }
+
+  .login-btn:active {
+    transform: scale(0.985);
+    background: var(--blue-dark);
+  }
+
+  .login-btn:disabled {
+    opacity: 0.7;
+    cursor: default;
+  }
+
+  .login-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke: #ffffff;
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #ffffff;
+    animation: spin 0.8s linear infinite;
+    display: none;
+  }
+
+  .login-btn.loading .spinner {
+    display: block;
+  }
+
+  .login-btn.loading svg {
+    display: none;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .footer {
+    margin-top: auto;
+    padding: 40px 0 calc(28px + env(safe-area-inset-bottom)) 0;
+    text-align: center;
+    font-size: 1.05rem;
+    color: var(--muted);
+  }
+
+  .footer strong {
+    color: var(--blue);
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <svg viewBox="0 0 412 310" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 0H412V214C350 262 260 308 160 308C90 308 35 285 0 259Z" fill="#dde9fb"/>
+  </svg>
+  <div class="hero-text">
+    <h1>Login</h1>
+    <p>Access your account to continue</p>
+  </div>
+</div>
+
+<form class="form" id="loginForm" novalidate>
+  <div class="field" id="emailField">
+    <span class="field-icon">
+      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+    </span>
+    <input type="email" id="email" placeholder="Email address" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false">
+  </div>
+
+  <div class="field" id="passwordField">
+    <span class="field-icon">
+      <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+    </span>
+    <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+    <button type="button" class="eye-btn" id="eyeBtn" aria-label="Show password">
+      <svg viewBox="0 0 24 24" id="eyeIcon"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>
+    </button>
+  </div>
+
+  <div class="error" id="errorBox" role="alert"></div>
+
+  <button type="submit" class="login-btn" id="loginBtn">
+    <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    <span class="spinner"></span>
+    <span id="loginLabel">Login</span>
+  </button>
+</form>
+
+<div class="footer">Powered by <strong>Doroi</strong></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  (function () {
+    var EYE_OFF = "M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z";
+    var EYE_ON = "M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z";
+
+    var form = document.getElementById("loginForm");
+    var emailInput = document.getElementById("email");
+    var passwordInput = document.getElementById("password");
+    var emailField = document.getElementById("emailField");
+    var passwordField = document.getElementById("passwordField");
+    var errorBox = document.getElementById("errorBox");
+    var loginBtn = document.getElementById("loginBtn");
+    var loginLabel = document.getElementById("loginLabel");
+    var eyeBtn = document.getElementById("eyeBtn");
+    var eyeIcon = document.getElementById("eyeIcon");
+
+    var next = new URLSearchParams(location.search).get("next") || "index.html";
+    if (!/^[A-Za-z0-9_\-]+\.html([?#].*)?$/.test(next)) {
+      next = "index.html";
+    }
+
+    auth.onAuthStateChanged(function (user) {
+      if (user) {
+        location.replace(next);
+      }
+    });
+
+    eyeBtn.addEventListener("click", function () {
+      var showing = passwordInput.type === "text";
+      passwordInput.type = showing ? "password" : "text";
+      eyeIcon.firstElementChild.setAttribute("d", showing ? EYE_OFF : EYE_ON);
+      eyeBtn.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+      passwordInput.focus();
+    });
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.classList.add("visible");
+    }
+
+    function clearError() {
+      errorBox.textContent = "";
+      errorBox.classList.remove("visible");
+      emailField.classList.remove("invalid");
+      passwordField.classList.remove("invalid");
+    }
+
+    function setLoading(isLoading) {
+      loginBtn.disabled = isLoading;
+      loginBtn.classList.toggle("loading", isLoading);
+      loginLabel.textContent = isLoading ? "Signing in..." : "Login";
+    }
+
+    function messageFor(code) {
+      switch (code) {
+        case "auth/invalid-email":
+          return "Please enter a valid email address.";
+        case "auth/user-disabled":
+          return "This account has been disabled.";
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+        case "auth/invalid-credential":
+        case "auth/invalid-login-credentials":
+          return "Incorrect email or password.";
+        case "auth/too-many-requests":
+          return "Too many attempts. Please try again later.";
+        case "auth/network-request-failed":
+          return "Network error. Check your connection and try again.";
+        default:
+          return "Login failed. Please try again.";
+      }
+    }
+
+    emailInput.addEventListener("input", clearError);
+    passwordInput.addEventListener("input", clearError);
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      clearError();
+
+      var email = emailInput.value.trim();
+      var password = passwordInput.value;
+
+      if (!email) {
+        emailField.classList.add("invalid");
+        showError("Please enter your email address.");
+        emailInput.focus();
+        return;
+      }
+
+      if (!password) {
+        passwordField.classList.add("invalid");
+        showError("Please enter your password.");
+        passwordInput.focus();
+        return;
+      }
+
+      setLoading(true);
+
+      auth.signInWithEmailAndPassword(email, password).catch(function (err) {
+        setLoading(false);
+        emailField.classList.add("invalid");
+        passwordField.classList.add("invalid");
+        showError(messageFor(err && err.code));
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

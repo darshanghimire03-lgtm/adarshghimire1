@@ -1,379 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Durbar - Units</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Durbar</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0c1f4a;
+    --muted: #8a96b0;
+    --tint: #e6eefc;
+    --tint-line: #d3dff5;
+    --card: #f3f7ff;
+    --icon-box: #e8f0fd;
+  }
 
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #f0f4fa;
-      color: #0b1b33;
-      padding: 2rem 1.5rem;
-      max-width: 950px;
-      margin: 0 auto;
-      line-height: 1.5;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 500;
-      font-size: 0.9rem;
-      color: #1e4b7a;
-      text-decoration: none;
-      background: #e9eef4;
-      padding: 0.4rem 1.2rem 0.4rem 1rem;
-      border-radius: 40px;
-      transition: all 0.2s;
-      margin-bottom: 1.5rem;
-      width: fit-content;
-    }
-    .back-link:hover {
-      background: #d0dceb;
-      color: #0a2a4a;
-      transform: translateX(-3px);
-    }
-    .back-link i {
-      font-size: 0.9rem;
-    }
+  html, body {
+    background: #ffffff;
+  }
 
-    .page-header {
-      display: flex;
-      align-items: baseline;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      margin-bottom: 2.5rem;
-      border-bottom: 2px solid rgba(0, 40, 80, 0.06);
-      padding-bottom: 1.2rem;
-    }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #111827;
+    max-width: 520px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  }
 
-    .page-header .header-left {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: calc(16px + env(safe-area-inset-top)) 16px 14px 16px;
+  }
 
-    .page-header .subject-icon-large {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      flex-shrink: 0;
-      background: #e9f0f8;
-      color: #1e4b7a;
-    }
+  .round-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--tint);
+    border: none;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    text-decoration: none;
+  }
 
-    .page-header .subject-icon-large.economic {
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
-    .page-header .subject-icon-large.account {
-      background: #e3f2fd;
-      color: #1565c0;
-    }
-    .page-header .subject-icon-large.computer {
-      background: #f3e5f5;
-      color: #6a1b9a;
-    }
-    .page-header .subject-icon-large.english {
-      background: #fce4ec;
-      color: #c62828;
-    }
-    .page-header .subject-icon-large.nepali {
-      background: #fff3e0;
-      color: #e65100;
-    }
-    .page-header .subject-icon-large.default {
-      background: #e9f0f8;
-      color: #1e4b7a;
-    }
+  .round-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 
-    .page-header h1 {
-      font-weight: 700;
-      font-size: 2.2rem;
-      letter-spacing: -0.02em;
-      color: #0b2a4a;
-    }
+  .round-btn svg.dots {
+    fill: currentColor;
+    stroke: none;
+  }
 
-    .page-header h1 .subject-badge {
-      font-weight: 400;
-      font-size: 0.85rem;
-      color: #42648d;
-      background: #e2eaf3;
-      padding: 0.15rem 1rem;
-      border-radius: 30px;
-      letter-spacing: 0.01em;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-left: 0.5rem;
-    }
+  .page-title {
+    flex: 1;
+    min-width: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-    .unit-count {
-      background: #dce5f0;
-      border-radius: 30px;
-      padding: 0.15rem 1.2rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: #1f4770;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .unit-count i {
-      font-size: 0.8rem;
-    }
+  .unit-list {
+    list-style: none;
+    padding: 6px 20px 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 
-    .coming-soon-card {
-      background: white;
-      border-radius: 28px;
-      padding: 4rem 2rem;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
-      border: 1px solid #e5edf5;
-    }
-    .coming-soon-card i {
-      font-size: 3rem;
-      color: #8aaac9;
-      margin-bottom: 1rem;
-    }
-    .coming-soon-card h2 {
-      font-weight: 500;
-      font-size: 1.8rem;
-      color: #3b5b7c;
-      margin-bottom: 0.5rem;
-    }
-    .coming-soon-card p {
-      color: #6d7f94;
-      max-width: 400px;
-      margin: 0 auto;
-    }
+  .unit-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--card);
+    border-radius: 30px;
+    padding: 16px 16px 16px 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
 
-    .unit-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-    }
+  .unit-card:active {
+    transform: scale(0.985);
+    background: #eaf1fd;
+  }
 
-    .unit-item {
-      background: white;
-      border-radius: 18px;
-      padding: 0.9rem 1.5rem;
-      border: 1px solid #e6edf6;
-      transition: all 0.25s ease;
-      box-shadow: 0 2px 6px rgba(0, 20, 40, 0.02);
-    }
+  .unit-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: var(--icon-box);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
 
-    .unit-item:hover {
-      border-color: #b8cfe3;
-      box-shadow: 0 6px 20px rgba(0, 30, 60, 0.06);
-      transform: translateX(4px);
-    }
+  .unit-icon svg {
+    width: 26px;
+    height: 26px;
+    stroke: #1a2a7a;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 
-    .unit-item a {
-      text-decoration: none;
-      color: #0d2b47;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      font-weight: 500;
-      font-size: 1.05rem;
-    }
+  .unit-info {
+    flex: 1;
+    min-width: 0;
+  }
 
-    .unit-item .unit-left {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      min-width: 0;
-      flex: 1;
-    }
+  .unit-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-    .unit-item .unit-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: #eef4fa;
-      color: #4b6f92;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
+  .unit-count {
+    margin-top: 3px;
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
 
-    .unit-item:hover .unit-icon {
-      background: #dce8f2;
-      color: #1e4b7a;
-      transform: scale(1.05);
-    }
+  .chevron {
+    width: 20px;
+    height: 20px;
+    stroke: #6b7a99;
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+    margin-right: 4px;
+  }
 
-    .unit-item .unit-name {
-      flex: 1;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+  .skeleton {
+    height: 84px;
+    border-radius: 30px;
+    background: linear-gradient(100deg, #f3f7ff 30%, #fafcff 50%, #f3f7ff 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite linear;
+  }
 
-    .unit-item .unit-meta {
-      font-weight: 400;
-      font-size: 0.78rem;
-      color: #5e7d9c;
-      background: #eef4fa;
-      padding: 0.15rem 1rem;
-      border-radius: 30px;
-      letter-spacing: 0.01em;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      white-space: nowrap;
-    }
-    .unit-item .unit-meta i {
-      font-size: 0.65rem;
-    }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
 
-    .unit-item .arrow-icon {
-      color: #7a9ab8;
-      font-size: 1rem;
-      opacity: 0.3;
-      transition: all 0.3s;
-      flex-shrink: 0;
-    }
+  .empty {
+    display: none;
+    text-align: center;
+    color: var(--muted);
+    padding: 70px 24px;
+  }
 
-    .unit-item:hover .arrow-icon {
-      opacity: 1;
-      transform: translateX(4px);
-      color: #1e4b7a;
-    }
+  .empty h2 {
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
 
-    /* Loading skeleton */
-    .skeleton {
-      background: linear-gradient(90deg, #eef4fa 25%, #f5f8fc 50%, #eef4fa 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 12px;
-      height: 60px;
-      margin-bottom: 0.9rem;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    @media (max-width: 640px) {
-      body { padding: 1rem; }
-      .page-header h1 { font-size: 1.7rem; }
-      .page-header .subject-icon-large { width: 40px; height: 40px; font-size: 1.2rem; }
-      .unit-item { padding: 0.8rem 1rem; }
-      .unit-item a { font-size: 0.95rem; }
-      .unit-item .unit-name { white-space: normal; }
-      .unit-item .unit-meta { font-size: 0.7rem; padding: 0.1rem 0.7rem; }
-    }
-  </style>
+  .empty p {
+    font-size: 0.95rem;
+  }
+</style>
 </head>
 <body>
 
-<a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Subjects</a>
+<header class="top-bar">
+  <a class="round-btn" id="backLink" href="index.html#subject" aria-label="Back">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+  </a>
+  <h1 class="page-title" id="subjectName">Subject</h1>
+  <button class="round-btn" type="button" aria-label="More">
+    <svg class="dots" viewBox="0 0 24 24">
+      <circle cx="12" cy="5" r="2"/>
+      <circle cx="12" cy="12" r="2"/>
+      <circle cx="12" cy="19" r="2"/>
+    </svg>
+  </button>
+</header>
 
-<div class="page-header">
-  <div class="header-left">
-    <div id="subjectIcon" class="subject-icon-large default">
-      <i class="fas fa-folder"></i>
-    </div>
-    <h1 id="subjectName">
-      Subject
-      <span class="subject-badge"><i class="fas fa-layer-group"></i> Units</span>
-    </h1>
-  </div>
-  <span id="unitCounter" class="unit-count"><i class="fas fa-cubes"></i> 0 units</span>
-</div>
-
-<div id="comingSoon" class="coming-soon-card" style="display: none;">
-  <i class="fas fa-inbox"></i>
+<div class="empty" id="comingSoon">
   <h2>No units yet</h2>
   <p>This subject is still empty. Check back later for new content.</p>
 </div>
 
-<ul id="unitList" class="unit-list">
-  <!-- Skeleton loaders -->
-  <div class="skeleton"></div>
-  <div class="skeleton"></div>
-  <div class="skeleton"></div>
+<ul class="unit-list" id="unitList">
+  <li class="skeleton"></li>
+  <li class="skeleton"></li>
+  <li class="skeleton"></li>
 </ul>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
-  (function() {
-    const listEl = document.getElementById("unitList");
-    const comingSoonEl = document.getElementById("comingSoon");
-    const subjectNameEl = document.getElementById("subjectName");
-    const unitCounter = document.getElementById("unitCounter");
-    const subjectIconEl = document.getElementById("subjectIcon");
+  (function () {
+    var SVG_NS = "http://www.w3.org/2000/svg";
+    var BOOK_PATH = "M4 5.5A1.5 1.5 0 0 1 5.5 4H9v15H5.5A1.5 1.5 0 0 1 4 17.5v-12zM9 4h6v15H9zM15 4h3.5A1.5 1.5 0 0 1 20 5.5v12a1.5 1.5 0 0 1-1.5 1.5H15zM9.8 19v1.8M14.2 19v1.8";
+    var CHEVRON_PATH = "M9 5l7 7-7 7";
 
-    const subjectName = qs("subjectName") ? decodeURIComponent(qs("subjectName")) : "Subject";
-    const subjectKeyFromLink = qs("subjectKey");
-    const subjectKey = subjectKeyFromLink || sanitizeKey(subjectName);
+    var listEl = document.getElementById("unitList");
+    var comingSoonEl = document.getElementById("comingSoon");
+    var subjectNameEl = document.getElementById("subjectName");
 
-    // Subject icon mapping
-    const iconMap = {
-      "Economic": { icon: "fa-chart-line", color: "economic" },
-      "Account": { icon: "fa-calculator", color: "account" },
-      "Computer Science": { icon: "fa-laptop-code", color: "computer" },
-      "English": { icon: "fa-book", color: "english" },
-      "Nepali": { icon: "fa-flag", color: "nepali" }
-    };
+    var subjectName = qs("subjectName") ? decodeURIComponent(qs("subjectName")) : "Subject";
+    var subjectKeyFromLink = qs("subjectKey");
+    var subjectKey = subjectKeyFromLink || sanitizeKey(subjectName);
 
-    const style = iconMap[subjectName] || { icon: "fa-folder", color: "default" };
-    subjectIconEl.className = "subject-icon-large " + style.color;
-    subjectIconEl.innerHTML = '<i class="fas ' + style.icon + '"></i>';
+    subjectNameEl.textContent = subjectName;
+    document.title = "Durbar \u00B7 " + subjectName;
 
-    subjectNameEl.innerHTML = subjectName + 
-      ' <span class="subject-badge"><i class="fas fa-layer-group"></i> Units</span>';
-    document.title = "Durbar · " + subjectName;
+    function svgIcon(d, className) {
+      var s = document.createElementNS(SVG_NS, "svg");
+      s.setAttribute("viewBox", "0 0 24 24");
+      if (className) s.setAttribute("class", className);
+      var p = document.createElementNS(SVG_NS, "path");
+      p.setAttribute("d", d);
+      s.appendChild(p);
+      return s;
+    }
+
+    function clearSkeletons() {
+      var skeletons = listEl.querySelectorAll(".skeleton");
+      skeletons.forEach(function (s) {
+        s.remove();
+      });
+    }
 
     function updateEmptyState(hasUnits) {
       listEl.style.display = hasUnits ? "" : "none";
-      comingSoonEl.style.display = hasUnits ? "none" : "";
-      unitCounter.innerHTML = hasUnits ? 
-        '<i class="fas fa-cubes"></i> ' + listEl.children.length + ' units' : 
-        '<i class="fas fa-cubes"></i> 0 units';
+      comingSoonEl.style.display = hasUnits ? "none" : "block";
     }
 
-    // Remove skeletons
-    function clearSkeletons() {
-      const skeletons = listEl.querySelectorAll('.skeleton');
-      skeletons.forEach(s => s.remove());
+    function buildUnit(unit) {
+      var notes = unit.notes || {};
+      var noteCount = Object.keys(notes).length;
+      var subtitle = noteCount === 1 ? "1 note" : (noteCount + " notes");
+
+      var li = document.createElement("li");
+
+      var a = document.createElement("a");
+      a.className = "unit-card";
+      a.href = "notes.html?unitId=" + encodeURIComponent(unit.id) +
+               "&unitName=" + encodeURIComponent(unit.name) +
+               "&subjectName=" + encodeURIComponent(subjectName) +
+               "&subjectKey=" + encodeURIComponent(subjectKey);
+
+      var icon = document.createElement("span");
+      icon.className = "unit-icon";
+      icon.appendChild(svgIcon(BOOK_PATH));
+
+      var info = document.createElement("span");
+      info.className = "unit-info";
+      info.style.display = "block";
+
+      var name = document.createElement("div");
+      name.className = "unit-name";
+      name.textContent = unit.name;
+
+      var count = document.createElement("div");
+      count.className = "unit-count";
+      count.textContent = subtitle;
+
+      info.appendChild(name);
+      info.appendChild(count);
+
+      a.appendChild(icon);
+      a.appendChild(info);
+      a.appendChild(svgIcon(CHEVRON_PATH, "chevron"));
+      li.appendChild(a);
+      return li;
     }
 
     unitsRef(subjectKey).once("value")
-      .then(snapshot => {
-        const units = [];
-        snapshot.forEach(child => {
+      .then(function (snapshot) {
+        var units = [];
+        snapshot.forEach(function (child) {
           units.push(child.val());
         });
 
@@ -385,53 +326,12 @@
         }
 
         listEl.innerHTML = "";
-        units.forEach(unit => {
-          const notes = unit.notes || {};
-          const noteCount = Object.keys(notes).length;
-          const subtitle = noteCount === 1 ? "1 note" : (noteCount + " notes");
-          const icon = noteCount > 0 ? 'fa-file-alt' : 'fa-folder-open';
-
-          const li = document.createElement("li");
-          li.className = "unit-item";
-
-          const a = document.createElement("a");
-          a.href = "notes.html?unitId=" + encodeURIComponent(unit.id) +
-                   "&unitName=" + encodeURIComponent(unit.name) +
-                   "&subjectName=" + encodeURIComponent(subjectName) +
-                   "&subjectKey=" + encodeURIComponent(subjectKey);
-
-          const left = document.createElement("span");
-          left.className = "unit-left";
-
-          const iconSpan = document.createElement("span");
-          iconSpan.className = "unit-icon";
-          iconSpan.innerHTML = '<i class="fas ' + icon + '"></i>';
-
-          const nameSpan = document.createElement("span");
-          nameSpan.className = "unit-name";
-          nameSpan.textContent = unit.name;
-
-          left.appendChild(iconSpan);
-          left.appendChild(nameSpan);
-
-          const metaSpan = document.createElement("span");
-          metaSpan.className = "unit-meta";
-          metaSpan.innerHTML = '<i class="fas fa-file-alt"></i> ' + subtitle;
-
-          const arrow = document.createElement("span");
-          arrow.className = "arrow-icon";
-          arrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
-
-          a.appendChild(left);
-          a.appendChild(metaSpan);
-          a.appendChild(arrow);
-          li.appendChild(a);
-          listEl.appendChild(li);
+        units.forEach(function (unit) {
+          listEl.appendChild(buildUnit(unit));
         });
-
         updateEmptyState(true);
       })
-      .catch(err => {
+      .catch(function (err) {
         console.error("loadUnits cancelled: " + err.message);
         clearSkeletons();
         updateEmptyState(false);
