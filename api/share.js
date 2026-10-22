@@ -169,7 +169,7 @@ function renderPost(id, post) {
     pageUrl: pageUrl,
     type: "article",
     twitterCard: isWide ? "summary_large_image" : "summary"
-  }), html, null);
+  }), html, SITE + "/post/?id=" + encodeURIComponent(id));
 }
 
 function renderShort(id, short) {

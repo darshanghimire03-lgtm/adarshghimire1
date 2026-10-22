@@ -82,16 +82,21 @@
   .head {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+    color: inherit;
   }
   .avatar {
-    width: 50px;
-    height: 50px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
     background: var(--line);
+    border: 2px solid var(--line);
   }
   .avatar.fallback {
     display: flex;
@@ -100,22 +105,32 @@
     background: var(--brand);
     color: #fff;
     font-weight: 800;
-    font-size: 20px;
+    font-size: 22px;
+    border-color: var(--brand);
   }
-  .who { min-width: 0; }
+  .who { min-width: 0; flex: 1; }
   .name {
     font-weight: 800;
-    font-size: 16px;
+    font-size: 17px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   .meta {
-    font-size: 12px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 12.5px;
     color: var(--muted);
-    margin-top: 2px;
-    text-transform: capitalize;
+    margin-top: 3px;
   }
+  .role {
+    text-transform: capitalize;
+    font-weight: 700;
+    color: var(--brand);
+  }
+  .dot { opacity: 0.6; }
 
   .text {
     font-size: 15.5px;
@@ -207,13 +222,17 @@
     </div>
 
     <div id="postView" class="hidden">
-      <div class="head">
+      <a class="head" id="profileLink" href="#">
         <div id="avatarSlot"></div>
         <div class="who">
           <div class="name" id="authorName"></div>
-          <div class="meta" id="authorMeta"></div>
+          <div class="meta">
+            <span class="role hidden" id="authorRole"></span>
+            <span class="dot hidden" id="metaDot">•</span>
+            <span id="postTime"></span>
+          </div>
         </div>
-      </div>
+      </a>
 
       <div class="text hidden" id="postText"></div>
       <img class="media hidden" id="postImage" alt="">
@@ -229,9 +248,14 @@
 <script>
 (function () {
   var DB = "https://darbarhigh-4c642-default-rtdb.firebaseio.com";
+  var PACKAGE = "com.doroi.plus2";
+  var HOST = "adarshghimire1.com.np";
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
   var params = new URLSearchParams(window.location.search);
   var postId = (params.get("id") || "").trim();
   var debug = params.get("debug") === "1";
+  var isAndroid = /android/i.test(navigator.userAgent);
 
   var loading = document.getElementById("loading");
   var missing = document.getElementById("missing");
@@ -266,7 +290,7 @@
           return { ok: res.ok, status: res.status, data: body };
         });
       })
-      .catch(function (err) {
+      .catch(function () {
         debugLines.push(path + " → network error");
         return { ok: false, status: 0, data: null };
       });
@@ -276,14 +300,32 @@
     return result && result.ok && typeof result.data === "string" ? result.data : "";
   }
 
-  function timeAgo(ts) {
+  function formatTime(ts) {
     if (!ts) return "";
-    var diff = Math.floor((Date.now() - ts) / 1000);
+    var now = Date.now();
+    var diff = Math.max(0, Math.floor((now - ts) / 1000));
+
     if (diff < 60) return "Just now";
-    if (diff < 3600) return Math.floor(diff / 60) + "m ago";
-    if (diff < 86400) return Math.floor(diff / 3600) + "h ago";
-    if (diff < 604800) return Math.floor(diff / 86400) + "d ago";
-    return new Date(ts).toLocaleDateString();
+
+    if (diff < 3600) {
+      return Math.floor(diff / 60) + " min ago";
+    }
+
+    if (diff < 86400) {
+      var hrs = Math.floor(diff / 3600);
+      return hrs + (hrs === 1 ? " hr ago" : " hrs ago");
+    }
+
+    var days = Math.floor(diff / 86400);
+    if (days <= 7) return days + "d ago";
+
+    var posted = new Date(ts);
+    var current = new Date(now);
+    var label = MONTHS[posted.getMonth()] + " " + posted.getDate();
+    if (posted.getFullYear() !== current.getFullYear()) {
+      label += ", " + posted.getFullYear();
+    }
+    return label;
   }
 
   function linkify(container, text) {
@@ -321,7 +363,7 @@
     if (photo) {
       var img = document.createElement("img");
       img.className = "avatar";
-      img.alt = "";
+      img.alt = name;
       img.src = photo;
       img.onerror = function () {
         slot.textContent = "";
@@ -333,13 +375,19 @@
     }
   }
 
+  function androidIntent(path) {
+    return "intent://" + HOST + path +
+      "#Intent;scheme=https;package=" + PACKAGE +
+      ";S.browser_fallback_url=" + encodeURIComponent("https://" + HOST + "/") + ";end";
+  }
+
   function render(card) {
     var name = card.authorName || "Durbar User";
     var role = card.authorRole || "";
-    var time = timeAgo(card.createdAt);
     var text = card.text || "";
     var image = card.imageUrl || "";
     var photo = card.authorPhoto || "";
+    var timeLabel = formatTime(card.createdAt);
 
     document.title = name + " on Durbar";
     var description = text ? text.replace(/\s+/g, " ").slice(0, 200) : "View this post on Durbar.";
@@ -352,7 +400,30 @@
 
     buildAvatar(name, photo);
     document.getElementById("authorName").textContent = name;
-    document.getElementById("authorMeta").textContent = [role, time].filter(Boolean).join(" • ");
+
+    var roleEl = document.getElementById("authorRole");
+    var dotEl = document.getElementById("metaDot");
+    if (role) {
+      roleEl.textContent = role;
+      show(roleEl);
+    }
+    if (role && timeLabel) {
+      show(dotEl);
+    }
+
+    var timeEl = document.getElementById("postTime");
+    timeEl.textContent = timeLabel;
+    if (card.createdAt) {
+      timeEl.title = new Date(card.createdAt).toLocaleString();
+    }
+
+    var profileLink = document.getElementById("profileLink");
+    if (isAndroid && card.authorUid) {
+      profileLink.href = androidIntent("/durbar/user/" + encodeURIComponent(card.authorUid));
+    } else {
+      profileLink.removeAttribute("href");
+      profileLink.style.cursor = "default";
+    }
 
     var textEl = document.getElementById("postText");
     if (text) {
@@ -367,10 +438,8 @@
     }
 
     var openApp = document.getElementById("openApp");
-    if (/android/i.test(navigator.userAgent)) {
-      openApp.href = "intent://adarshghimire1.com.np/durbar/post/" + encodeURIComponent(postId) +
-        "#Intent;scheme=https;package=com.doroi.plus2;S.browser_fallback_url=" +
-        encodeURIComponent("https://adarshghimire1.com.np/") + ";end";
+    if (isAndroid) {
+      openApp.href = androidIntent("/durbar/post/" + encodeURIComponent(postId));
     }
 
     hide(loading);
@@ -408,7 +477,15 @@
     }
 
     if (!authorUid || !/^[A-Za-z0-9_-]{1,128}$/.test(authorUid)) {
-      render({ authorName: "", authorPhoto: "", authorRole: authorRole, text: text, imageUrl: imageUrl, createdAt: createdAt });
+      render({
+        authorUid: "",
+        authorName: "",
+        authorPhoto: "",
+        authorRole: authorRole,
+        text: text,
+        imageUrl: imageUrl,
+        createdAt: createdAt
+      });
       return;
     }
 
@@ -419,6 +496,7 @@
       getValue("users/" + uKey + "/role")
     ]).then(function (u) {
       render({
+        authorUid: authorUid,
         authorName: asString(u[0]),
         authorPhoto: asString(u[1]),
         authorRole: authorRole || asString(u[2]),
