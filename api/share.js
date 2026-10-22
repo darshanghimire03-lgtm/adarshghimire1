@@ -28,15 +28,67 @@ function videoThumbnail(videoUrl) {
     .replace(/\.[a-zA-Z0-9]{2,4}(\?.*)?$/, ".jpg");
 }
 
-async function loadNode(path) {
+async function loadValue(path) {
   try {
     const res = await fetch(DB + "/" + path + ".json");
     if (!res.ok) return null;
-    const data = await res.json();
-    return data && typeof data === "object" ? data : null;
+    return await res.json();
   } catch (e) {
     return null;
   }
+}
+
+async function loadNode(path) {
+  const data = await loadValue(path);
+  return data && typeof data === "object" ? data : null;
+}
+
+function str(value) {
+  return typeof value === "string" ? value : "";
+}
+
+async function loadPost(id) {
+  const key = encodeURIComponent(id);
+  const results = await Promise.all([
+    loadValue("posts/" + key + "/authorUid"),
+    loadValue("posts/" + key + "/text"),
+    loadValue("posts/" + key + "/imageUrl"),
+    loadValue("posts/" + key + "/authorRole"),
+    loadValue("posts/" + key + "/createdAt")
+  ]);
+
+  const authorUid = str(results[0]);
+  const text = str(results[1]);
+  const imageUrl = str(results[2]);
+  const authorRole = str(results[3]);
+  const createdAt = typeof results[4] === "number" ? results[4] : 0;
+
+  if (!authorUid && !text && !imageUrl) return null;
+
+  let authorName = "";
+  let authorPhoto = "";
+  let role = authorRole;
+
+  if (authorUid && /^[A-Za-z0-9_-]{1,128}$/.test(authorUid)) {
+    const uKey = encodeURIComponent(authorUid);
+    const user = await Promise.all([
+      loadValue("users/" + uKey + "/fullName"),
+      loadValue("users/" + uKey + "/profileImageUrl"),
+      loadValue("users/" + uKey + "/role")
+    ]);
+    authorName = str(user[0]);
+    authorPhoto = str(user[1]);
+    if (!role) role = str(user[2]);
+  }
+
+  return {
+    authorName: authorName,
+    authorPhoto: authorPhoto,
+    authorRole: role,
+    text: text,
+    imageUrl: imageUrl,
+    createdAt: createdAt
+  };
 }
 
 const baseStyle =
@@ -62,8 +114,8 @@ function metaTags(opts) {
     '<meta property="og:title" content="' + esc(opts.title) + '">' +
     '<meta property="og:description" content="' + esc(opts.description) + '">' +
     '<meta property="og:image" content="' + esc(opts.image) + '">' +
-    '<meta property="og:image:width" content="1200">' +
-    '<meta property="og:image:height" content="630">' +
+    '<meta property="og:image:width" content="' + opts.imageWidth + '">' +
+    '<meta property="og:image:height" content="' + opts.imageHeight + '">' +
     '<meta property="og:image:alt" content="' + esc(opts.title) + '">' +
     '<meta name="twitter:card" content="' + opts.twitterCard + '">' +
     '<meta name="twitter:title" content="' + esc(opts.title) + '">' +
@@ -82,16 +134,17 @@ function wrapPage(title, meta, bodyHtml, redirectTo) {
     "<style>" + baseStyle + "</style></head><body>" + bodyHtml + script + "</body></html>";
 }
 
-function renderPost(id, card) {
+function renderPost(id, post) {
   const pageUrl = SITE + "/post/" + id;
-  const name = card && card.authorName ? card.authorName : "Durbar User";
-  const role = card && card.authorRole ? card.authorRole : "";
-  const body = card ? shorten(card.text, 300) : "";
-  const photo = card && card.authorPhoto ? cloudinaryImage(card.authorPhoto, "w_600,h_600,c_fill,g_face,q_auto,f_jpg") : "";
-  const postImage = card && card.imageUrl ? cloudinaryImage(card.imageUrl, "w_1200,h_630,c_fill,q_auto,f_jpg") : "";
+  const name = post && post.authorName ? post.authorName : "Durbar User";
+  const role = post && post.authorRole ? post.authorRole : "";
+  const body = post ? shorten(post.text, 300) : "";
+  const photo = post && post.authorPhoto ? cloudinaryImage(post.authorPhoto, "w_600,h_600,c_fill,g_face,q_auto,f_jpg") : "";
+  const postImage = post && post.imageUrl ? cloudinaryImage(post.imageUrl, "w_1200,h_630,c_fill,q_auto,f_jpg") : "";
   const image = postImage || photo || DEFAULT_IMAGE;
-  const title = card ? name + " on Durbar" : "Post on Durbar";
-  const description = body || (card ? "Shared a post on Durbar" : "Open this post in the Durbar app");
+  const title = post ? name + " on Durbar" : "Post on Durbar";
+  const description = body || (post ? "Shared a post on Durbar" : "Open this post in the Durbar app");
+  const isWide = !!postImage;
 
   const avatar = photo
     ? '<img class="avatar" src="' + esc(photo) + '" alt="">'
@@ -111,9 +164,11 @@ function renderPost(id, card) {
     title: title,
     description: description,
     image: image,
+    imageWidth: isWide ? 1200 : 600,
+    imageHeight: isWide ? 630 : 600,
     pageUrl: pageUrl,
     type: "article",
-    twitterCard: postImage ? "summary_large_image" : "summary"
+    twitterCard: isWide ? "summary_large_image" : "summary"
   }), html, null);
 }
 
@@ -141,6 +196,8 @@ function renderShort(id, short) {
     title: title,
     description: description,
     image: image,
+    imageWidth: 1200,
+    imageHeight: 630,
     pageUrl: pageUrl,
     type: "website",
     twitterCard: thumb ? "summary_large_image" : "summary"
@@ -157,8 +214,8 @@ module.exports = async function handler(req, res) {
   const validId = /^[A-Za-z0-9_-]{1,64}$/.test(id);
 
   if (type === "post") {
-    const card = validId ? await loadNode("shareCards/" + encodeURIComponent(id)) : null;
-    res.status(200).send(renderPost(validId ? id : "invalid", card));
+    const post = validId ? await loadPost(id) : null;
+    res.status(200).send(renderPost(validId ? id : "invalid", post));
     return;
   }
 

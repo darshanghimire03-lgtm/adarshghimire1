@@ -192,7 +192,7 @@
     </div>
 
     <div id="missing" class="state hidden">
-      This post isn't available right now. It may have been deleted or not shared yet.
+      This post isn't available right now. It may have been deleted.
       <div class="actions" style="margin-top:18px;">
         <a class="btn" href="/">Go to Durbar</a>
       </div>
@@ -218,11 +218,9 @@
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
-
 <script>
 (function () {
+  var DB = "https://darbarhigh-4c642-default-rtdb.firebaseio.com";
   var params = new URLSearchParams(window.location.search);
   var postId = (params.get("id") || "").trim();
 
@@ -242,6 +240,16 @@
   function setMeta(selector, value) {
     var el = document.querySelector(selector);
     if (el) el.setAttribute("content", value);
+  }
+
+  function getValue(path) {
+    return fetch(DB + "/" + path + ".json")
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .catch(function () { return null; });
+  }
+
+  function asString(value) {
+    return typeof value === "string" ? value : "";
   }
 
   function timeAgo(ts) {
@@ -346,31 +354,54 @@
     show(postView);
   }
 
-  if (!postId) {
+  if (!postId || !/^[A-Za-z0-9_-]{1,64}$/.test(postId)) {
     showMissing();
     return;
   }
 
-  try {
-    firebase.initializeApp({
-      apiKey: "AIzaSyCyrQUpOlHrY3t7GtxFXD5zCweKtYYX5wI",
-      databaseURL: "https://darbarhigh-4c642-default-rtdb.firebaseio.com",
-      projectId: "darbarhigh-4c642"
-    });
+  var key = encodeURIComponent(postId);
 
-    firebase.database().ref("shareCards/" + postId).once("value").then(function (snap) {
-      var card = snap.val();
-      if (!card) {
-        showMissing();
-        return;
-      }
-      render(card);
-    }).catch(function () {
+  Promise.all([
+    getValue("posts/" + key + "/authorUid"),
+    getValue("posts/" + key + "/text"),
+    getValue("posts/" + key + "/imageUrl"),
+    getValue("posts/" + key + "/authorRole"),
+    getValue("posts/" + key + "/createdAt")
+  ]).then(function (r) {
+    var authorUid = asString(r[0]);
+    var text = asString(r[1]);
+    var imageUrl = asString(r[2]);
+    var authorRole = asString(r[3]);
+    var createdAt = typeof r[4] === "number" ? r[4] : 0;
+
+    if (!authorUid && !text && !imageUrl) {
       showMissing();
+      return;
+    }
+
+    if (!authorUid || !/^[A-Za-z0-9_-]{1,128}$/.test(authorUid)) {
+      render({ authorName: "", authorPhoto: "", authorRole: authorRole, text: text, imageUrl: imageUrl, createdAt: createdAt });
+      return;
+    }
+
+    var uKey = encodeURIComponent(authorUid);
+    Promise.all([
+      getValue("users/" + uKey + "/fullName"),
+      getValue("users/" + uKey + "/profileImageUrl"),
+      getValue("users/" + uKey + "/role")
+    ]).then(function (u) {
+      render({
+        authorName: asString(u[0]),
+        authorPhoto: asString(u[1]),
+        authorRole: authorRole || asString(u[2]),
+        text: text,
+        imageUrl: imageUrl,
+        createdAt: createdAt
+      });
     });
-  } catch (e) {
+  }).catch(function () {
     showMissing();
-  }
+  });
 })();
 </script>
 
