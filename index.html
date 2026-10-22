@@ -1,687 +1,914 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darshan Ghimire · @darshang404</title>
-
-    <!-- ===== FAVICON (uses profile.png) ===== -->
-    <link rel="icon" type="image/png" href="profile.png">
-    <link rel="shortcut icon" type="image/png" href="profile.png">
-    <link rel="apple-touch-icon" href="profile.png">
-    <link rel="mask-icon" href="profile.png" color="#0b1a2b">
-
-    <!-- ===== SEO / SOCIAL META ===== -->
-    <meta name="description" content="Check out Darshan Ghimire (@darshang404) — creator & developer.">
-    <meta name="theme-color" content="#0b1a2b">
-    <meta property="og:title" content="Darshan Ghimire · @darshang404">
-    <meta property="og:description" content="Check out Darshan Ghimire (@darshang404) — creator & developer.">
-    <meta property="og:type" content="profile">
-    <meta property="og:url" content="https://adarshghimire1.com.np/">
-    <meta property="og:image" content="https://adarshghimire1.com.np/profile.png">
-    <meta property="og:site_name" content="Darshan Ghimire">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Darshan Ghimire · @darshang404">
-    <meta name="twitter:description" content="Check out Darshan Ghimire (@darshang404) — creator & developer.">
-    <meta name="twitter:image" content="https://adarshghimire1.com.np/profile.png">
-
-    <!-- ===== JSON-LD STRUCTURED DATA ===== -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Darshan Ghimire",
-        "url": "https://adarshghimire1.com.np/",
-        "description": "Check out Darshan Ghimire (@darshang404) — creator & developer.",
-        "image": "https://adarshghimire1.com.np/profile.png",
-        "author": {
-            "@type": "Person",
-            "name": "Darshan Ghimire",
-            "alternateName": "@darshang404",
-            "url": "https://adarshghimire1.com.np/"
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Durbar - Subjects</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body {
-            background-color: #ffffff;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: #000; display: flex; justify-content: center; min-height: 100vh;
-        }
-        .app-container {
-            width: 100%; max-width: 480px; background: #fff; min-height: 100vh;
-            display: flex; flex-direction: column; position: relative;
-            box-shadow: 0 0 40px rgba(0,0,0,0.03);
-        }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f0f4fa;
+      color: #0b1b33;
+      padding: 2.5rem 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        /* ===== PROFILE INFO ===== */
-        .profile-info-section {
-            padding: 20px 16px 0;
-            display: flex; justify-content: space-between; align-items: flex-start;
-        }
-        .profile-text { flex: 1; padding-top: 4px; }
-        .profile-name { font-size: 24px; font-weight: 700; line-height: 1.25; letter-spacing: -0.4px; }
-        .profile-username-row { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
-        .profile-username { font-size: 15px; color: #000; }
-        .verified-badge { color: #1d9bf0; font-size: 15px; }
-        .profile-avatar-large {
-            width: 76px; height: 76px; border-radius: 50%; object-fit: cover;
-            flex-shrink: 0; border: 1px solid #e1e8ed; background: #f0f0f0;
-        }
+    /* Header */
+    .app-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 2px solid rgba(0, 40, 80, 0.06);
+      padding-bottom: 1.5rem;
+    }
 
-        /* ===== ACTION BUTTONS ===== */
-        .action-buttons { display: flex; gap: 10px; padding: 16px 16px 0; }
-        .action-btn {
-            flex: 1; padding: 12px 0; border-radius: 30px;
-            font-size: 15px; font-weight: 600; text-align: center;
-            cursor: pointer; font-family: 'Inter', sans-serif;
-            transition: all 0.15s ease; border: 1.5px solid #dbdbdb;
-            background: #fff; color: #000;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
-        .action-btn.follow-btn-main { background: #0b1a2b; color: #fff; border-color: #0b1a2b; font-weight: 700; }
-        .action-btn.follow-btn-main:active { background: #1e3349; }
-        .action-btn.follow-btn-main.followed { background: #fff; color: #0b1a2b; border-color: #dbdbdb; }
-        .action-btn.message { color: #000; border-color: #dbdbdb; }
-        .action-btn:active { background-color: #f2f2f2; }
+    .app-header .header-top {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
 
-        /* ===== SOCIAL SUGGESTIONS ROW ===== */
-        .social-suggestions {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease, opacity 0.35s ease, margin 0.35s ease;
-            margin-top: 0;
-        }
-        .social-suggestions.visible {
-            max-height: 130px;
-            opacity: 1;
-            margin-top: 18px;
-        }
-        .social-suggestions-label {
-            font-size: 12px;
-            font-weight: 700;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            padding: 0 16px 10px;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .social-suggestions-label i { color: #6366f1; }
-        .social-scroll {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding: 4px 16px 12px;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            scroll-behavior: smooth;
-        }
-        .social-scroll::-webkit-scrollbar { display: none; }
-        .suggestion-card {
-            flex: 0 0 auto;
-            width: 92px;
-            background: #ffffff;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 18px;
-            padding: 12px 8px 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.18s ease;
-            text-decoration: none;
-            color: inherit;
-            box-shadow: 0 4px 10px -6px rgba(0,0,0,0.06);
-        }
-        .suggestion-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 22px -10px rgba(0,0,0,0.18);
-            border-color: #cbd5e1;
-        }
-        .suggestion-card:active { transform: scale(0.96); }
-        .suggestion-icon {
-            width: 44px; height: 44px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: #fff;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        .suggestion-icon img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-        .suggestion-icon.facebook  { background: #1877f2; }
-        .suggestion-icon.tiktok    { background: #000; }
-        .suggestion-icon.instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-        .suggestion-icon.twitter   { background: #000; }
-        .suggestion-icon.threads   { background: #000; }
-        .suggestion-icon.telegram  { background: #0088cc; }
-        .suggestion-name {
-            font-size: 11px;
-            font-weight: 600;
-            color: #1e293b;
-            text-align: center;
-            letter-spacing: -0.01em;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
-        }
+    .app-header .app-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(30, 75, 122, 0.25);
+      flex-shrink: 0;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        /* ===== TABS ===== */
-        .tabs-container {
-            display: flex; justify-content: space-around; padding: 18px 8px 0;
-            border-bottom: 1px solid #eaeaea; margin-top: 4px;
-        }
-        .tab-item {
-            font-size: 15px; font-weight: 500; color: #687684;
-            padding-bottom: 12px; cursor: pointer; position: relative;
-            background: none; border: none; font-family: 'Inter', sans-serif;
-            flex: 1; transition: color 0.2s;
-        }
-        .tab-item.active { color: #000; font-weight: 600; }
-        .tab-item.active::after {
-            content: ''; position: absolute; bottom: -1px; left: 0;
-            width: 100%; height: 2px; background: #000; border-radius: 1px;
-        }
-        .tab-panel { display: none; animation: fadeInPanel 0.25s ease; }
-        .tab-panel.active { display: block; }
-        @keyframes fadeInPanel { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .app-header .app-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
 
-        /* ===== POST CARD ===== */
-        .post-card {
-            padding: 14px 16px 20px; display: flex; flex-direction: column;
-            border-bottom: 1px solid #f0f0f0; margin-top: 4px;
-        }
-        .post-header { display: flex; align-items: center; gap: 10px; }
-        .post-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 1px solid #e1e8ed; background: #f0f0f0; }
-        .post-user-info { display: flex; align-items: center; gap: 5px; flex: 1; min-width: 0; }
-        .post-username { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .post-verified { color: #1d9bf0; font-size: 14px; flex-shrink: 0; }
-        .post-time { font-size: 15px; color: #687684; flex-shrink: 0; }
-        .post-more { color: #687684; font-size: 18px; cursor: pointer; padding: 0 4px; background: none; border: none; }
-        .post-caption { margin-top: 12px; font-size: 16px; line-height: 1.4; }
-        .post-media {
-            margin-top: 12px; border-radius: 16px; overflow: hidden;
-            background: #f0f0f0; width: 100%; aspect-ratio: 4/5;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .post-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .app-header h1 {
+      font-weight: 700;
+      font-size: 2.8rem;
+      letter-spacing: -0.03em;
+      color: #0a2a4a;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
 
-        /* ===== LIST (apps/websites) ===== */
-        .list-container { padding: 8px 16px 20px; }
-        .list-item {
-            display: flex; align-items: center; gap: 14px;
-            padding: 14px 12px; border-radius: 16px;
-            transition: background 0.15s; cursor: pointer;
-            text-decoration: none; color: inherit;
-            border-bottom: 1px solid #f5f5f5;
-        }
-        .list-item:hover { background: #f8fafc; }
-        .list-icon {
-            width: 48px; height: 48px; border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 22px; color: #fff; flex-shrink: 0;
-            box-shadow: 0 6px 12px -6px rgba(0,0,0,0.15);
-            overflow: hidden;
-            background: #f1f5f9;
-        }
-        .list-icon.app-color { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-        .list-icon.web-color { background: linear-gradient(135deg, #0ea5e9, #06b6d4); }
-        .list-icon img {
-            width: 100%; height: 100%;
-            object-fit: contain;
-            border-radius: 14px;
-            background: #fff;
-        }
-        .list-icon i { color: #fff; }
-        .list-content { flex: 1; min-width: 0; }
-        .list-title { font-size: 15px; font-weight: 600; color: #0b1a2b; margin-bottom: 2px; }
-        .list-desc { font-size: 13px; color: #687684; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .list-arrow { color: #94a3b8; font-size: 14px; flex-shrink: 0; }
+    .app-header h1 .title-text {
+      background: linear-gradient(135deg, #0a2a4a, #1e4b7a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-        /* ===== EMPTY STATE ===== */
-        .empty-state {
-            padding: 48px 24px;
-            text-align: center;
-            color: #64748b;
-        }
-        .empty-state i {
-            font-size: 44px;
-            color: #cbd5e1;
-            margin-bottom: 14px;
-            display: block;
-        }
-        .empty-state h4 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #334155;
-            margin-bottom: 6px;
-        }
-        .empty-state p {
-            font-size: 13px;
-            line-height: 1.5;
-            color: #94a3b8;
-        }
+    .app-header .subtitle {
+      color: #4a6a88;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .app-header .subtitle i {
+      color: #6a8aa8;
+      font-size: 0.8rem;
+    }
 
-        /* ===== TOAST ===== */
-        .toast {
-            position: fixed; bottom: 40px; left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: #0b1a2b; color: #fff;
-            padding: 12px 22px; border-radius: 30px;
-            font-size: 14px; font-weight: 500;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
-            z-index: 2000; box-shadow: 0 12px 24px -8px rgba(0,0,0,0.3);
-            max-width: 85%; text-align: center;
-        }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        .toast i { margin-right: 8px; color: #4ade80; }
+    /* Subject Grid */
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.25rem;
+      list-style: none;
+      padding: 0;
+    }
 
-        @media (max-width: 400px) {
-            .profile-name { font-size: 21px; }
-            .profile-avatar-large { width: 68px; height: 68px; }
-            .action-btn { font-size: 14px; padding: 10px 0; }
-            .tab-item { font-size: 14px; }
-            .suggestion-card { width: 84px; }
-            .suggestion-icon { width: 40px; height: 40px; font-size: 18px; }
-        }
-    </style>
+    .subject-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.5rem 1.2rem;
+      border: 1px solid #e6edf6;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 8px rgba(0, 20, 40, 0.02);
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .subject-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #1e4b7a, #4a8ab5);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .subject-card:hover::before {
+      opacity: 1;
+    }
+
+    .subject-card:hover {
+      border-color: #b8cfe3;
+      box-shadow: 0 8px 24px rgba(0, 30, 60, 0.08);
+      transform: translateY(-3px);
+    }
+
+    .subject-card a {
+      text-decoration: none;
+      color: #0d2b47;
+      font-weight: 600;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .subject-card .subject-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      background: #e9f0f8;
+      color: #1e4b7a;
+      transition: all 0.3s;
+    }
+
+    .subject-card:hover .subject-icon {
+      transform: scale(1.05) rotate(-3deg);
+    }
+
+    .subject-card .subject-icon.economic {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .subject-card .subject-icon.account {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    .subject-card .subject-icon.computer {
+      background: #f3e5f5;
+      color: #6a1b9a;
+    }
+    .subject-card .subject-icon.english {
+      background: #fce4ec;
+      color: #c62828;
+    }
+    .subject-card .subject-icon.nepali {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .subject-card .subject-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .subject-card .subject-info .name {
+      font-weight: 600;
+      color: #0d2b47;
+      font-size: 1.05rem;
+    }
+
+    .subject-card .subject-info .count {
+      font-size: 0.7rem;
+      color: #6d89a6;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.1rem;
+    }
+    .subject-card .subject-info .count i {
+      font-size: 0.6rem;
+    }
+
+    .subject-card .arrow-icon {
+      color: #7a9ab8;
+      font-size: 1rem;
+      opacity: 0.3;
+      transition: all 0.3s;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    .subject-card:hover .arrow-icon {
+      opacity: 1;
+      transform: translateX(4px);
+      color: #1e4b7a;
+    }
+
+    /* Footer */
+    .app-footer {
+      margin-top: auto;
+      padding-top: 2.5rem;
+      text-align: center;
+      color: #8aaac9;
+      font-size: 0.8rem;
+      border-top: 1px solid rgba(0, 40, 80, 0.05);
+    }
+    .app-footer i {
+      color: #b8cee3;
+      margin: 0 0.3rem;
+    }
+
+    /* ===== AD POPUP OVERLAY ===== */
+    .ad-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .ad-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .ad-popup {
+      background: white;
+      border-radius: 32px;
+      max-width: 480px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35);
+      animation: slideUp 0.5s ease;
+      position: relative;
+    }
+
+    /* Ad Header with Gradient */
+    .ad-header {
+      background: linear-gradient(135deg, #1a3a5c, #2a6a9e);
+      padding: 2.5rem 2rem 2rem 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .ad-header .ad-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      background: white;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .ad-header .ad-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ad-header .ad-title {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .ad-header .ad-subtitle {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+      margin-top: 0.3rem;
+      font-weight: 400;
+    }
+
+    .ad-header .ad-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .ad-header .ad-badge i {
+      font-size: 0.5rem;
+    }
+
+    /* Ad Body */
+    .ad-body {
+      padding: 1.5rem 2rem 2rem 2rem;
+    }
+
+    .ad-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .ad-feature {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      color: #0d2b47;
+      font-weight: 500;
+      background: #f6faff;
+      padding: 0.6rem 0.8rem;
+      border-radius: 12px;
+      border: 1px solid #eef4fa;
+      transition: all 0.2s;
+    }
+
+    .ad-feature:hover {
+      background: #eef4fa;
+      border-color: #dce8f2;
+    }
+
+    .ad-feature i {
+      color: #2a6a9e;
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .ad-actions {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .ad-actions .btn-download {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, #1e4b7a, #2a6a9e);
+      color: white;
+      padding: 0.85rem 1.5rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(30, 75, 122, 0.3);
+      text-decoration: none;
+    }
+
+    .ad-actions .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(30, 75, 122, 0.4);
+      background: linear-gradient(135deg, #0a2a4a, #1e4b7a);
+    }
+
+    .ad-actions .btn-download i {
+      font-size: 1.1rem;
+    }
+
+    .ad-actions .btn-close {
+      padding: 0.85rem 1.2rem;
+      background: #eef4fa;
+      color: #4a6a88;
+      border: none;
+      border-radius: 60px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .ad-actions .btn-close:hover {
+      background: #dce8f2;
+      color: #0a2a4a;
+    }
+
+    /* Download Progress */
+    .download-progress {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.8rem 1rem;
+      background: #f0f7ff;
+      border-radius: 12px;
+      border: 1px solid #dce8f2;
+    }
+
+    .download-progress.active {
+      display: block;
+    }
+
+    .download-progress .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e6edf6;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .download-progress .progress-bar .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1e4b7a, #2a6a9e);
+      border-radius: 10px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .download-progress .progress-text {
+      font-size: 0.8rem;
+      color: #1e4b7a;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      body { padding: 1.25rem; }
+      .app-header h1 { font-size: 2rem; }
+      .app-header .app-icon { width: 44px; height: 44px; }
+      .subject-grid { grid-template-columns: 1fr; }
+      .subject-card { padding: 1rem; }
+
+      .ad-popup {
+        border-radius: 24px;
+        margin: 1rem;
+      }
+
+      .ad-header {
+        padding: 1.5rem 1.5rem 1.2rem 1.5rem;
+      }
+
+      .ad-header .ad-icon {
+        width: 64px;
+        height: 64px;
+      }
+
+      .ad-header .ad-title {
+        font-size: 1.4rem;
+      }
+
+      .ad-header .ad-subtitle {
+        font-size: 0.85rem;
+      }
+
+      .ad-body {
+        padding: 1rem 1.5rem 1.5rem 1.5rem;
+      }
+
+      .ad-features {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+
+      .ad-feature {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.7rem;
+      }
+
+      .ad-actions {
+        flex-direction: column;
+      }
+
+      .ad-actions .btn-close {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .ad-header .ad-badge {
+        top: 0.6rem;
+        right: 0.6rem;
+        font-size: 0.5rem;
+        padding: 0.15rem 0.6rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .app-header h1 { font-size: 1.7rem; }
+      .ad-header .ad-title { font-size: 1.2rem; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="app-container">
-
-    <!-- ===== PROFILE INFO ===== -->
-    <section class="profile-info-section">
-        <div class="profile-text">
-            <h1 class="profile-name" id="profileName">Darshan Ghimire</h1>
-            <div class="profile-username-row">
-                <span class="profile-username" id="profileUsername">@darshang404</span>
-                <span class="verified-badge"><i class="fa-solid fa-circle-check"></i></span>
-            </div>
-        </div>
-        <img class="profile-avatar-large" id="profileAvatar" src="profile.png" alt="Darshan Ghimire"
-             onerror="this.src='https://ui-avatars.com/api/?name=Darshan+Ghimire&size=120&background=0b1a2b&color=fff&bold=true'">
-    </section>
-
-    <!-- ===== ACTION BUTTONS ===== -->
-    <div class="action-buttons">
-        <button class="action-btn follow-btn-main" id="followBtn">
-            <i class="fas fa-user-plus"></i> Follow
-        </button>
-        <button class="action-btn message" id="messageBtn">
-            <i class="fab fa-whatsapp"></i> Message
-        </button>
+<div class="app-header">
+  <div class="header-top">
+    <div class="app-icon">
+      <img src="favicon.png" alt="Durbar App Icon">
     </div>
-
-    <!-- ===== SOCIAL SUGGESTIONS ROW ===== -->
-    <div class="social-suggestions" id="socialSuggestions">
-        <div class="social-suggestions-label">
-            <i class="fas fa-users"></i> Follow on other platforms
-        </div>
-        <div class="social-scroll" id="socialScroll"></div>
-    </div>
-
-    <!-- ===== TABS ===== -->
-    <div class="tabs-container" id="tabsContainer">
-        <button class="tab-item active" data-tab="posts">Posts</button>
-        <button class="tab-item" data-tab="apps">Apps</button>
-        <button class="tab-item" data-tab="websites">Websites</button>
-    </div>
-
-    <!-- ===== POSTS PANEL ===== -->
-    <div class="tab-panel active" id="panel-posts">
-        <div id="postsContainer"></div>
-    </div>
-
-    <!-- ===== APPS PANEL ===== -->
-    <div class="tab-panel" id="panel-apps">
-        <div class="list-container" id="appsContainer"></div>
-    </div>
-
-    <!-- ===== WEBSITES PANEL ===== -->
-    <div class="tab-panel" id="panel-websites">
-        <div class="list-container" id="websitesContainer"></div>
-    </div>
-
+    <h1>
+      <span class="title-text">Durbar</span>
+    </h1>
+  </div>
+  
+  <div class="subtitle">
+    <i class="fas fa-compass"></i>
+    Select a subject to explore units and notes
+  </div>
 </div>
 
-<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastText">Done</span></div>
+<ul id="subjectList" class="subject-grid"></ul>
 
-<script type="module">
-    import { PROFILE_REF, onValue } from './firebase-config.js';
+<div class="app-footer">
+  <i class="fas fa-book-open"></i> Durbar Learning Platform
+</div>
 
-    // ============ DOM ============
-    const profileName        = document.getElementById('profileName');
-    const profileUsername    = document.getElementById('profileUsername');
-    const profileAvatar      = document.getElementById('profileAvatar');
-    const followBtn          = document.getElementById('followBtn');
-    const messageBtn         = document.getElementById('messageBtn');
-    const socialSuggestions  = document.getElementById('socialSuggestions');
-    const socialScroll       = document.getElementById('socialScroll');
-    const toast              = document.getElementById('toast');
-    const toastText          = document.getElementById('toastText');
-    const postsContainer     = document.getElementById('postsContainer');
-    const appsContainer      = document.getElementById('appsContainer');
-    const websitesContainer  = document.getElementById('websitesContainer');
+<!-- ===== AD POPUP ===== -->
+<div class="ad-overlay" id="adOverlay">
+  <div class="ad-popup">
+    <!-- Ad Header -->
+    <div class="ad-header">
+      <span class="ad-badge"><i class="fas fa-star"></i> RECOMMENDED</span>
+      <div class="ad-icon">
+        <img src="favicon.png" alt="Durbar App">
+      </div>
+      <div class="ad-title">Durbar App</div>
+      <div class="ad-subtitle">Learn anywhere, anytime with the official app</div>
+    </div>
 
-    let profileData = null;
-    let isFollowing = false;
+    <!-- Ad Body -->
+    <div class="ad-body">
+      <div class="ad-features">
+        <div class="ad-feature">
+          <i class="fas fa-mobile-alt"></i>
+          Mobile Learning
+        </div>
+        <div class="ad-feature">
+          <i class="fas fa-wifi"></i>
+          Offline Access
+        </div>
+        <div class="ad-feature">
+          <i class="fas fa-bell"></i>
+          Smart Notifications
+        </div>
+        <div class="ad-feature">
+          <i class="fas fa-tachometer-alt"></i>
+          Faster Performance
+        </div>
+      </div>
 
-    // ============ TOAST ============
-    let toastTimer = null;
-    function showToast(msg, ok = true) {
-        toastText.textContent = msg;
-        const icon = toast.querySelector('i');
-        icon.className = ok ? 'fas fa-check-circle' : 'fas fa-info-circle';
-        icon.style.color = ok ? '#4ade80' : '#fbbf24';
-        toast.classList.add('show');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-    }
+      <!-- Download Progress -->
+      <div class="download-progress" id="downloadProgress">
+        <div class="progress-text">
+          <span>Downloading Durbar.apk</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
 
-    // ============ HELPERS ============
-    function toArray(input) {
-        if (!input) return [];
-        if (Array.isArray(input)) return input;
-        return Object.keys(input).sort((a,b) => Number(a) - Number(b)).map(k => input[k]);
-    }
-    function escapeHTML(str) {
-        if (!str) return '';
-        return String(str).replace(/[&<>"']/g, m => ({
-            '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-        }[m]));
-    }
+      <div class="ad-actions">
+        <a href="#" class="btn-download" id="downloadBtn" onclick="handleAdDownload(event)">
+          <i class="fas fa-download"></i>
+          Download Now
+        </a>
+        <button class="btn-close" onclick="closeAd()">
+          <i class="fas fa-times"></i> Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
-    function getFaviconUrl(url, size = 64) {
-        if (!url) return '';
-        try {
-            const u = new URL(url);
-            return `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=${size}`;
-        } catch {
-            return '';
-        }
-    }
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  (function() {
+    const listEl = document.getElementById("subjectList");
+    let adInterval = null;
+    let isAdShowing = false;
+    let isDownloading = false;
 
-    function buildWebsiteIconHTML(item) {
-        const iconField = (item.icon || '').trim();
-        const isImagePath = /\.(png|jpe?g|gif|svg|webp|ico|bmp|avif)(\?.*)?$/i.test(iconField)
-            || iconField.startsWith('./')
-            || iconField.startsWith('../')
-            || iconField.startsWith('/')
-            || iconField.startsWith('http');
-
-        if (isImagePath && iconField) {
-            return `<img src="${escapeHTML(iconField)}" alt="icon"
-                        onerror="this.parentElement.innerHTML='<i class=\\'fas fa-globe\\'></i>';">
-                    `;
-        }
-
-        const favicon = getFaviconUrl(item.url, 64);
-        if (favicon) {
-            return `<img src="${favicon}" alt="favicon"
-                        onerror="this.parentElement.innerHTML='<i class=\\'fas fa-globe\\'></i>';">
-                    `;
-        }
-
-        const faClass = iconField && /^fa-/.test(iconField) ? iconField : 'fa-globe';
-        return `<i class="fas ${escapeHTML(faClass)}"></i>`;
-    }
-
-    function buildAppIconHTML(item) {
-        const iconField = (item.icon || '').trim();
-        const isImagePath = /\.(png|jpe?g|gif|svg|webp|ico|bmp|avif)(\?.*)?$/i.test(iconField)
-            || iconField.startsWith('./')
-            || iconField.startsWith('../')
-            || iconField.startsWith('/')
-            || iconField.startsWith('http');
-
-        if (isImagePath && iconField) {
-            return `<img src="${escapeHTML(iconField)}" alt="icon"
-                        onerror="this.parentElement.innerHTML='<i class=\\'fas fa-mobile-alt\\'></i>';">
-                    `;
-        }
-
-        const faClass = iconField && /^fa-/.test(iconField) ? iconField : 'fa-mobile-alt';
-        return `<i class="fas ${escapeHTML(faClass)}"></i>`;
-    }
-
-    // ============ EMPTY STATES ============
-    const EMPTY_STATES = {
-        posts: `
-            <div class="empty-state">
-                <i class="fas fa-newspaper"></i>
-                <h4>No posts yet</h4>
-                <p>This user hasn't posted anything yet.</p>
-            </div>
-        `,
-        apps: `
-            <div class="empty-state">
-                <i class="fas fa-mobile-alt"></i>
-                <h4>No apps yet</h4>
-                <p>No apps to show at the moment.</p>
-            </div>
-        `,
-        websites: `
-            <div class="empty-state">
-                <i class="fas fa-globe"></i>
-                <h4>No websites yet</h4>
-                <p>No websites to show at the moment.</p>
-            </div>
-        `
+    // Subject icons and colors mapping
+    const subjectStyles = {
+      "Economic": { icon: "fa-chart-line", color: "economic" },
+      "Account": { icon: "fa-calculator", color: "account" },
+      "Computer Science": { icon: "fa-laptop-code", color: "computer" },
+      "English": { icon: "fa-book", color: "english" },
+      "Nepali": { icon: "fa-flag", color: "nepali" }
     };
 
-    // ============ PLATFORMS ============
-    const PLATFORMS = [
-        { key: 'facebook',  label: 'Facebook',  iconHTML: `<i class="fab fa-facebook-f"></i>` },
-        { key: 'tiktok',    label: 'TikTok',    iconHTML: `<i class="fab fa-tiktok"></i>` },
-        { key: 'instagram', label: 'Instagram', iconHTML: `<i class="fab fa-instagram"></i>` },
-        { key: 'twitter',   label: 'X',         iconHTML: `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>` },
-        { key: 'threads',   label: 'Threads',   iconHTML: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></svg>` },
-        { key: 'telegram',  label: 'Telegram',  iconHTML: `<i class="fab fa-telegram"></i>` }
-    ];
+    // Build subject list
+    SUBJECTS.forEach(subjectName => {
+      const li = document.createElement("li");
+      li.className = "subject-card";
 
-    // ============ SOCIAL SUGGESTIONS ============
-    function buildSocialSuggestions(links) {
-        socialScroll.innerHTML = '';
-        const available = PLATFORMS.filter(p => p.key !== 'whatsapp' && links && links[p.key]);
+      const a = document.createElement("a");
+      const subjectKey = sanitizeKey(subjectName);
+      a.href = "unit.html?subjectName=" + encodeURIComponent(subjectName) +
+               "&subjectKey=" + encodeURIComponent(subjectKey);
 
-        if (!available.length) {
-            socialScroll.innerHTML = `
-                <div style="width:100%; text-align:center; padding:12px 8px; font-size:13px; color:#94a3b8;">
-                    No social platforms linked yet.
-                </div>
-            `;
-            return;
-        }
+      const style = subjectStyles[subjectName] || { icon: "fa-folder", color: "" };
+      const iconSpan = document.createElement("span");
+      iconSpan.className = "subject-icon " + style.color;
+      iconSpan.innerHTML = '<i class="fas ' + style.icon + '"></i>';
 
-        available.forEach(p => {
-            const url = links[p.key];
-            const card = document.createElement('a');
-            card.className = 'suggestion-card';
-            card.href = url;
-            card.target = '_blank';
-            card.rel = 'noopener noreferrer';
-            card.setAttribute('aria-label', `Follow on ${p.label}`);
-            card.innerHTML = `
-                <div class="suggestion-icon ${p.key}">
-                    ${p.iconHTML}
-                </div>
-                <div class="suggestion-name">${p.label}</div>
-            `;
-            card.addEventListener('click', (e) => {
-                e.preventDefault();
-                showToast(`Opening ${p.label}…`);
-                setTimeout(() => window.open(url, '_blank', 'noopener,noreferrer'), 200);
-            });
-            socialScroll.appendChild(card);
+      const info = document.createElement("span");
+      info.className = "subject-info";
+      
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "name";
+      nameSpan.textContent = subjectName;
+      
+      const countSpan = document.createElement("span");
+      countSpan.className = "count";
+      countSpan.innerHTML = '<i class="fas fa-chevron-right"></i> Explore units';
+      
+      info.appendChild(nameSpan);
+      info.appendChild(countSpan);
+
+      const arrow = document.createElement("span");
+      arrow.className = "arrow-icon";
+      arrow.innerHTML = '<i class="fas fa-arrow-right"></i>';
+
+      a.appendChild(iconSpan);
+      a.appendChild(info);
+      a.appendChild(arrow);
+      li.appendChild(a);
+      listEl.appendChild(li);
+    });
+
+    // ===== DIRECT DOWNLOAD FUNCTION =====
+    function downloadAPK() {
+      const apkUrl = "https://github.com/darshanghimire03-lgtm/DOROI-STORE/releases/download/Doroi/Durbar.apk";
+      const downloadBtn = document.getElementById('downloadBtn');
+      const progressDiv = document.getElementById('downloadProgress');
+      const progressFill = document.getElementById('progressFill');
+      const progressPercent = document.getElementById('progressPercent');
+
+      if (isDownloading) return;
+      isDownloading = true;
+
+      // Show progress
+      progressDiv.classList.add('active');
+      downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+      downloadBtn.style.opacity = '0.7';
+      downloadBtn.style.pointerEvents = 'none';
+
+      // Use fetch to download with progress
+      fetch(apkUrl)
+        .then(response => {
+          if (!response.ok) throw new Error('Download failed');
+          
+          const contentLength = response.headers.get('content-length');
+          const total = parseInt(contentLength, 10);
+          let loaded = 0;
+
+          const reader = response.body.getReader();
+          const chunks = [];
+
+          return new ReadableStream({
+            start(controller) {
+              function push() {
+                reader.read().then(({ done, value }) => {
+                  if (done) {
+                    controller.close();
+                    return;
+                  }
+                  chunks.push(value);
+                  loaded += value.length;
+                  
+                  // Update progress
+                  if (total) {
+                    const percent = Math.round((loaded / total) * 100);
+                    progressFill.style.width = percent + '%';
+                    progressPercent.textContent = percent + '%';
+                  } else {
+                    // If content-length not available, show indeterminate
+                    progressFill.style.width = '100%';
+                    progressFill.style.animation = 'pulse 1s infinite';
+                    progressPercent.textContent = 'Downloading...';
+                  }
+                  
+                  controller.enqueue(value);
+                  push();
+                }).catch(err => {
+                  controller.error(err);
+                });
+              }
+              push();
+            }
+          });
+        })
+        .then(stream => new Response(stream))
+        .then(response => response.blob())
+        .then(blob => {
+          // Create download link
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'Durbar.apk';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+
+          // Reset UI
+          setTimeout(() => {
+            progressDiv.classList.remove('active');
+            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Now';
+            downloadBtn.style.opacity = '1';
+            downloadBtn.style.pointerEvents = 'auto';
+            progressFill.style.width = '0%';
+            progressPercent.textContent = '0%';
+            isDownloading = false;
+            closeAd();
+          }, 1500);
+        })
+        .catch(err => {
+          console.error('Download error:', err);
+          alert('Download failed. Please try again or visit the GitHub releases page directly.');
+          
+          // Reset UI
+          progressDiv.classList.remove('active');
+          downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Now';
+          downloadBtn.style.opacity = '1';
+          downloadBtn.style.pointerEvents = 'auto';
+          progressFill.style.width = '0%';
+          progressPercent.textContent = '0%';
+          isDownloading = false;
+          
+          // Fallback: open in new tab
+          window.open(apkUrl, '_blank');
         });
     }
 
-    // ============ RENDER PROFILE ============
-    function renderProfile(data) {
-        if (!data) return;
-        profileData = data;
+    // ===== AD POPUP FUNCTIONS =====
 
-        profileName.textContent = data.name || 'Darshan Ghimire';
-        profileUsername.textContent = '@' + (data.username || 'darshang404');
-
-        if (data.avatar && data.avatar.trim() !== '') {
-            profileAvatar.src = data.avatar;
-        } else {
-            profileAvatar.src = 'profile.png';
-        }
-        profileAvatar.onerror = function() {
-            this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.name || 'Darshan Ghimire') + '&size=120&background=0b1a2b&color=fff&bold=true';
-        };
-
-        buildSocialSuggestions(data.links || {});
-        renderPosts(data.posts || []);
-        renderApps(data.apps || []);
-        renderWebsites(data.websites || []);
+    // Show Ad Popup
+    function showAd() {
+      if (isAdShowing) return;
+      isAdShowing = true;
+      const overlay = document.getElementById('adOverlay');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
-    // ============ POSTS ============
-    function renderPosts(posts) {
-        const list = toArray(posts);
-        if (!list.length) {
-            postsContainer.innerHTML = EMPTY_STATES.posts;
-            return;
-        }
-        postsContainer.innerHTML = list.map(post => `
-            <article class="post-card">
-                <div class="post-header">
-                    <img class="post-avatar" src="${post.avatar || profileAvatar.src}" 
-                         onerror="this.src='https://ui-avatars.com/api/?name=Darshan+Ghimire&size=80&background=0b1a2b&color=fff&bold=true'">
-                    <div class="post-user-info">
-                        <span class="post-username">${escapeHTML(post.username || 'darshang404')}</span>
-                        <span class="post-verified"><i class="fa-solid fa-circle-check"></i></span>
-                        <span class="post-time">${escapeHTML(post.time || 'now')}</span>
-                    </div>
-                    <button class="post-more"><i class="fa-solid fa-ellipsis"></i></button>
-                </div>
-                ${post.caption ? `<div class="post-caption">${escapeHTML(post.caption)}</div>` : ''}
-                ${post.image ? `<div class="post-media"><img src="${post.image}" alt="Post image" onerror="this.parentElement.innerHTML='<div style=\\'padding:20px;color:#5a6b7a;\\'>📸 Image preview</div>'"></div>` : ''}
-            </article>
-        `).join('');
+    // Close Ad Popup
+    window.closeAd = function() {
+      const overlay = document.getElementById('adOverlay');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      isAdShowing = false;
+      
+      // Reset download state if needed
+      if (isDownloading) {
+        const progressDiv = document.getElementById('downloadProgress');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
+        
+        progressDiv.classList.remove('active');
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download Now';
+        downloadBtn.style.opacity = '1';
+        downloadBtn.style.pointerEvents = 'auto';
+        progressFill.style.width = '0%';
+        progressPercent.textContent = '0%';
+        isDownloading = false;
+      }
+      
+      // Restart the timer after closing
+      resetAdTimer();
+    };
+
+    // Handle Download from Ad
+    window.handleAdDownload = function(e) {
+      e.preventDefault();
+      
+      if (isDownloading) return;
+      
+      // Start direct download
+      downloadAPK();
+    };
+
+    // Reset timer
+    function resetAdTimer() {
+      if (adInterval) {
+        clearInterval(adInterval);
+        adInterval = null;
+      }
+      startAdTimer();
     }
 
-    // ============ APPS ============
-    function renderApps(apps) {
-        const list = toArray(apps);
-        if (!list.length) {
-            appsContainer.innerHTML = EMPTY_STATES.apps;
-            return;
+    // Start timer
+    function startAdTimer() {
+      adInterval = setInterval(function() {
+        if (!isAdShowing && !isDownloading) {
+          showAd();
         }
-        appsContainer.innerHTML = list.map(item => `
-            <a href="${item.url || '#'}" target="_blank" rel="noopener noreferrer" class="list-item">
-                <div class="list-icon app-color">${buildAppIconHTML(item)}</div>
-                <div class="list-content">
-                    <div class="list-title">${escapeHTML(item.title || 'Untitled')}</div>
-                    <div class="list-desc">${escapeHTML(item.description || '')}</div>
-                </div>
-                <div class="list-arrow"><i class="fas fa-chevron-right"></i></div>
-            </a>
-        `).join('');
+      }, 10000); // 10 seconds
     }
 
-    // ============ WEBSITES ============
-    function renderWebsites(websites) {
-        const list = toArray(websites);
-        if (!list.length) {
-            websitesContainer.innerHTML = EMPTY_STATES.websites;
-            return;
-        }
-        websitesContainer.innerHTML = list.map(item => `
-            <a href="${item.url || '#'}" target="_blank" rel="noopener noreferrer" class="list-item">
-                <div class="list-icon web-color">${buildWebsiteIconHTML(item)}</div>
-                <div class="list-content">
-                    <div class="list-title">${escapeHTML(item.title || 'Untitled')}</div>
-                    <div class="list-desc">${escapeHTML(item.description || '')}</div>
-                </div>
-                <div class="list-arrow"><i class="fas fa-chevron-right"></i></div>
-            </a>
-        `).join('');
-    }
-
-    // ============ FOLLOW BUTTON ============
-    followBtn.addEventListener('click', () => {
-        if (!isFollowing) {
-            isFollowing = true;
-            followBtn.classList.add('followed');
-            followBtn.innerHTML = '<i class="fas fa-check"></i> Following';
-            socialSuggestions.classList.add('visible');
-            showToast('Followed! Choose a platform below.');
-        } else {
-            isFollowing = false;
-            followBtn.classList.remove('followed');
-            followBtn.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
-            socialSuggestions.classList.remove('visible');
-            showToast('Unfollowed.', false);
-        }
+    // Close ad when clicking outside
+    document.getElementById('adOverlay').addEventListener('click', function(e) {
+      if (e.target === this && !isDownloading) {
+        closeAd();
+      }
     });
 
-    // ============ MESSAGE BUTTON ============
-    messageBtn.addEventListener('click', () => {
-        const wa = profileData?.links?.whatsapp;
-        if (wa) {
-            showToast('Opening WhatsApp…');
-            setTimeout(() => window.open(wa, '_blank', 'noopener,noreferrer'), 250);
-        } else {
-            showToast('WhatsApp not set.', false);
-        }
+    // Keyboard shortcut: ESC to close
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && isAdShowing && !isDownloading) {
+        closeAd();
+      }
     });
 
-    // ============ TABS ============
-    document.querySelectorAll('.tab-item').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tab = this.dataset.tab;
-            document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            this.classList.add('active');
-            document.getElementById('panel-' + tab)?.classList.add('active');
-        });
+    // Start the ad timer
+    startAdTimer();
+
+    // Show first ad after 3 seconds (so user sees content first)
+    setTimeout(function() {
+      if (!isAdShowing && !isDownloading) {
+        showAd();
+      }
+    }, 3000);
+
+    // Cleanup interval on page unload
+    window.addEventListener('beforeunload', function() {
+      if (adInterval) {
+        clearInterval(adInterval);
+        adInterval = null;
+      }
     });
 
-    // ============ FIREBASE LISTENER ============
-    onValue(PROFILE_REF, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            renderProfile(data);
-            console.log('✅ Profile loaded:', data);
-        } else {
-            profileName.textContent = 'Darshan Ghimire';
-            profileUsername.textContent = '@darshang404';
-            postsContainer.innerHTML = EMPTY_STATES.posts;
-            appsContainer.innerHTML = EMPTY_STATES.apps;
-            websitesContainer.innerHTML = EMPTY_STATES.websites;
-            socialScroll.innerHTML = `
-                <div style="width:100%; text-align:center; padding:12px 8px; font-size:13px; color:#94a3b8;">
-                    No social platforms linked yet.
-                </div>
-            `;
-            showToast('Open admin.html to set up the profile.', false);
-        }
-    }, (err) => {
-        console.error('Realtime DB error:', err);
-        showToast('Failed to load profile.', false);
-    });
+  })();
 </script>
 
 </body>
