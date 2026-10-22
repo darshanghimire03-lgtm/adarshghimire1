@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Post — Durbar</title>
+<meta name="description" content="View this post on Durbar.">
+<meta property="og:site_name" content="Durbar">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Post on Durbar">
+<meta property="og:description" content="View this post on Durbar.">
+<meta property="og:image" content="https://adarshghimire1.com.np/favicon.png">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #eef1f6;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --muted: #777777;
+    --line: #e6e9ef;
+    --brand: #1e4b7a;
+    --btn: #111111;
+    --btn-text: #ffffff;
+    --shadow: 0 12px 40px rgba(0,0,0,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1218;
+      --card: #1a1e27;
+      --text: #f1f3f7;
+      --muted: #98a0ae;
+      --line: #2a303c;
+      --brand: #4a8ab5;
+      --btn: #f1f3f7;
+      --btn-text: #111111;
+      --shadow: 0 12px 40px rgba(0,0,0,0.5);
+    }
+  }
+
+  html, body {
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    padding-top: calc(20px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .card {
+    width: 100%;
+    max-width: 500px;
+    background: var(--card);
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+  }
+
+  .brand-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--brand);
+    margin-bottom: 16px;
+  }
+  .brand-row img { width: 22px; height: 22px; border-radius: 6px; }
+
+  .head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--line);
+  }
+  .avatar.fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--brand);
+    color: #fff;
+    font-weight: 800;
+    font-size: 20px;
+  }
+  .who { min-width: 0; }
+  .name {
+    font-weight: 800;
+    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    text-transform: capitalize;
+  }
+
+  .text {
+    font-size: 15.5px;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .text a { color: var(--brand); word-break: break-all; }
+
+  .media {
+    width: 100%;
+    border-radius: 14px;
+    display: block;
+    margin-bottom: 14px;
+    max-height: 420px;
+    object-fit: cover;
+    background: var(--line);
+  }
+
+  .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+  .btn {
+    display: block;
+    text-align: center;
+    background: var(--btn);
+    color: var(--btn-text);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn.secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--line);
+  }
+
+  .state {
+    text-align: center;
+    padding: 28px 8px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid var(--line);
+    border-top-color: var(--brand);
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 14px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="card">
+    <div class="brand-row">
+      <img src="/favicon.png" alt="">
+      <span>Durbar</span>
+    </div>
+
+    <div id="loading" class="state">
+      <div class="spinner"></div>
+      Loading post…
+    </div>
+
+    <div id="missing" class="state hidden">
+      This post isn't available right now. It may have been deleted or not shared yet.
+      <div class="actions" style="margin-top:18px;">
+        <a class="btn" href="/">Go to Durbar</a>
+      </div>
+    </div>
+
+    <div id="postView" class="hidden">
+      <div class="head">
+        <div id="avatarSlot"></div>
+        <div class="who">
+          <div class="name" id="authorName"></div>
+          <div class="meta" id="authorMeta"></div>
+        </div>
+      </div>
+
+      <div class="text hidden" id="postText"></div>
+      <img class="media hidden" id="postImage" alt="">
+
+      <div class="actions">
+        <a class="btn" id="openApp" href="/">Open in Durbar app</a>
+        <a class="btn secondary" href="/">Visit Durbar</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var postId = (params.get("id") || "").trim();
+
+  var loading = document.getElementById("loading");
+  var missing = document.getElementById("missing");
+  var postView = document.getElementById("postView");
+
+  function show(el) { el.classList.remove("hidden"); }
+  function hide(el) { el.classList.add("hidden"); }
+
+  function showMissing() {
+    hide(loading);
+    hide(postView);
+    show(missing);
+  }
+
+  function setMeta(selector, value) {
+    var el = document.querySelector(selector);
+    if (el) el.setAttribute("content", value);
+  }
+
+  function timeAgo(ts) {
+    if (!ts) return "";
+    var diff = Math.floor((Date.now() - ts) / 1000);
+    if (diff < 60) return "Just now";
+    if (diff < 3600) return Math.floor(diff / 60) + "m ago";
+    if (diff < 86400) return Math.floor(diff / 3600) + "h ago";
+    if (diff < 604800) return Math.floor(diff / 86400) + "d ago";
+    return new Date(ts).toLocaleDateString();
+  }
+
+  function linkify(container, text) {
+    container.textContent = "";
+    var pattern = /(https?:\/\/[^\s<]+)/g;
+    var last = 0;
+    var match;
+    while ((match = pattern.exec(text)) !== null) {
+      if (match.index > last) {
+        container.appendChild(document.createTextNode(text.slice(last, match.index)));
+      }
+      var a = document.createElement("a");
+      a.href = match[1];
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = match[1];
+      container.appendChild(a);
+      last = match.index + match[1].length;
+    }
+    if (last < text.length) {
+      container.appendChild(document.createTextNode(text.slice(last)));
+    }
+  }
+
+  function buildAvatar(name, photo) {
+    var slot = document.getElementById("avatarSlot");
+    slot.textContent = "";
+    if (photo) {
+      var img = document.createElement("img");
+      img.className = "avatar";
+      img.alt = "";
+      img.src = photo;
+      img.onerror = function () {
+        slot.textContent = "";
+        slot.appendChild(fallbackAvatar(name));
+      };
+      slot.appendChild(img);
+    } else {
+      slot.appendChild(fallbackAvatar(name));
+    }
+  }
+
+  function fallbackAvatar(name) {
+    var div = document.createElement("div");
+    div.className = "avatar fallback";
+    div.textContent = (name || "D").charAt(0).toUpperCase();
+    return div;
+  }
+
+  function render(card) {
+    var name = card.authorName || "Durbar User";
+    var role = card.authorRole || "";
+    var time = timeAgo(card.createdAt);
+    var text = card.text || "";
+    var image = card.imageUrl || "";
+    var photo = card.authorPhoto || "";
+
+    document.title = name + " on Durbar";
+    var description = text ? text.replace(/\s+/g, " ").slice(0, 200) : "View this post on Durbar.";
+    setMeta('meta[property="og:title"]', name + " on Durbar");
+    setMeta('meta[property="og:description"]', description);
+    setMeta('meta[name="description"]', description);
+    if (image || photo) {
+      setMeta('meta[property="og:image"]', image || photo);
+    }
+
+    buildAvatar(name, photo);
+    document.getElementById("authorName").textContent = name;
+    document.getElementById("authorMeta").textContent = [role, time].filter(Boolean).join(" • ");
+
+    var textEl = document.getElementById("postText");
+    if (text) {
+      linkify(textEl, text);
+      show(textEl);
+    }
+
+    var imageEl = document.getElementById("postImage");
+    if (image) {
+      imageEl.src = image;
+      show(imageEl);
+    }
+
+    var openApp = document.getElementById("openApp");
+    var isAndroid = /android/i.test(navigator.userAgent);
+    if (isAndroid) {
+      openApp.href = "intent://adarshghimire1.com.np/durbar/post/" + encodeURIComponent(postId) +
+        "#Intent;scheme=https;package=com.doroi.plus2;S.browser_fallback_url=" +
+        encodeURIComponent("https://adarshghimire1.com.np/") + ";end";
+    }
+
+    hide(loading);
+    hide(missing);
+    show(postView);
+  }
+
+  if (!postId) {
+    showMissing();
+    return;
+  }
+
+  try {
+    firebase.initializeApp({
+      apiKey: "AIzaSyCyrQUpOlHrY3t7GtxFXD5zCweKtYYX5wI",
+      databaseURL: "https://darbarhigh-4c642-default-rtdb.firebaseio.com",
+      projectId: "darbarhigh-4c642"
+    });
+
+    firebase.database().ref("shareCards/" + postId).once("value").then(function (snap) {
+      var card = snap.val();
+      if (!card) {
+        showMissing();
+        return;
+      }
+      render(card);
+    }).catch(function () {
+      showMissing();
+    });
+  } catch (e) {
+    showMissing();
+  }
+})();
+</script>
+
+</body>
+</html>

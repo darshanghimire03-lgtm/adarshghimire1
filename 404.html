@@ -3,7 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Page not found</title>
+<title>Durbar</title>
+<meta name="description" content="Durbar Learning Platform — notes, posts and shorts for students.">
+<meta property="og:site_name" content="Durbar">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Durbar">
+<meta property="og:description" content="Open this link in Durbar — notes, posts and shorts for students.">
+<meta property="og:image" content="https://adarshghimire1.com.np/favicon.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Durbar">
+<meta name="twitter:description" content="Open this link in Durbar — notes, posts and shorts for students.">
+<meta name="twitter:image" content="https://adarshghimire1.com.np/favicon.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -333,7 +343,7 @@
 <div id="redirecting" class="page">
   <div class="content">
     <div class="spinner"></div>
-    <div class="redirecting-text">Opening short…</div>
+    <div class="redirecting-text" id="redirectingText">Opening…</div>
     <a id="manualLink" class="manual-link" href="#">Tap here if not redirected</a>
   </div>
 </div>
@@ -393,24 +403,31 @@
 (function () {
   var path = window.location.pathname || "";
   var search = window.location.search || "";
+  var query = new URLSearchParams(search);
 
-  var match = path.match(/^(.*?)\/shorts\/([^\/?#]+)/i);
-  var base = match ? match[1] : "";
-  var shortId = match ? decodeURIComponent(match[2]) : null;
+  var target = null;
+  var label = "Opening…";
 
-  if (shortId && /^index\.html?$/i.test(shortId)) {
-    shortId = null;
+  var postMatch = path.match(/^(?:\/durbar)?\/post\/([^\/?#]+)/i);
+  var shortMatch = path.match(/^(?:\/durbar)?\/shorts\/([^\/?#]+)/i);
+
+  if (postMatch && !/^index\.html?$/i.test(postMatch[1])) {
+    target = "/post/?id=" + encodeURIComponent(decodeURIComponent(postMatch[1]));
+    label = "Opening post…";
+  } else if (shortMatch && !/^index\.html?$/i.test(shortMatch[1])) {
+    target = "/shorts/?id=" + encodeURIComponent(decodeURIComponent(shortMatch[1]));
+    label = "Opening short…";
+  } else if (/\/shorts\/?$/i.test(path) && query.get("id")) {
+    target = "/shorts/?id=" + encodeURIComponent(query.get("id"));
+    label = "Opening short…";
+  } else if (/\/post\/?$/i.test(path) && query.get("id")) {
+    target = "/post/?id=" + encodeURIComponent(query.get("id"));
+    label = "Opening post…";
   }
 
-  if (!shortId) {
-    var q = new URLSearchParams(search);
-    if (q.get("id")) shortId = q.get("id");
-  }
-
-  if (shortId) {
-    var target = base + "/shorts/?id=" + encodeURIComponent(shortId);
-
+  if (target) {
     document.getElementById("redirecting").classList.add("show");
+    document.getElementById("redirectingText").textContent = label;
     document.getElementById("manualLink").href = target;
 
     try {
