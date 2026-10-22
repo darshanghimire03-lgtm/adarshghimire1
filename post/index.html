@@ -164,6 +164,13 @@
     font-size: 15px;
     line-height: 1.6;
   }
+  .debug {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--muted);
+    word-break: break-all;
+    text-align: left;
+  }
   .spinner {
     width: 40px;
     height: 40px;
@@ -192,7 +199,8 @@
     </div>
 
     <div id="missing" class="state hidden">
-      This post isn't available right now. It may have been deleted.
+      <div id="missingText">This post isn't available right now.</div>
+      <div id="debugBox" class="debug hidden"></div>
       <div class="actions" style="margin-top:18px;">
         <a class="btn" href="/">Go to Durbar</a>
       </div>
@@ -223,17 +231,25 @@
   var DB = "https://darbarhigh-4c642-default-rtdb.firebaseio.com";
   var params = new URLSearchParams(window.location.search);
   var postId = (params.get("id") || "").trim();
+  var debug = params.get("debug") === "1";
 
   var loading = document.getElementById("loading");
   var missing = document.getElementById("missing");
   var postView = document.getElementById("postView");
+  var debugLines = [];
 
   function show(el) { el.classList.remove("hidden"); }
   function hide(el) { el.classList.add("hidden"); }
 
-  function showMissing() {
+  function showMissing(message) {
     hide(loading);
     hide(postView);
+    document.getElementById("missingText").textContent = message || "This post isn't available right now.";
+    if (debug) {
+      var box = document.getElementById("debugBox");
+      box.textContent = debugLines.join(" | ");
+      show(box);
+    }
     show(missing);
   }
 
@@ -243,13 +259,21 @@
   }
 
   function getValue(path) {
-    return fetch(DB + "/" + path + ".json")
-      .then(function (res) { return res.ok ? res.json() : null; })
-      .catch(function () { return null; });
+    return fetch(DB + "/" + path + ".json", { cache: "no-store" })
+      .then(function (res) {
+        return res.json().catch(function () { return null; }).then(function (body) {
+          debugLines.push(path + " → " + res.status);
+          return { ok: res.ok, status: res.status, data: body };
+        });
+      })
+      .catch(function (err) {
+        debugLines.push(path + " → network error");
+        return { ok: false, status: 0, data: null };
+      });
   }
 
-  function asString(value) {
-    return typeof value === "string" ? value : "";
+  function asString(result) {
+    return result && result.ok && typeof result.data === "string" ? result.data : "";
   }
 
   function timeAgo(ts) {
@@ -355,7 +379,8 @@
   }
 
   if (!postId || !/^[A-Za-z0-9_-]{1,64}$/.test(postId)) {
-    showMissing();
+    debugLines.push("invalid or missing id");
+    showMissing("This post link is not valid.");
     return;
   }
 
@@ -368,14 +393,17 @@
     getValue("posts/" + key + "/authorRole"),
     getValue("posts/" + key + "/createdAt")
   ]).then(function (r) {
+    var denied = r.some(function (x) { return x.status === 401 || x.status === 403; });
     var authorUid = asString(r[0]);
     var text = asString(r[1]);
     var imageUrl = asString(r[2]);
     var authorRole = asString(r[3]);
-    var createdAt = typeof r[4] === "number" ? r[4] : 0;
+    var createdAt = r[4].ok && typeof r[4].data === "number" ? r[4].data : 0;
 
     if (!authorUid && !text && !imageUrl) {
-      showMissing();
+      showMissing(denied
+        ? "This post can't be shown yet. Please open it in the Durbar app."
+        : "This post isn't available. It may have been deleted.");
       return;
     }
 
@@ -400,6 +428,7 @@
       });
     });
   }).catch(function () {
+    debugLines.push("script error");
     showMissing();
   });
 })();
