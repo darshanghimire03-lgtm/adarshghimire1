@@ -276,6 +276,13 @@
     }
   }
 
+  function fallbackAvatar(name) {
+    var div = document.createElement("div");
+    div.className = "avatar fallback";
+    div.textContent = (name || "D").charAt(0).toUpperCase();
+    return div;
+  }
+
   function buildAvatar(name, photo) {
     var slot = document.getElementById("avatarSlot");
     slot.textContent = "";
@@ -292,13 +299,6 @@
     } else {
       slot.appendChild(fallbackAvatar(name));
     }
-  }
-
-  function fallbackAvatar(name) {
-    var div = document.createElement("div");
-    div.className = "avatar fallback";
-    div.textContent = (name || "D").charAt(0).toUpperCase();
-    return div;
   }
 
   function render(card) {
@@ -335,8 +335,7 @@
     }
 
     var openApp = document.getElementById("openApp");
-    var isAndroid = /android/i.test(navigator.userAgent);
-    if (isAndroid) {
+    if (/android/i.test(navigator.userAgent)) {
       openApp.href = "intent://adarshghimire1.com.np/durbar/post/" + encodeURIComponent(postId) +
         "#Intent;scheme=https;package=com.doroi.plus2;S.browser_fallback_url=" +
         encodeURIComponent("https://adarshghimire1.com.np/") + ";end";

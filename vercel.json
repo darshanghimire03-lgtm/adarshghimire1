@@ -1,0 +1,18 @@
+{
+  "cleanUrls": false,
+  "rewrites": [
+    { "source": "/post/:id", "destination": "/api/share?type=post&id=:id" },
+    { "source": "/durbar/post/:id", "destination": "/api/share?type=post&id=:id" },
+    { "source": "/shorts/:id", "destination": "/api/share?type=shorts&id=:id" },
+    { "source": "/durbar/shorts/:id", "destination": "/api/share?type=shorts&id=:id" }
+  ],
+  "headers": [
+    {
+      "source": "/.well-known/assetlinks.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    }
+  ]
+}
