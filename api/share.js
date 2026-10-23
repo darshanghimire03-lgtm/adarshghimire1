@@ -215,6 +215,7 @@ function possessive(name) {
 
 function renderPost(id, post) {
   const pageUrl = SITE + "/post/" + id;
+  const target = SITE + "/comment.html?postId=" + encodeURIComponent(id);
   const name = post && post.authorName ? post.authorName : "Durbar User";
   const role = post && post.authorRole ? post.authorRole : "";
   const body = post ? shorten(post.text, 300) : "";
@@ -240,7 +241,7 @@ function renderPost(id, post) {
     '<div><div class="name">' + esc(name) + "</div>" +
     (role ? '<div class="role">' + esc(role) + "</div>" : "") +
     "</div></div>" +
-    '<a class="btn" href="' + esc(SITE + "/post/?id=" + id) + '">View post</a>' +
+    '<a class="btn" href="' + esc(target) + '">View post</a>' +
     '<div class="brand">Durbar Learning Platform</div></div>';
 
   return wrapPage(title, metaTags({
@@ -252,7 +253,7 @@ function renderPost(id, post) {
     pageUrl: pageUrl,
     type: "article",
     twitterCard: hasImage ? "summary_large_image" : "summary"
-  }), html, SITE + "/post/?id=" + encodeURIComponent(id));
+  }), html, target);
 }
 
 function renderShort(id, short) {

@@ -162,7 +162,7 @@
   var userMatch = path.match(/^(?:\/durbar)?\/user\/([^\/?#]+)/i);
 
   if (postMatch && !/^index\.html?$/i.test(postMatch[1])) {
-    target = "/post/?id=" + encodeURIComponent(decodeURIComponent(postMatch[1]));
+    target = "/comment.html?postId=" + encodeURIComponent(decodeURIComponent(postMatch[1]));
     label = "Opening post…";
   } else if (shortMatch && !/^index\.html?$/i.test(shortMatch[1])) {
     target = "/shorts/?id=" + encodeURIComponent(decodeURIComponent(shortMatch[1]));
@@ -174,7 +174,7 @@
     target = "/shorts/?id=" + encodeURIComponent(query.get("id"));
     label = "Opening short…";
   } else if (/\/post\/?$/i.test(path) && query.get("id")) {
-    target = "/post/?id=" + encodeURIComponent(query.get("id"));
+    target = "/comment.html?postId=" + encodeURIComponent(query.get("id"));
     label = "Opening post…";
   }
 
