@@ -234,19 +234,27 @@ function renderShort(id, short) {
   }), html, target);
 }
 
+function circleImage(url) {
+  if (!url) return "";
+  if (url.indexOf("res.cloudinary.com") === -1 || url.indexOf("/image/upload/") === -1) return url;
+  return url.replace("/image/upload/", "/image/upload/w_400,h_400,c_fill,g_face/r_max/f_png/");
+}
+
 function renderUser(id, user) {
   const pageUrl = SITE + "/durbar/user/" + id;
   const target = id === "invalid" ? SITE + "/" : SITE + "/profile/?uid=" + encodeURIComponent(id);
   const name = user && user.name ? user.name : "Durbar User";
   const role = user ? capitalize(user.role) : "";
   const isModerator = role.toLowerCase() === "moderator";
-  const photo = user && user.photo ? cloudinaryImage(user.photo, "w_400,h_400,c_fill,g_face,q_auto,f_jpg") : "";
+  const photo = user && user.photo ? user.photo : "";
+  const circle = circleImage(photo);
+  const pagePhoto = photo ? cloudinaryImage(photo, "w_400,h_400,c_fill,g_face,q_auto,f_jpg") : "";
   const title = user ? name + " on Durbar" : "Profile on Durbar";
   const description = role ? role + " • View profile on Durbar" : "View profile on Durbar";
-  const image = user ? SITE + "/api/og?id=" + encodeURIComponent(id) : DEFAULT_IMAGE;
+  const image = circle || DEFAULT_IMAGE;
 
-  const avatar = photo
-    ? '<img class="avatar" src="' + esc(photo) + '" alt="">'
+  const avatar = pagePhoto
+    ? '<img class="avatar" src="' + esc(pagePhoto) + '" alt="">'
     : '<div class="avatar fallback">' + esc(name.charAt(0).toUpperCase()) + "</div>";
 
   const tick = role
@@ -265,11 +273,11 @@ function renderUser(id, user) {
     title: title,
     description: description,
     image: image,
-    imageWidth: 1200,
-    imageHeight: 630,
+    imageWidth: 400,
+    imageHeight: 400,
     pageUrl: pageUrl,
     type: "profile",
-    twitterCard: user ? "summary_large_image" : "summary"
+    twitterCard: "summary"
   }), html, target);
 }
 
