@@ -29,6 +29,44 @@ function videoThumbnail(videoUrl) {
     .replace(/\.[a-zA-Z0-9]{2,4}(\?.*)?$/, ".jpg");
 }
 
+function cloudinaryPublicId(url) {
+  const match = /^https?:\/\/res\.cloudinary\.com\/([^/]+)\/image\/upload\/(.+)$/.exec(url || "");
+  if (!match) return null;
+  const parts = match[2].split("?")[0].split("/");
+  while (parts.length > 1 && (/^v\d+$/.test(parts[0]) || /^[a-z]{1,3}_[^/]*$/.test(parts[0]))) parts.shift();
+  const publicId = parts.join("/").replace(/\.[a-zA-Z0-9]{2,4}$/, "");
+  return publicId ? { cloud: match[1], publicId: publicId } : null;
+}
+
+function base64Url(text) {
+  return Buffer.from(text, "utf8").toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function postPreviewImage(postImage, avatar) {
+  if (!postImage) return "";
+  const base = cloudinaryPublicId(postImage);
+  if (!base) return postImage;
+  const marker = "/image/upload/";
+  const head = postImage.slice(0, postImage.indexOf(marker) + marker.length);
+  const rest = postImage.slice(postImage.indexOf(marker) + marker.length);
+  const original = rest.split("?")[0];
+  const frame = "w_1200,h_630,c_fill,g_auto,q_auto";
+
+  if (!avatar) return head + frame + ",f_jpg/" + original;
+
+  const av = cloudinaryPublicId(avatar);
+  let layer;
+  if (av && av.cloud === base.cloud) {
+    layer = "l_" + av.publicId.split("/").map(encodeURIComponent).join(":");
+  } else {
+    layer = "l_fetch:" + base64Url(avatar);
+  }
+
+  return head + frame + "/" +
+    layer + "/c_fill,g_face,w_132,h_132/r_max/bo_6px_solid_white/" +
+    "fl_layer_apply,g_south_west,x_32,y_32/f_jpg/" + original;
+}
+
 async function loadValue(path) {
   try {
     const res = await fetch(DB + "/" + path + ".json");
@@ -164,29 +202,44 @@ function wrapPage(title, meta, bodyHtml, redirectTo) {
     "<style>" + baseStyle + "</style></head><body>" + bodyHtml + script + "</body></html>";
 }
 
+function circleImage(url, size) {
+  if (!url) return "";
+  if (url.indexOf("res.cloudinary.com") === -1 || url.indexOf("/image/upload/") === -1) return url;
+  const dim = size || 400;
+  return url.replace("/image/upload/", "/image/upload/w_" + dim + ",h_" + dim + ",c_fill,g_face/r_max/f_png/");
+}
+
+function possessive(name) {
+  return name + "'s";
+}
+
 function renderPost(id, post) {
   const pageUrl = SITE + "/post/" + id;
   const name = post && post.authorName ? post.authorName : "Durbar User";
   const role = post && post.authorRole ? post.authorRole : "";
   const body = post ? shorten(post.text, 300) : "";
-  const photo = post && post.authorPhoto ? cloudinaryImage(post.authorPhoto, "w_600,h_600,c_fill,g_face,q_auto,f_jpg") : "";
-  const postImage = post && post.imageUrl ? cloudinaryImage(post.imageUrl, "w_1200,h_630,c_fill,q_auto,f_jpg") : "";
-  const image = postImage || photo || DEFAULT_IMAGE;
-  const title = post ? name + " on Durbar" : "Post on Durbar";
-  const description = body || (post ? "Shared a post on Durbar" : "Open this post in the Durbar app");
-  const isWide = !!postImage;
+  const rawPhoto = post && post.authorPhoto ? post.authorPhoto : "";
+  const rawImage = post && post.imageUrl ? post.imageUrl : "";
+  const photoPage = rawPhoto ? cloudinaryImage(rawPhoto, "w_200,h_200,c_fill,g_face,q_auto,f_jpg") : "";
+  const photoSmall = rawPhoto ? circleImage(rawPhoto, 200) : "";
+  const postImagePage = rawImage ? cloudinaryImage(rawImage, "w_1200,h_630,c_fill,q_auto,f_jpg") : "";
+  const hasImage = !!rawImage;
+  const image = hasImage ? postPreviewImage(rawImage, rawPhoto) : (photoSmall || DEFAULT_IMAGE);
+  const title = post ? possessive(name) + " post on Durbar" : "Post on Durbar";
+  const description = body || (post ? (hasImage ? "Shared a photo on Durbar" : "Shared a post on Durbar") : "Open this post in the Durbar app");
 
-  const avatar = photo
-    ? '<img class="avatar" src="' + esc(photo) + '" alt="">'
+  const avatar = photoPage
+    ? '<img class="avatar" src="' + esc(photoPage) + '" alt="">'
     : '<div class="avatar fallback">' + esc(name.charAt(0).toUpperCase()) + "</div>";
 
   const html =
-    '<div class="card"><div class="head">' + avatar +
+    '<div class="card">' +
+    (postImagePage ? '<img class="media" src="' + esc(postImagePage) + '" alt="">' : "") +
+    (body ? '<p class="text">' + esc(body) + "</p>" : "") +
+    '<div class="head">' + avatar +
     '<div><div class="name">' + esc(name) + "</div>" +
     (role ? '<div class="role">' + esc(role) + "</div>" : "") +
     "</div></div>" +
-    (body ? '<p class="text">' + esc(body) + "</p>" : "") +
-    (postImage ? '<img class="media" src="' + esc(postImage) + '" alt="">' : "") +
     '<a class="btn" href="' + esc(SITE + "/post/?id=" + id) + '">View post</a>' +
     '<div class="brand">Durbar Learning Platform</div></div>';
 
@@ -194,11 +247,11 @@ function renderPost(id, post) {
     title: title,
     description: description,
     image: image,
-    imageWidth: isWide ? 1200 : 600,
-    imageHeight: isWide ? 630 : 600,
+    imageWidth: hasImage ? 1200 : 200,
+    imageHeight: hasImage ? 630 : 200,
     pageUrl: pageUrl,
     type: "article",
-    twitterCard: isWide ? "summary_large_image" : "summary"
+    twitterCard: hasImage ? "summary_large_image" : "summary"
   }), html, SITE + "/post/?id=" + encodeURIComponent(id));
 }
 
@@ -232,12 +285,6 @@ function renderShort(id, short) {
     type: "website",
     twitterCard: thumb ? "summary_large_image" : "summary"
   }), html, target);
-}
-
-function circleImage(url) {
-  if (!url) return "";
-  if (url.indexOf("res.cloudinary.com") === -1 || url.indexOf("/image/upload/") === -1) return url;
-  return url.replace("/image/upload/", "/image/upload/w_400,h_400,c_fill,g_face/r_max/f_png/");
 }
 
 function renderUser(id, user) {
