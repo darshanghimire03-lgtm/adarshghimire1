@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Comments — Durbar</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --card: #eaf1fd;
+    --navy: #0c1f4a;
+    --blue: #1f4aa8;
+    --muted: #6b7a99;
+    --line: #cfd9ec;
+    --like: #e53935;
+    --tint: #e6eefc;
+    --tint-line: #d3dff5;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  html, body {
+    background: var(--bg);
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #111827;
+    max-width: 520px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: calc(14px + env(safe-area-inset-top)) 16px 14px 16px;
+    background: var(--bg);
+    border-bottom: 1.5px solid var(--line);
+  }
+
+  .back-btn {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--tint-line);
+    border-radius: 14px;
+    background: var(--tint);
+    color: var(--navy);
+    cursor: pointer;
+  }
+
+  .back-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+  }
+
+  .post-box {
+    padding: 16px 16px 0 16px;
+  }
+
+  .section-label {
+    padding: 20px 20px 0 20px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .post {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 18px 18px 14px 18px;
+  }
+
+  .post-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: #c9d6f0;
+    color: var(--navy);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .who {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .name {
+    font-size: 1.12rem;
+    font-weight: 700;
+    color: var(--navy);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .badge {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    fill: #1d9bf0;
+  }
+
+  .badge.grey {
+    fill: #7b8190;
+  }
+
+  .meta {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .meta .role {
+    color: var(--blue);
+    font-weight: 500;
+  }
+
+  .menu-btn {
+    border: none;
+    background: transparent;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1c2333;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .menu-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+  }
+
+  .post-text {
+    margin-top: 18px;
+    font-size: 1.1rem;
+    line-height: 1.55;
+    color: #1a1f2b;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .post-text a {
+    color: var(--blue);
+  }
+
+  .post-image {
+    display: block;
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    border-radius: 18px;
+    margin-top: 14px;
+    background: #d9e3f6;
+  }
+
+  .divider {
+    height: 1.5px;
+    background: var(--line);
+    margin: 16px 0 6px 0;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .action {
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1c2333;
+  }
+
+  .action svg {
+    width: 30px;
+    height: 30px;
+    stroke: #1c2333;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .action.like {
+    cursor: default;
+  }
+
+  .action.like svg {
+    stroke: #8a94a8;
+  }
+
+  .action.like.on svg {
+    fill: var(--like);
+    stroke: var(--like);
+  }
+
+  .list {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .c-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .c-avatar {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background: #c9d6f0;
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  .c-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  .bubble {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 16px;
+    border-radius: 20px;
+    background: var(--card);
+  }
+
+  .c-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .c-name {
+    min-width: 0;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--navy);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .c-time {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .c-text {
+    margin-top: 4px;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #1a1f2b;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .state {
+    padding: 40px 16px;
+    text-align: center;
+    font-size: 0.98rem;
+    color: var(--muted);
+  }
+
+  .composer {
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    z-index: 30;
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom)) 12px;
+    background: #fdfdff;
+    box-shadow: 0 -1px 0 rgba(12, 31, 74, 0.06), 0 -6px 18px rgba(12, 31, 74, 0.05);
+  }
+
+  .composer input {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    padding: 0 18px;
+    border: 1.5px solid var(--tint-line);
+    border-radius: 999px;
+    outline: none;
+    background: var(--tint);
+    color: var(--navy);
+    font-family: inherit;
+    font-size: 1rem;
+  }
+
+  .composer input::placeholder {
+    color: var(--muted);
+  }
+
+  .send-btn {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .send-btn:disabled {
+    opacity: 0.5;
+  }
+
+  .send-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(88px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 40;
+    display: none;
+    max-width: 90%;
+    padding: 12px 22px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .toast.show {
+    display: block;
+  }
+
+  @media (min-width: 521px) {
+    body {
+      box-shadow: 0 0 0 1px #eef2fa;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header class="top-bar">
+  <button class="back-btn" type="button" id="backBtn" aria-label="Back">
+    <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <h1 class="title">Comments</h1>
+</header>
+
+<div class="post-box" id="postBox"></div>
+
+<div class="section-label">All comments</div>
+
+<main class="list" id="list">
+  <div class="state">Loading comments…</div>
+</main>
+
+<div class="composer" id="composer">
+  <input type="text" id="commentInput" placeholder="Add a comment" maxlength="500" autocomplete="off">
+  <button class="send-btn" type="button" id="sendBtn" aria-label="Send">
+    <svg viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-6.5L4 12zM11 13.5L20 4"/></svg>
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  (function () {
+    var POST_TEMPLATE_URL = "layout/item_post.html";
+
+    var postId = qs("postId");
+    var postBox = document.getElementById("postBox");
+    var listEl = document.getElementById("list");
+    var input = document.getElementById("commentInput");
+    var sendBtn = document.getElementById("sendBtn");
+    var composer = document.getElementById("composer");
+    var toastEl = document.getElementById("toast");
+
+    var userCache = {};
+    var me = null;
+    var meName = "";
+    var mePhoto = "";
+    var renderToken = 0;
+    var stickBottom = false;
+    var listening = false;
+    var postTemplate = null;
+    var templatePromise = null;
+
+    function el(tag, className, text) {
+      var node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(function () {
+        toastEl.classList.remove("show");
+      }, 3000);
+    }
+
+    function timeAgo(ts) {
+      if (!ts || typeof ts !== "number") return "";
+      var diff = Math.floor((Date.now() - ts) / 1000);
+      if (diff < 60) return "Just now";
+      if (diff < 3600) return Math.floor(diff / 60) + "m ago";
+      if (diff < 86400) return Math.floor(diff / 3600) + "h ago";
+      if (diff < 604800) return Math.floor(diff / 86400) + "d ago";
+      if (diff < 2592000) return Math.floor(diff / 604800) + "w ago";
+      return new Date(ts).toLocaleDateString();
+    }
+
+    function formatDate(ms) {
+      if (!ms || typeof ms !== "number") return "";
+      var d = new Date(ms);
+      return d.toLocaleDateString("en-US", { month: "long" }) + " " + String(d.getDate()).padStart(2, "0");
+    }
+
+    function likeInfo(post, uid) {
+      var l = post.likes;
+      if (l && typeof l === "object") {
+        var keys = Object.keys(l);
+        return {
+          count: keys.length,
+          liked: !!uid && keys.indexOf(uid) !== -1 && l[uid] !== false
+        };
+      }
+      if (typeof l === "number") return { count: l, liked: false };
+      return { count: 0, liked: false };
+    }
+
+    function linkify(container, text) {
+      var pattern = /(https?:\/\/[^\s]+)/g;
+      var last = 0;
+      var match;
+      while ((match = pattern.exec(text)) !== null) {
+        if (match.index > last) {
+          container.appendChild(document.createTextNode(text.slice(last, match.index)));
+        }
+        var a = document.createElement("a");
+        a.href = match[1];
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = match[1];
+        container.appendChild(a);
+        last = match.index + match[1].length;
+      }
+      if (last < text.length) {
+        container.appendChild(document.createTextNode(text.slice(last)));
+      }
+    }
+
+    function showState(message) {
+      listEl.textContent = "";
+      listEl.appendChild(el("div", "state", message));
+    }
+
+    function commentsRef() {
+      return db.ref("posts").child(postId).child("comments");
+    }
+
+    function loadUser(uid) {
+      if (!uid) return Promise.resolve({});
+      if (!userCache[uid]) {
+        userCache[uid] = db.ref("users").child(uid).once("value").then(function (snap) {
+          var u = snap.val() || {};
+          return {
+            name: typeof u.fullName === "string" ? u.fullName : "",
+            photo: typeof u.profileImageUrl === "string" ? u.profileImageUrl : "",
+            role: typeof u.role === "string" ? u.role : ""
+          };
+        }).catch(function () {
+          return {};
+        });
+      }
+      return userCache[uid];
+    }
+
+    function loadTemplate() {
+      if (postTemplate) return Promise.resolve(postTemplate);
+      if (templatePromise) return templatePromise;
+      templatePromise = fetch(POST_TEMPLATE_URL).then(function (res) {
+        if (!res.ok) throw new Error("template");
+        return res.text();
+      }).then(function (html) {
+        var holder = document.createElement("template");
+        holder.innerHTML = html.trim();
+        var node = holder.content.firstElementChild;
+        if (!node) throw new Error("template");
+        postTemplate = node;
+        return postTemplate;
+      }).catch(function (err) {
+        templatePromise = null;
+        throw err;
+      });
+      return templatePromise;
+    }
+
+    function buildPost(post, u) {
+      var role = (post.authorRole || u.role || "").toLowerCase();
+      var name = u.name || post.authorName || "Durbar User";
+      var photo = u.photo || post.authorPhoto || "";
+      var dateLabel = formatDate(post.createdAt);
+
+      var card = postTemplate.cloneNode(true);
+
+      var avatarImg = card.querySelector(".avatar-img");
+      var avatarInitial = card.querySelector(".avatar-initial");
+      avatarInitial.textContent = name.charAt(0).toUpperCase();
+      if (photo) {
+        avatarImg.alt = name;
+        avatarImg.onerror = function () {
+          avatarImg.hidden = true;
+          avatarInitial.hidden = false;
+        };
+        avatarImg.src = photo;
+        avatarImg.hidden = false;
+      } else {
+        avatarInitial.hidden = false;
+      }
+
+      card.querySelector(".name").textContent = name;
+      card.querySelector(".badge").classList.toggle("grey", role === "moderator");
+
+      var roleEl = card.querySelector(".role");
+      var dotEl = card.querySelector(".dot");
+      var dateEl = card.querySelector(".date");
+      if (role) {
+        roleEl.textContent = role;
+        roleEl.hidden = false;
+      }
+      if (dateLabel) {
+        dateEl.textContent = dateLabel;
+        dateEl.hidden = false;
+      }
+      dotEl.hidden = !(role && dateLabel);
+
+      var body = card.querySelector(".post-text");
+      card.querySelector(".see-more").remove();
+      body.classList.remove("clamped");
+      if (post.text) {
+        linkify(body, post.text);
+        body.hidden = false;
+      }
+
+      var img = card.querySelector(".post-image");
+      if (post.imageUrl) {
+        img.onerror = function () {
+          img.hidden = true;
+        };
+        img.src = post.imageUrl;
+        img.hidden = false;
+      } else {
+        img.remove();
+      }
+
+      var info = likeInfo(post, me ? me.uid : "");
+      var likeBtn = card.querySelector(".action.like");
+      likeBtn.classList.toggle("on", info.liked);
+      likeBtn.querySelector(".count").textContent = String(info.count);
+
+      card.querySelector(".action.comment").addEventListener("click", function () {
+        input.focus();
+      });
+
+      card.querySelector(".action.share").addEventListener("click", function () {
+        var url = location.origin + "/post/" + encodeURIComponent(postId);
+        if (navigator.share) {
+          navigator.share({ title: name + " on Durbar", url: url }).catch(function () {});
+        } else if (navigator.clipboard) {
+          navigator.clipboard.writeText(url).then(function () {
+            showToast("Link copied to clipboard");
+          }).catch(function () {});
+        }
+      });
+
+      return card;
+    }
+
+    function loadPost() {
+      Promise.all([loadTemplate(), db.ref("posts").child(postId).once("value")]).then(function (results) {
+        var v = results[1].val();
+        if (!v || typeof v !== "object") return;
+        var authorUid = typeof v.authorUid === "string" ? v.authorUid : "";
+        return loadUser(authorUid).then(function (u) {
+          postBox.textContent = "";
+          postBox.appendChild(buildPost({
+            authorName: typeof v.authorName === "string" ? v.authorName : "",
+            authorPhoto: typeof v.authorPhoto === "string" ? v.authorPhoto : "",
+            authorRole: typeof v.authorRole === "string" ? v.authorRole : "",
+            createdAt: typeof v.createdAt === "number" ? v.createdAt : 0,
+            text: typeof v.text === "string" ? v.text : "",
+            imageUrl: typeof v.imageUrl === "string" ? v.imageUrl : "",
+            likes: v.likes !== undefined ? v.likes : v.likeCount
+          }, u));
+        });
+      }).catch(function () {});
+    }
+
+    function buildComment(c) {
+      var row = el("div", "c-row");
+
+      var avatar = el("div", "c-avatar");
+      var initial = el("span", "", c.name.charAt(0).toUpperCase());
+      if (c.photo) {
+        var img = document.createElement("img");
+        img.alt = c.name;
+        img.loading = "lazy";
+        img.onerror = function () {
+          img.remove();
+          avatar.appendChild(initial);
+        };
+        img.src = c.photo;
+        avatar.appendChild(img);
+      } else {
+        avatar.appendChild(initial);
+      }
+      row.appendChild(avatar);
+
+      var bubble = el("div", "bubble");
+      var head = el("div", "c-head");
+      head.appendChild(el("span", "c-name", c.name));
+      var ago = timeAgo(c.createdAt);
+      if (ago) head.appendChild(el("span", "c-time", ago));
+      bubble.appendChild(head);
+      bubble.appendChild(el("div", "c-text", c.text));
+      row.appendChild(bubble);
+
+      return row;
+    }
+
+    function render(comments) {
+      if (!comments.length) {
+        showState("No comments yet. Be the first to comment.");
+        return;
+      }
+      listEl.textContent = "";
+      comments.forEach(function (c) {
+        listEl.appendChild(buildComment(c));
+      });
+      if (stickBottom) {
+        stickBottom = false;
+        window.scrollTo(0, document.body.scrollHeight);
+      }
+    }
+
+    function pickString(v, keys) {
+      for (var i = 0; i < keys.length; i++) {
+        if (typeof v[keys[i]] === "string" && v[keys[i]]) return v[keys[i]];
+      }
+      return "";
+    }
+
+    function listen() {
+      commentsRef().on("value", function (snap) {
+        var token = ++renderToken;
+        var list = [];
+        snap.forEach(function (child) {
+          var v = child.val();
+          if (v && typeof v === "object") {
+            list.push({
+              id: child.key,
+              uid: pickString(v, ["authorUid", "uid", "userId", "authorId"]),
+              authorName: pickString(v, ["authorName", "userName", "name"]),
+              authorPhoto: pickString(v, ["authorPhoto", "userPhoto", "photoUrl"]),
+              text: typeof v.text === "string" ? v.text : "",
+              createdAt: typeof v.createdAt === "number" ? v.createdAt : 0
+            });
+          }
+        });
+        list.sort(function (a, b) {
+          return a.createdAt - b.createdAt;
+        });
+
+        Promise.all(list.map(function (c) {
+          return loadUser(c.uid);
+        })).then(function (users) {
+          if (token !== renderToken) return;
+          render(list.map(function (c, i) {
+            var u = users[i] || {};
+            return {
+              id: c.id,
+              name: u.name || c.authorName || "Durbar User",
+              photo: u.photo || c.authorPhoto || "",
+              text: c.text,
+              createdAt: c.createdAt
+            };
+          }));
+        });
+      }, function () {
+        showState("Couldn't load comments. You may not have permission to view them.");
+      });
+    }
+
+    function loadMe(user) {
+      meName = user.displayName || (user.email ? user.email.split("@")[0] : "");
+      mePhoto = user.photoURL || "";
+      loadUser(user.uid).then(function (u) {
+        if (u.name) meName = u.name;
+        if (u.photo) mePhoto = u.photo;
+      });
+    }
+
+    function send() {
+      var text = input.value.trim();
+      if (!text || !me || sendBtn.disabled) return;
+      sendBtn.disabled = true;
+      stickBottom = true;
+      commentsRef().push({
+        authorUid: me.uid,
+        authorName: meName,
+        authorPhoto: mePhoto,
+        text: text,
+        createdAt: firebase.database.ServerValue.TIMESTAMP
+      }).then(function () {
+        input.value = "";
+      }).catch(function () {
+        stickBottom = false;
+        showToast("Couldn't post your comment");
+      }).then(function () {
+        sendBtn.disabled = false;
+      });
+    }
+
+    document.getElementById("backBtn").addEventListener("click", function () {
+      if (history.length > 1) history.back();
+      else location.href = "index.html";
+    });
+
+    sendBtn.addEventListener("click", send);
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        send();
+      }
+    });
+
+    if (!postId) {
+      composer.hidden = true;
+      showState("Post not found.");
+    } else {
+      auth.onAuthStateChanged(function (user) {
+        if (!user) return;
+        me = user;
+        loadMe(user);
+        if (!listening) {
+          listening = true;
+          loadPost();
+          listen();
+        }
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

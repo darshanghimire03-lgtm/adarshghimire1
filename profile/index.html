@@ -444,16 +444,309 @@
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  .o-profile {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 16px 20px 0 20px;
+  }
+
+  .o-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 1.5px solid var(--tint-line);
+    background: #dfe8f8;
+    object-fit: cover;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .o-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .o-name {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .o-role-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    min-height: 24px;
+  }
+
+  .o-role {
+    font-size: 1.15rem;
+    color: var(--role-blue);
+    font-weight: 500;
+  }
+
+  .o-btn-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .msg-btn {
+    height: 52px;
+    padding: 0 24px;
+    border: none;
+    border-radius: 18px;
+    background: var(--navy);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .msg-btn svg {
+    width: 28px;
+    height: 28px;
+    stroke: #ffffff;
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .o-share-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    border: 1.5px solid var(--tint-line);
+    background: var(--tint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .o-share-btn svg {
+    width: 26px;
+    height: 26px;
+    stroke: var(--navy);
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .feed {
+    padding: 26px 16px 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .feed .post {
+    background: var(--tint);
+    border-radius: 28px;
+    padding: 18px 18px 14px 18px;
+  }
+
+  .feed .post-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .feed .avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: none;
+    background: #c9d6f0;
+    color: var(--navy);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .feed .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .feed .who {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .feed .name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .feed .name {
+    font-size: 1.12rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: normal;
+    line-height: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .feed .badge {
+    width: 20px;
+    height: 20px;
+    fill: #1d9bf0;
+    flex-shrink: 0;
+  }
+
+  .feed .badge.grey {
+    fill: #7b8190;
+  }
+
+  .feed .meta {
+    font-size: 0.9rem;
+    color: #6b7a99;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .feed .meta .role {
+    font-size: inherit;
+    color: var(--role-blue);
+    font-weight: 500;
+  }
+
+  .feed .menu-btn {
+    width: 36px;
+    height: 36px;
+    color: #1c2333;
+  }
+
+  .feed .menu-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+    stroke: none;
+  }
+
+  .feed .post-text {
+    margin-top: 18px;
+    font-size: 1.1rem;
+    line-height: 1.55;
+    color: #1a1f2b;
+  }
+
+  .feed .post-text.clamped {
+    max-height: calc(1.55em * 11);
+    overflow: hidden;
+  }
+
+  .feed .see-more {
+    display: none;
+    border: none;
+    background: transparent;
+    color: var(--blue);
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 700;
+    padding: 8px 0 0 0;
+    cursor: pointer;
+  }
+
+  .feed .see-more.visible {
+    display: block;
+  }
+
+  .feed .post-image {
+    max-height: 420px;
+    border-radius: 18px;
+    margin-top: 14px;
+  }
+
+  .feed .divider {
+    height: 1.5px;
+    background: #cfd9ec;
+    margin: 16px 0 6px 0;
+  }
+
+  .feed .actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .feed .action {
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1c2333;
+  }
+
+  .feed .action svg {
+    width: 30px;
+    height: 30px;
+    stroke: #1c2333;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .feed .action.like {
+    cursor: default;
+  }
+
+  .feed .action.like svg {
+    stroke: #8a94a8;
+  }
+
+  .feed .action.like.on svg {
+    fill: var(--like);
+    stroke: var(--like);
+  }
 </style>
 </head>
 <body>
 
 <header class="top-bar">
-  <a class="back-btn" href="../index.html" aria-label="Back">
+  <a class="back-btn" id="backBtn" href="../index.html" aria-label="Back">
     <svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
   </a>
   <h1 class="top-title" id="topTitle">Profile</h1>
-  <div class="menu-wrap">
+  <div class="menu-wrap" id="menuWrap">
     <button class="menu-btn" type="button" id="menuBtn" aria-label="Menu">
       <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
     </button>
@@ -462,6 +755,8 @@
     </div>
   </div>
 </header>
+
+<div id="ownView" hidden>
 
 <section class="profile">
   <img class="avatar" id="avatar" src="../favicon.png" alt="Profile photo">
@@ -492,6 +787,32 @@
 
 <div class="content" id="content"></div>
 
+</div>
+
+<div id="otherView" hidden>
+  <section class="o-profile">
+    <img class="o-avatar" id="oAvatar" src="../favicon.png" alt="Profile photo">
+    <div class="o-info">
+      <h2 class="o-name" id="oName"></h2>
+      <div class="o-role-row">
+        <span class="o-role" id="oRole"></span>
+        <svg class="badge" id="oBadge" viewBox="0 0 24 24" style="display:none"><path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.69 3.1 5.5l.34 3.7L1 12l2.44 2.79-.34 3.7 3.61.82L8.6 22.5l3.4-1.47 3.4 1.46 1.89-3.19 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z"/></svg>
+      </div>
+      <div class="o-btn-row">
+        <button class="msg-btn" type="button" id="msgBtn">
+          <svg viewBox="0 0 24 24"><path d="M4.5 4.5h15a1 1 0 0 1 1 1V16a1 1 0 0 1-1 1H9l-4.5 3.5V5.5a1 1 0 0 1 1-1z"/></svg>
+          <span>Message</span>
+        </button>
+        <button class="o-share-btn" type="button" id="oShareBtn" aria-label="Share">
+          <svg viewBox="0 0 24 24"><path d="M12 15V3.5M7.8 7.7L12 3.5l4.2 4.2M5 11.5V19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7.5"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <main class="feed" id="otherFeed"></main>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -504,6 +825,7 @@
     var HEART_PATH = "M12 20.5l-1.2-1.08C6 15.2 3 12.5 3 9a4.6 4.6 0 0 1 4.7-4.7c1.6 0 3.1.8 4.3 2.2 1.2-1.4 2.7-2.2 4.3-2.2A4.6 4.6 0 0 1 21 9c0 3.5-3 6.2-7.8 10.42L12 20.5z";
     var SHORT_OWNER_FIELDS = ["uploaderUid", "uploadedBy", "authorUid", "uid", "userId", "ownerUid", "createdBy"];
     var LOAD_TIMEOUT_MS = 12000;
+    var POST_TEMPLATE_URL = "../layout/item_post.html";
 
     var avatarEl = document.getElementById("avatar");
     var nameEl = document.getElementById("name");
@@ -517,11 +839,25 @@
     var changeLabel = document.getElementById("changeLabel");
     var fileInput = document.getElementById("fileInput");
     var tabs = document.querySelectorAll(".tab");
+    var ownView = document.getElementById("ownView");
+    var otherView = document.getElementById("otherView");
+    var menuWrap = document.getElementById("menuWrap");
+    var backBtn = document.getElementById("backBtn");
+    var oAvatar = document.getElementById("oAvatar");
+    var oName = document.getElementById("oName");
+    var oRole = document.getElementById("oRole");
+    var oBadge = document.getElementById("oBadge");
+    var otherFeed = document.getElementById("otherFeed");
 
     var currentUser = null;
     var displayName = "";
     var activeTab = "posts";
     var cache = { posts: null, shorts: null };
+    var otherUid = "";
+    var otherInfo = { name: "", role: "", photo: "" };
+    var otherPosts = [];
+    var postTemplate = null;
+    var templatePromise = null;
 
     function el(tag, className, text) {
       var node = document.createElement(tag);
@@ -790,8 +1126,220 @@
       if (photo) avatarEl.src = photo;
     }
 
+    function formatShortDate(ms) {
+      if (!ms || typeof ms !== "number") return "";
+      var d = new Date(ms);
+      return d.toLocaleDateString("en-US", { month: "long" }) + " " + String(d.getDate()).padStart(2, "0");
+    }
+
+    function loadTemplate() {
+      if (postTemplate) return Promise.resolve(postTemplate);
+      if (templatePromise) return templatePromise;
+      templatePromise = fetch(POST_TEMPLATE_URL).then(function (res) {
+        if (!res.ok) throw new Error("template");
+        return res.text();
+      }).then(function (html) {
+        var holder = document.createElement("template");
+        holder.innerHTML = html.trim();
+        var node = holder.content.firstElementChild;
+        if (!node) throw new Error("template");
+        postTemplate = node;
+        return postTemplate;
+      }).catch(function (err) {
+        templatePromise = null;
+        throw err;
+      });
+      return templatePromise;
+    }
+
+    function showFeedState(message, withRetry, onRetry) {
+      otherFeed.textContent = "";
+      var box = el("div", "state");
+      box.appendChild(el("div", "", message));
+      if (withRetry) {
+        var btn = el("button", "retry-btn", "Retry");
+        btn.type = "button";
+        btn.addEventListener("click", onRetry);
+        box.appendChild(btn);
+      }
+      otherFeed.appendChild(box);
+    }
+
+    function buildFeedPost(post) {
+      var role = (otherInfo.role || "").toLowerCase();
+      var name = otherInfo.name || "Durbar User";
+      var dateLabel = formatShortDate(post.createdAt);
+
+      var card = postTemplate.cloneNode(true);
+
+      var avatarImg = card.querySelector(".avatar-img");
+      var avatarInitial = card.querySelector(".avatar-initial");
+      avatarInitial.textContent = name.charAt(0).toUpperCase();
+      if (otherInfo.photo) {
+        avatarImg.alt = name;
+        avatarImg.onerror = function () {
+          avatarImg.hidden = true;
+          avatarInitial.hidden = false;
+        };
+        avatarImg.src = otherInfo.photo;
+        avatarImg.hidden = false;
+      } else {
+        avatarInitial.hidden = false;
+      }
+
+      card.querySelector(".name").textContent = name;
+      card.querySelector(".badge").classList.toggle("grey", role === "moderator");
+
+      var roleNode = card.querySelector(".role");
+      var dotNode = card.querySelector(".dot");
+      var dateNode = card.querySelector(".date");
+      if (role) {
+        roleNode.textContent = role;
+        roleNode.hidden = false;
+      }
+      if (dateLabel) {
+        dateNode.textContent = dateLabel;
+        dateNode.hidden = false;
+      }
+      dotNode.hidden = !(role && dateLabel);
+
+      var body = card.querySelector(".post-text");
+      var seeMore = card.querySelector(".see-more");
+      if (post.text) {
+        linkify(body, post.text);
+        body.hidden = false;
+        seeMore.addEventListener("click", function () {
+          var collapsed = body.classList.toggle("clamped");
+          seeMore.textContent = collapsed ? "See more" : "See less";
+        });
+        card._body = body;
+        card._seeMore = seeMore;
+      } else {
+        seeMore.remove();
+      }
+
+      var img = card.querySelector(".post-image");
+      if (post.imageUrl) {
+        img.onerror = function () {
+          img.hidden = true;
+        };
+        img.src = post.imageUrl;
+        img.hidden = false;
+      } else {
+        img.remove();
+      }
+
+      var info = likeCount(post);
+      var likeBtn = card.querySelector(".action.like");
+      likeBtn.classList.toggle("on", info.liked);
+      likeBtn.querySelector(".count").textContent = String(info.count);
+
+      card.querySelector(".action.comment").addEventListener("click", function () {
+        location.href = "../comment.html?postId=" + encodeURIComponent(post.id);
+      });
+
+      card.querySelector(".action.share").addEventListener("click", function () {
+        var url = location.origin + "/post/" + encodeURIComponent(post.id);
+        if (navigator.share) {
+          navigator.share({ title: name + " on Durbar", url: url }).catch(function () {});
+        } else if (navigator.clipboard) {
+          navigator.clipboard.writeText(url).then(function () {
+            showToast("Link copied");
+          }).catch(function () {});
+        }
+      });
+
+      return card;
+    }
+
+    function renderOtherFeed() {
+      if (!otherPosts.length) {
+        showFeedState("No posts yet", false);
+        return;
+      }
+      otherFeed.textContent = "";
+      var cards = otherPosts.map(buildFeedPost);
+      cards.forEach(function (card) {
+        otherFeed.appendChild(card);
+      });
+      requestAnimationFrame(function () {
+        cards.forEach(function (card) {
+          if (card._body && card._body.scrollHeight > card._body.clientHeight + 2) {
+            card._seeMore.classList.add("visible");
+          }
+        });
+      });
+    }
+
+    function loadOtherFeed() {
+      showFeedState("Loading...", false);
+      Promise.all([loadTemplate(), withTimeout(fetchPosts(otherUid))]).then(function (results) {
+        otherPosts = results[1];
+        renderOtherFeed();
+      }).catch(function () {
+        showFeedState("Couldn't load posts.", true, loadOtherFeed);
+      });
+    }
+
+    function applyOther() {
+      var name = otherInfo.name || "Durbar User";
+      oName.textContent = name;
+      topTitleEl.textContent = name;
+      document.title = name + " · Durbar";
+
+      var roleText = capitalize((otherInfo.role || "").toLowerCase());
+      oRole.textContent = roleText;
+      if (roleText) {
+        oBadge.style.display = "";
+        oBadge.setAttribute("class", "badge" + (roleText.toLowerCase() === "moderator" ? "" : " blue"));
+      } else {
+        oBadge.style.display = "none";
+      }
+
+      if (otherInfo.photo) {
+        oAvatar.onerror = function () {
+          oAvatar.onerror = null;
+          oAvatar.src = "../favicon.png";
+        };
+        oAvatar.src = otherInfo.photo;
+      }
+    }
+
+    function startOther(uid) {
+      otherUid = uid;
+      menuWrap.hidden = true;
+      otherView.hidden = false;
+      topTitleEl.textContent = "Profile";
+      showFeedState("Loading...", false);
+
+      backBtn.addEventListener("click", function (e) {
+        if (history.length > 1) {
+          e.preventDefault();
+          history.back();
+        }
+      });
+
+      db.ref("users").child(uid).once("value").then(function (snap) {
+        var u = snap.val() || {};
+        otherInfo = {
+          name: typeof u.fullName === "string" ? u.fullName.trim() : "",
+          role: typeof u.role === "string" ? u.role : "",
+          photo: typeof u.profileImageUrl === "string" ? u.profileImageUrl : ""
+        };
+      }).catch(function () {}).then(function () {
+        applyOther();
+        loadOtherFeed();
+      });
+    }
+
     function start(user) {
       currentUser = user;
+      var targetUid = qs("uid");
+      if (targetUid && targetUid !== user.uid) {
+        startOther(targetUid);
+        return;
+      }
+      ownView.hidden = false;
       var fallbackName = user.displayName || (user.email ? user.email.split("@")[0] : "");
       applyProfile(fallbackName, "", user.photoURL || "");
 
@@ -875,6 +1423,22 @@
         changeBtn.disabled = false;
         changeLabel.textContent = "Change profile";
       });
+    });
+
+    document.getElementById("msgBtn").addEventListener("click", function () {
+      showToast("Messaging isn't available yet");
+    });
+
+    document.getElementById("oShareBtn").addEventListener("click", function () {
+      var url = location.origin + "/profile/?uid=" + encodeURIComponent(otherUid);
+      var title = (otherInfo.name || "Durbar User") + " on Durbar";
+      if (navigator.share) {
+        navigator.share({ title: title, url: url }).catch(function () {});
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(function () {
+          showToast("Link copied");
+        }).catch(function () {});
+      }
     });
 
     document.getElementById("shareBtn").addEventListener("click", function () {
