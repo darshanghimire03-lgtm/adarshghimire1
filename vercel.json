@@ -4,7 +4,9 @@
     { "source": "/post/:id", "destination": "/api/share?type=post&id=:id" },
     { "source": "/durbar/post/:id", "destination": "/api/share?type=post&id=:id" },
     { "source": "/shorts/:id", "destination": "/api/share?type=shorts&id=:id" },
-    { "source": "/durbar/shorts/:id", "destination": "/api/share?type=shorts&id=:id" }
+    { "source": "/durbar/shorts/:id", "destination": "/api/share?type=shorts&id=:id" },
+    { "source": "/user/:id", "destination": "/api/share?type=user&id=:id" },
+    { "source": "/durbar/user/:id", "destination": "/api/share?type=user&id=:id" }
   ],
   "headers": [
     {

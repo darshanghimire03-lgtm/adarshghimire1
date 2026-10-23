@@ -1,6 +1,7 @@
 const DB = "https://darbarhigh-4c642-default-rtdb.firebaseio.com";
 const SITE = "https://adarshghimire1.com.np";
 const DEFAULT_IMAGE = SITE + "/favicon.png";
+const TICK_PATH = "M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.69 3.1 5.5l.34 3.7L1 12l2.44 2.79-.34 3.7 3.61.82L8.6 22.5l3.4-1.47 3.4 1.46 1.89-3.19 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z";
 
 function esc(value) {
   return String(value == null ? "" : value)
@@ -91,6 +92,28 @@ async function loadPost(id) {
   };
 }
 
+function capitalize(text) {
+  const clean = String(text || "").trim();
+  return clean ? clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase() : "";
+}
+
+async function loadUser(uid) {
+  const key = encodeURIComponent(uid);
+  const results = await Promise.all([
+    loadValue("users/" + key + "/fullName"),
+    loadValue("users/" + key + "/profileImageUrl"),
+    loadValue("users/" + key + "/role")
+  ]);
+
+  const name = str(results[0]).trim();
+  const photo = str(results[1]);
+  const role = str(results[2]).trim();
+
+  if (!name && !photo && !role) return null;
+
+  return { name: name, photo: photo, role: role };
+}
+
 const baseStyle =
   "*{box-sizing:border-box;margin:0;padding:0}" +
   "body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#eef1f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1a1a1a}" +
@@ -104,7 +127,14 @@ const baseStyle =
   ".media{width:100%;border-radius:14px;display:block;margin-bottom:14px;max-height:360px;object-fit:cover}" +
   ".tag{display:inline-block;background:#e8f0fe;color:#1e4b7a;font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;margin-bottom:14px}" +
   ".btn{display:block;text-align:center;background:#111;color:#fff;text-decoration:none;font-weight:700;font-size:15px;padding:14px;border-radius:999px}" +
-  ".brand{text-align:center;font-size:12px;color:#999;margin-top:12px}";
+  ".brand{text-align:center;font-size:12px;color:#999;margin-top:12px}" +
+  ".profile{text-align:center;padding:14px 0 22px}" +
+  ".profile .avatar{width:112px;height:112px;margin:0 auto 16px;display:block;border:4px solid #eaf1fd}" +
+  ".profile .avatar.fallback{display:flex;font-size:44px}" +
+  ".profile .name-row{display:flex;align-items:center;justify-content:center;gap:8px}" +
+  ".profile .name{font-size:24px;word-break:break-word}" +
+  ".profile .role{font-size:15px;margin-top:6px}" +
+  ".badge{width:24px;height:24px;flex-shrink:0}";
 
 function metaTags(opts) {
   return '<meta name="description" content="' + esc(opts.description) + '">' +
@@ -204,6 +234,45 @@ function renderShort(id, short) {
   }), html, target);
 }
 
+function renderUser(id, user) {
+  const pageUrl = SITE + "/durbar/user/" + id;
+  const target = id === "invalid" ? SITE + "/" : SITE + "/profile/?uid=" + encodeURIComponent(id);
+  const name = user && user.name ? user.name : "Durbar User";
+  const role = user ? capitalize(user.role) : "";
+  const isModerator = role.toLowerCase() === "moderator";
+  const photo = user && user.photo ? cloudinaryImage(user.photo, "w_400,h_400,c_fill,g_face,q_auto,f_jpg") : "";
+  const title = user ? name + " on Durbar" : "Profile on Durbar";
+  const description = role ? role + " • View profile on Durbar" : "View profile on Durbar";
+  const image = user ? SITE + "/api/og?id=" + encodeURIComponent(id) : DEFAULT_IMAGE;
+
+  const avatar = photo
+    ? '<img class="avatar" src="' + esc(photo) + '" alt="">'
+    : '<div class="avatar fallback">' + esc(name.charAt(0).toUpperCase()) + "</div>";
+
+  const tick = role
+    ? '<svg class="badge" viewBox="0 0 24 24" fill="' + (isModerator ? "#7b8190" : "#1d9bf0") + '"><path d="' + TICK_PATH + '"/></svg>'
+    : "";
+
+  const html =
+    '<div class="card"><div class="profile">' + avatar +
+    '<div class="name-row"><div class="name">' + esc(name) + "</div>" + tick + "</div>" +
+    (role ? '<div class="role">' + esc(role) + "</div>" : "") +
+    "</div>" +
+    '<a class="btn" href="' + esc(target) + '">View profile</a>' +
+    '<div class="brand">Durbar Learning Platform</div></div>';
+
+  return wrapPage(title, metaTags({
+    title: title,
+    description: description,
+    image: image,
+    imageWidth: 1200,
+    imageHeight: 630,
+    pageUrl: pageUrl,
+    type: "profile",
+    twitterCard: user ? "summary_large_image" : "summary"
+  }), html, target);
+}
+
 module.exports = async function handler(req, res) {
   const type = String((req.query && req.query.type) || "");
   const id = String((req.query && req.query.id) || "");
@@ -222,6 +291,13 @@ module.exports = async function handler(req, res) {
   if (type === "shorts") {
     const short = validId ? await loadNode("shorts/" + encodeURIComponent(id)) : null;
     res.status(200).send(renderShort(validId ? id : "invalid", short));
+    return;
+  }
+
+  if (type === "user") {
+    const validUid = /^[A-Za-z0-9_-]{1,128}$/.test(id);
+    const user = validUid ? await loadUser(id) : null;
+    res.status(200).send(renderUser(validUid ? id : "invalid", user));
     return;
   }
 
