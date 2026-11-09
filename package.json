@@ -1,0 +1,8 @@
+{
+  "name": "nplcode",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vercel/og": "^0.6.2"
+  }
+}

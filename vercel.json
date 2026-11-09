@@ -1,6 +1,6 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/match/:id", "destination": "/detail.html" }
+    { "source": "/match/:id", "destination": "/api/match?id=:id" }
   ]
 }

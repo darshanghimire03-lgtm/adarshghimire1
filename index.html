@@ -189,10 +189,27 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
   font-size: 0.8rem;
   color: var(--muted);
 }
-.foot .go { color: var(--primary); font-weight: 800; }
+.foot .go { color: var(--primary); font-weight: 800; white-space: nowrap; }
+.foot-right { display: flex; align-items: center; gap: 12px; }
+.share-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.share-mini:active { border-color: var(--primary); color: var(--primary); }
+.share-mini svg { width: 13px; height: 13px; }
 .badge {
   font-size: 0.68rem;
   font-weight: 800;
@@ -223,11 +240,28 @@ main {
   animation: shimmer 1.3s linear infinite;
   margin-bottom: 14px;
 }
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(28px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 20px);
+  background: var(--primary);
+  color: #0C0F0D;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 11px 20px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 50;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) {
   .badge.live, .dot, .skeleton { animation: none; }
-  .match { transition: none; }
+  .match, .toast { transition: none; }
 }
 </style>
 </head>
@@ -247,6 +281,7 @@ main {
   <div class="skeleton"></div>
   <div class="skeleton"></div>
 </main>
+<div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -267,16 +302,89 @@ const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
 const homeMain = document.getElementById("homeMain");
 const livePill = document.getElementById("livePill");
 const liveCount = document.getElementById("liveCount");
+const toastEl = document.getElementById("toast");
+
+const SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>';
 
 let teamsData = {};
 let matchesData = {};
 let matchesLoaded = false;
 let failed = false;
 let lastSignature = "";
+let toastTimer = null;
 
 if (location.pathname.endsWith("/index.html") || location.pathname.endsWith("/index")) {
   history.replaceState(null, "", "/" + location.search + location.hash);
 }
+
+function showToast(text) {
+  toastEl.textContent = text;
+  toastEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2200);
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (err) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try {
+      ok = document.execCommand("copy");
+    } catch (err2) {
+      ok = false;
+    }
+    ta.remove();
+    return ok;
+  }
+}
+
+function teamName(id) {
+  const t = teamsData[id];
+  return t && t.name ? t.name : "TBD";
+}
+
+async function shareMatch(id) {
+  const m = matchesData[id];
+  if (!m) return;
+  const url = location.origin + "/match/" + encodeURIComponent(id);
+  const title = teamName(m.team1) + " vs " + teamName(m.team2);
+  const text = title + " - Watch live on NPLcode";
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, text, url });
+      return;
+    } catch (err) {
+      if (err && err.name === "AbortError") return;
+    }
+  }
+  const ok = await copyText(url);
+  showToast(ok ? "Match link copied" : url);
+}
+
+homeMain.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-share]");
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  shareMatch(btn.getAttribute("data-share"));
+});
+
+homeMain.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const btn = e.target.closest("[data-share]");
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  shareMatch(btn.getAttribute("data-share"));
+});
 
 function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
@@ -356,7 +464,7 @@ function cardHtml(id, m, info, now) {
   if (info.group === "today" && info.state === "ended") classes.push("ended");
   const goText = info.state === "live" ? "Watch now &rsaquo;" : "Details &rsaquo;";
   return `
-    <a class="${classes.join(" ")}" href="/detail?id=${encodeURIComponent(id)}">
+    <a class="${classes.join(" ")}" href="/match/${encodeURIComponent(id)}">
       <div class="meta">
         <span class="time-chip">${esc(formatTime(m.startTime))}</span>
         ${tagHtml(info)}
@@ -368,7 +476,10 @@ function cardHtml(id, m, info, now) {
       </div>
       <div class="foot">
         <span>${esc(whenText(m, info, now))}</span>
-        <span class="go">${goText}</span>
+        <span class="foot-right">
+          <span class="share-mini" role="button" tabindex="0" data-share="${esc(id)}" aria-label="Share match">${SHARE_ICON}Share</span>
+          <span class="go">${goText}</span>
+        </span>
       </div>
     </a>
   `;

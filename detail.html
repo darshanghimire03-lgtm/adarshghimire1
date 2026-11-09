@@ -58,8 +58,26 @@ header {
   transition: transform 0.15s ease;
 }
 .back:active { transform: scale(0.92); }
-.title { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; }
+.title { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; flex: 1; }
 .title span { color: var(--primary); }
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid rgba(163, 230, 53, 0.35);
+  border-radius: 13px;
+  height: 40px;
+  padding: 0 14px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.share-btn:active { transform: scale(0.94); }
+.share-btn[hidden] { display: none; }
+.share-btn svg { width: 16px; height: 16px; }
 main {
   width: 100%;
   max-width: 560px;
@@ -213,11 +231,28 @@ main {
   margin-bottom: 14px;
 }
 .skeleton.small { height: 64px; border-radius: 18px; }
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(28px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 20px);
+  background: var(--primary);
+  color: #0C0F0D;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 11px 20px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 50;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) {
   .badge.live, .skeleton { animation: none; }
-  .link-item, .back { transition: none; }
+  .link-item, .back, .share-btn, .toast { transition: none; }
 }
 </style>
 </head>
@@ -226,6 +261,10 @@ main {
   <div class="bar">
     <a class="back" id="backBtn" href="/" aria-label="Back">&#8592;</a>
     <div class="title">NPL<span>code</span></div>
+    <button class="share-btn" id="shareBtn" type="button" hidden aria-label="Share match">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>
+      Share
+    </button>
   </div>
 </header>
 <main id="detail">
@@ -233,6 +272,7 @@ main {
   <div class="skeleton small"></div>
   <div class="skeleton small"></div>
 </main>
+<div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -252,6 +292,8 @@ const db = getDatabase(app);
 const LINK_COUNT = 5;
 const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
 const detail = document.getElementById("detail");
+const shareBtn = document.getElementById("shareBtn");
+const toastEl = document.getElementById("toast");
 
 function getMatchId() {
   const fromQuery = new URLSearchParams(location.search).get("id");
@@ -275,6 +317,7 @@ let match = null;
 let loaded = false;
 let failed = false;
 let lastSignature = "";
+let toastTimer = null;
 
 document.getElementById("backBtn").addEventListener("click", (e) => {
   let sameOrigin = false;
@@ -288,6 +331,59 @@ document.getElementById("backBtn").addEventListener("click", (e) => {
     history.back();
   }
 });
+
+function showToast(text) {
+  toastEl.textContent = text;
+  toastEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2200);
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (err) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try {
+      ok = document.execCommand("copy");
+    } catch (err2) {
+      ok = false;
+    }
+    ta.remove();
+    return ok;
+  }
+}
+
+function teamName(id) {
+  const t = teamsData[id];
+  return t && t.name ? t.name : "TBD";
+}
+
+async function shareMatch() {
+  if (!match || !matchId) return;
+  const url = location.origin + "/match/" + encodeURIComponent(matchId);
+  const title = teamName(match.team1) + " vs " + teamName(match.team2);
+  const text = title + " - Watch live on NPLcode";
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, text, url });
+      return;
+    } catch (err) {
+      if (err && err.name === "AbortError") return;
+    }
+  }
+  const ok = await copyText(url);
+  showToast(ok ? "Match link copied" : url);
+}
+
+shareBtn.addEventListener("click", shareMatch);
 
 function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
@@ -362,6 +458,7 @@ function tagHtml(info) {
 }
 
 function notFound(text) {
+  shareBtn.hidden = true;
   detail.innerHTML = `<div class="empty">${text}<br><a href="/">&#8592; Back to matches</a></div>`;
 }
 
@@ -378,6 +475,8 @@ function render() {
     notFound("Match not found");
     return;
   }
+
+  shareBtn.hidden = false;
 
   const t1 = teamsData[match.team1];
   const t2 = teamsData[match.team2];
