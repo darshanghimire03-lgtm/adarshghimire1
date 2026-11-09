@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ramuscode Admin</title>
+<meta name="theme-color" content="#101211">
+<style>
+:root {
+  --bg: #101211;
+  --surface: #1B211E;
+  --primary: #A3E635;
+  --text: #F5F5F5;
+  --muted: #9AA39E;
+  --danger: #F87171;
+  --line: rgba(255, 255, 255, 0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  padding-bottom: 90px;
+}
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(16, 18, 17, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+header h1 { font-size: 1.2rem; font-weight: 800; }
+header h1 span { color: var(--primary); }
+#status { font-size: 0.85rem; color: var(--muted); }
+#status.ok { color: var(--primary); }
+#status.err { color: var(--danger); }
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.slot {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.logo-box {
+  width: 84px;
+  height: 84px;
+  border-radius: 20px;
+  background: var(--bg);
+  border: 1px dashed rgba(163, 230, 53, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+.logo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+}
+input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+}
+input:focus { border-color: var(--primary); }
+.row { display: flex; gap: 8px; }
+button {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+button:active { transform: scale(0.97); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--primary); color: #101211; flex: 1; }
+.btn-clear { background: transparent; color: var(--danger); border: 1px solid var(--line); }
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(16, 18, 17, 0.95);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: center;
+}
+.bar button { width: 100%; max-width: 420px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Ramus<span>code</span> Admin</h1>
+  <div id="status">Connecting...</div>
+</header>
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+<div class="bar">
+  <button class="btn-primary" id="saveAll">Save all teams</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "ramus-7f7aa.firebaseapp.com",
+  databaseURL: "https://ramus-7f7aa-default-rtdb.firebaseio.com",
+  projectId: "ramus-7f7aa",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const TOTAL = 8;
+const grid = document.getElementById("grid");
+const statusEl = document.getElementById("status");
+const saveAllBtn = document.getElementById("saveAll");
+
+function setStatus(text, type) {
+  statusEl.textContent = text;
+  statusEl.className = type || "";
+}
+
+function buildCards() {
+  for (let i = 1; i <= TOTAL; i++) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.dataset.slot = "team" + i;
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="slot">Team ${i}</span>
+      </div>
+      <div class="logo-box" id="logo-${i}"><span>No logo</span></div>
+      <div>
+        <label for="name-${i}">Name</label>
+        <input id="name-${i}" type="text" placeholder="Team name" autocomplete="off">
+      </div>
+      <div>
+        <label for="url-${i}">Logo URL</label>
+        <input id="url-${i}" type="url" placeholder="https://..." autocomplete="off">
+      </div>
+      <div class="row">
+        <button class="btn-primary" data-save="${i}">Save</button>
+        <button class="btn-clear" data-clear="${i}">Clear</button>
+      </div>
+    `;
+    grid.appendChild(card);
+
+    const urlInput = card.querySelector("#url-" + i);
+    urlInput.addEventListener("input", () => renderLogo(i, urlInput.value.trim()));
+  }
+}
+
+function renderLogo(i, url) {
+  const box = document.getElementById("logo-" + i);
+  box.innerHTML = "";
+  if (!url) {
+    box.innerHTML = "<span>No logo</span>";
+    return;
+  }
+  const img = document.createElement("img");
+  img.alt = "Logo";
+  img.onerror = () => {
+    box.innerHTML = "<span>Invalid URL</span>";
+  };
+  img.src = url;
+  box.appendChild(img);
+}
+
+function readSlot(i) {
+  return {
+    name: document.getElementById("name-" + i).value.trim(),
+    logourl: document.getElementById("url-" + i).value.trim()
+  };
+}
+
+async function saveSlot(i) {
+  const data = readSlot(i);
+  if (!data.name) {
+    setStatus("Team " + i + " needs a name", "err");
+    return false;
+  }
+  try {
+    await set(ref(db, "teams/team" + i), data);
+    setStatus("Team " + i + " saved", "ok");
+    return true;
+  } catch (e) {
+    setStatus("Save failed: " + e.message, "err");
+    return false;
+  }
+}
+
+async function clearSlot(i) {
+  try {
+    await remove(ref(db, "teams/team" + i));
+    document.getElementById("name-" + i).value = "";
+    document.getElementById("url-" + i).value = "";
+    renderLogo(i, "");
+    setStatus("Team " + i + " cleared", "ok");
+  } catch (e) {
+    setStatus("Clear failed: " + e.message, "err");
+  }
+}
+
+async function saveAll() {
+  const payload = {};
+  for (let i = 1; i <= TOTAL; i++) {
+    const data = readSlot(i);
+    if (data.name) payload["team" + i] = data;
+  }
+  if (!Object.keys(payload).length) {
+    setStatus("Nothing to save", "err");
+    return;
+  }
+  saveAllBtn.disabled = true;
+  try {
+    await update(ref(db, "teams"), payload);
+    setStatus("All teams saved", "ok");
+  } catch (e) {
+    setStatus("Save failed: " + e.message, "err");
+  }
+  saveAllBtn.disabled = false;
+}
+
+grid.addEventListener("click", (e) => {
+  const saveBtn = e.target.closest("[data-save]");
+  const clearBtn = e.target.closest("[data-clear]");
+  if (saveBtn) saveSlot(Number(saveBtn.dataset.save));
+  if (clearBtn) clearSlot(Number(clearBtn.dataset.clear));
+});
+
+saveAllBtn.addEventListener("click", saveAll);
+
+buildCards();
+
+onValue(
+  ref(db, "teams"),
+  (snap) => {
+    const teams = snap.val() || {};
+    for (let i = 1; i <= TOTAL; i++) {
+      const t = teams["team" + i];
+      const nameEl = document.getElementById("name-" + i);
+      const urlEl = document.getElementById("url-" + i);
+      if (document.activeElement !== nameEl) nameEl.value = t && t.name ? t.name : "";
+      if (document.activeElement !== urlEl) {
+        urlEl.value = t && t.logourl ? t.logourl : "";
+        renderLogo(i, urlEl.value);
+      }
+    }
+    setStatus("Connected", "ok");
+  },
+  (err) => setStatus("Read failed: " + err.message, "err")
+);
+</script>
+</body>
+</html>
