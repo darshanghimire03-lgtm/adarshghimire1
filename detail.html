@@ -197,7 +197,13 @@ const detail = document.getElementById("detail");
 
 function getMatchId() {
   const parts = location.pathname.split("/").filter(Boolean);
-  if (parts[0] === "match" && parts[1]) return decodeURIComponent(parts[1]);
+  if (parts[0] === "match" && parts[1]) {
+    try {
+      return decodeURIComponent(parts[1]);
+    } catch (err) {
+      return parts[1];
+    }
+  }
   return new URLSearchParams(location.search).get("id");
 }
 
@@ -206,6 +212,7 @@ const matchId = getMatchId();
 let teamsData = {};
 let match = null;
 let loaded = false;
+let failed = false;
 let lastSignature = "";
 
 document.getElementById("backBtn").addEventListener("click", (e) => {
@@ -275,10 +282,14 @@ function tagHtml(info) {
 }
 
 function render() {
+  if (failed) {
+    detail.innerHTML = '<div class="empty">Could not load match. Please check your connection and try again.</div>';
+    return;
+  }
   if (!loaded) return;
   const now = Date.now();
-  const info = match ? getInfo(match, now) : null;
-  if (!match || !info.visible) {
+  const info = match && typeof match.startTime === "number" ? getInfo(match, now) : null;
+  if (!match || !info || !info.visible) {
     detail.innerHTML = '<div class="empty">Match not found</div>';
     return;
   }
@@ -323,6 +334,11 @@ function render() {
   `;
 }
 
+function onError() {
+  failed = true;
+  render();
+}
+
 if (!matchId) {
   loaded = true;
   render();
@@ -330,16 +346,17 @@ if (!matchId) {
   onValue(ref(db, "teams"), (snap) => {
     teamsData = snap.val() || {};
     render();
-  });
+  }, onError);
 
   onValue(ref(db, "matches/" + matchId), (snap) => {
     match = snap.val();
     loaded = true;
+    failed = false;
     render();
-  });
+  }, onError);
 
   setInterval(() => {
-    if (!match) return;
+    if (!match || typeof match.startTime !== "number") return;
     const i = getInfo(match, Date.now());
     const sig = i.state + i.dayDiff + (i.visible ? "v" : "h");
     if (sig !== lastSignature) {

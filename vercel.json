@@ -2,8 +2,5 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/match/:id", "destination": "/detail.html" }
-  ],
-  "redirects": [
-    { "source": "/detail", "destination": "/", "permanent": false }
   ]
 }
