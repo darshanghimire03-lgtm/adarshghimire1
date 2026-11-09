@@ -219,6 +219,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   gap: 14px;
 }
 .match.live { border-color: var(--primary); }
+.match.ended { opacity: 0.6; }
 .match-teams {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -259,6 +260,11 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   0%, 100% { opacity: 1; }
   50% { opacity: 0.55; }
 }
+.badge.ended {
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip {
   font-size: 0.8rem;
@@ -272,6 +278,13 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 .match-actions { display: flex; gap: 8px; }
 .match-actions button { flex: 1; padding: 10px; }
+.btn-end {
+  background: var(--danger);
+  color: #101211;
+}
+.winner-line { font-size: 0.85rem; color: var(--muted); }
+.winner-line span { color: var(--primary); font-weight: 800; }
+.pick-box { display: flex; flex-direction: column; gap: 10px; }
 .empty {
   text-align: center;
   color: var(--muted);
@@ -351,6 +364,7 @@ const db = getDatabase(app);
 
 const TOTAL = 8;
 const LINK_COUNT = 5;
+const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
 const grid = document.getElementById("grid");
 const statusEl = document.getElementById("status");
 const saveAllBtn = document.getElementById("saveAll");
@@ -367,6 +381,7 @@ const matchList = document.getElementById("matchList");
 let teamsData = {};
 let matchesData = {};
 let editingId = null;
+let endingId = null;
 
 function setStatus(text, type) {
   statusEl.textContent = text;
@@ -596,6 +611,21 @@ function linkChips(links) {
   return chips.length ? `<div class="chips">${chips.join("")}</div>` : "";
 }
 
+function teamLabel(id) {
+  const t = teamsData[id];
+  return t && t.name ? t.name : "Unknown";
+}
+
+function winnerOf(m) {
+  return m.winner && (m.winner === m.team1 || m.winner === m.team2) ? m.winner : null;
+}
+
+function matchState(m, now) {
+  if (now < m.startTime) return "upcoming";
+  if (m.ended === true || now >= m.startTime + LIVE_MS) return "ended";
+  return "live";
+}
+
 function renderMatches() {
   const entries = Object.entries(matchesData).sort((a, b) => a[1].startTime - b[1].startTime);
   if (!entries.length) {
@@ -604,12 +634,48 @@ function renderMatches() {
   }
   const now = Date.now();
   matchList.innerHTML = entries.map(([id, m]) => {
-    const live = now >= m.startTime;
-    const badge = live
-      ? '<span class="badge live">LIVE NOW</span>'
-      : `<span class="badge soon" data-countdown="${m.startTime}">Starts in ${countdown(m.startTime - now)}</span>`;
+    const state = matchState(m, now);
+    let badge;
+    if (state === "live") {
+      badge = `<span class="badge live" data-endat="${m.startTime + LIVE_MS}">LIVE NOW</span>`;
+    } else if (state === "ended") {
+      badge = '<span class="badge ended">MATCH ENDED</span>';
+    } else {
+      badge = `<span class="badge soon" data-countdown="${m.startTime}">Starts in ${countdown(m.startTime - now)}</span>`;
+    }
+    const winnerId = state === "ended" ? winnerOf(m) : null;
+    const winnerLine = winnerId
+      ? `<div class="winner-line">Winner: <span>${escapeHtml(teamLabel(winnerId))}</span></div>`
+      : "";
+    let endBtn = "";
+    if (state === "live") {
+      endBtn = `<button class="btn-end" data-end="${id}">End match</button>`;
+    } else if (state === "ended") {
+      endBtn = `<button class="btn-ghost" data-end="${id}">${winnerId ? "Change winner" : "Set winner"}</button>`;
+    }
+    const actions = endingId === id
+      ? `
+        <div class="pick-box">
+          <div class="links-title">Who won?</div>
+          <div class="match-actions">
+            <button class="btn-primary" data-pick="team1" data-match="${id}">${escapeHtml(teamLabel(m.team1))}</button>
+            <button class="btn-primary" data-pick="team2" data-match="${id}">${escapeHtml(teamLabel(m.team2))}</button>
+          </div>
+          <div class="match-actions">
+            <button class="btn-ghost" data-pick="none" data-match="${id}">No result</button>
+            <button class="btn-clear" data-cancel-end="1">Cancel</button>
+          </div>
+        </div>
+      `
+      : `
+        <div class="match-actions">
+          ${endBtn}
+          <button class="btn-ghost" data-edit="${id}">Edit</button>
+          <button class="btn-clear" data-delete="${id}">Delete</button>
+        </div>
+      `;
     return `
-      <div class="match ${live ? "live" : ""}" data-id="${id}">
+      <div class="match ${state === "live" ? "live" : ""} ${state === "ended" ? "ended" : ""}" data-id="${id}">
         <div class="match-teams">
           ${teamBlock(m.team1)}
           <div class="match-vs">VS</div>
@@ -619,11 +685,9 @@ function renderMatches() {
           <span class="time">${formatTime(m.startTime)}</span>
           ${badge}
         </div>
+        ${winnerLine}
         ${linkChips(m.links)}
-        <div class="match-actions">
-          <button class="btn-ghost" data-edit="${id}">Edit</button>
-          <button class="btn-clear" data-delete="${id}">Delete</button>
-        </div>
+        ${actions}
       </div>
     `;
   }).join("");
@@ -668,6 +732,11 @@ async function saveMatch() {
     }
   }
   const data = { team1: t1, team2: t2, startTime: ms, links: links };
+  if (editingId && matchesData[editingId] && matchesData[editingId].ended === true && ms <= Date.now()) {
+    data.ended = true;
+    const prev = matchesData[editingId].winner;
+    if (prev && (prev === t1 || prev === t2)) data.winner = prev;
+  }
   saveMatchBtn.disabled = true;
   try {
     if (editingId) {
@@ -690,6 +759,32 @@ cancelEditBtn.addEventListener("click", resetForm);
 matchList.addEventListener("click", async (e) => {
   const editBtn = e.target.closest("[data-edit]");
   const delBtn = e.target.closest("[data-delete]");
+  const endBtn = e.target.closest("[data-end]");
+  const pickBtn = e.target.closest("[data-pick]");
+  const cancelEndBtn = e.target.closest("[data-cancel-end]");
+  if (endBtn) {
+    endingId = endBtn.dataset.end;
+    renderMatches();
+  }
+  if (cancelEndBtn) {
+    endingId = null;
+    renderMatches();
+  }
+  if (pickBtn) {
+    const id = pickBtn.dataset.match;
+    const choice = pickBtn.dataset.pick;
+    const m = matchesData[id];
+    if (!m) return;
+    const winner = choice === "none" ? null : m[choice];
+    try {
+      await update(ref(db, "matches/" + id), { ended: true, winner: winner });
+      setStatus(winner ? "Winner saved" : "Match ended", "ok");
+    } catch (err) {
+      setStatus("Save failed: " + err.message, "err");
+    }
+    endingId = null;
+    renderMatches();
+  }
   if (editBtn) {
     const id = editBtn.dataset.edit;
     const m = matchesData[id];
@@ -761,6 +856,9 @@ setInterval(() => {
     } else {
       el.textContent = "Starts in " + countdown(t - now);
     }
+  });
+  document.querySelectorAll("[data-endat]").forEach((el) => {
+    if (now >= Number(el.dataset.endat)) needsRender = true;
   });
   if (needsRender) renderMatches();
 }, 1000);

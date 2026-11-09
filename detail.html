@@ -128,6 +128,16 @@ main {
   -webkit-box-orient: vertical;
   word-break: break-word;
 }
+.team.winner .team-logo { border-color: var(--primary); box-shadow: 0 0 0 1px rgba(163, 230, 53, 0.25); }
+.win-tag {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #0C0F0D;
+  background: var(--primary);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
 .vs {
   font-weight: 800;
   font-size: 0.78rem;
@@ -417,7 +427,7 @@ function getInfo(m, now) {
   const dayDiff = dayNumber(start) - dayNumber(now);
   let state;
   if (now < start) state = "notstarted";
-  else if (now < start + LIVE_MS) state = "live";
+  else if (m.ended !== true && now < start + LIVE_MS) state = "live";
   else state = "ended";
 
   let visible = true;
@@ -430,21 +440,29 @@ function getInfo(m, now) {
   return { state, dayDiff, visible, group };
 }
 
+function winnerOf(m) {
+  return m.winner && (m.winner === m.team1 || m.winner === m.team2) ? m.winner : null;
+}
+
 function whenText(m, info, now) {
   if (info.state === "live") return "Started " + duration(now - m.startTime) + " ago";
-  if (info.state === "ended") return "Match ended";
+  if (info.state === "ended") {
+    const w = winnerOf(m);
+    return w ? "Winner: " + teamName(w) : "Match ended";
+  }
   if (info.group === "today") return "Starts in " + duration(m.startTime - now);
   return formatDate(m.startTime);
 }
 
-function teamHtml(id) {
+function teamHtml(id, isWinner) {
   const t = teamsData[id];
   const name = t && t.name ? esc(t.name) : "TBD";
   const letter = t && t.name ? esc(t.name.charAt(0).toUpperCase()) : "?";
   const logo = t && t.logourl
     ? `<img src="${esc(t.logourl)}" alt="" onerror="this.parentNode.textContent='${letter}'">`
     : letter;
-  return `<div class="team"><div class="team-logo">${logo}</div><div class="team-name">${name}</div></div>`;
+  const tag = isWinner ? '<div class="win-tag">WINNER</div>' : "";
+  return `<div class="team ${isWinner ? "winner" : ""}"><div class="team-logo">${logo}</div><div class="team-name">${name}</div>${tag}</div>`;
 }
 
 function tagHtml(info) {
@@ -477,6 +495,7 @@ function render() {
   }
 
   shareBtn.hidden = false;
+  const winnerId = info.state === "ended" ? winnerOf(match) : null;
 
   const t1 = teamsData[match.team1];
   const t2 = teamsData[match.team2];
@@ -511,9 +530,9 @@ function render() {
   detail.innerHTML = `
     <div class="match-card ${info.state === "live" ? "live" : ""}">
       <div class="teams">
-        ${teamHtml(match.team1)}
+        ${teamHtml(match.team1, winnerId === match.team1)}
         <div class="vs">VS</div>
-        ${teamHtml(match.team2)}
+        ${teamHtml(match.team2, winnerId === match.team2)}
       </div>
       <div class="info">
         ${tagHtml(info)}
