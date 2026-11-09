@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ramuscode</title>
+<title>NPLcode</title>
 <meta name="theme-color" content="#101211">
 <style>
 :root {
@@ -12,93 +12,352 @@
   --primary: #A3E635;
   --text: #F5F5F5;
   --muted: #9AA39E;
+  --line: rgba(255, 255, 255, 0.08);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body {
   background: var(--bg);
   color: var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  display: flex;
-  flex-direction: column;
+  min-height: 100vh;
 }
-main {
-  flex: 1;
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(16, 18, 17, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  padding: 16px 20px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 24px;
-  background: radial-gradient(circle at 50% 30%, rgba(163, 230, 53, 0.12), transparent 60%);
+  gap: 12px;
 }
-.badge {
-  width: 88px;
-  height: 88px;
-  border-radius: 24px;
+.logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
   background: var(--surface);
   border: 1px solid rgba(163, 230, 53, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 44px;
   font-weight: 800;
   color: var(--primary);
-  margin-bottom: 28px;
 }
-h1 {
-  font-size: clamp(2.6rem, 9vw, 5rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-}
-h1 span { color: var(--primary); }
-p {
-  margin-top: 16px;
-  max-width: 460px;
-  color: var(--muted);
-  font-size: 1.05rem;
-  line-height: 1.6;
-}
-.actions {
-  margin-top: 32px;
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.btn {
-  padding: 14px 26px;
-  border-radius: 14px;
-  font-size: 1rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-}
-.btn:active { transform: scale(0.97); }
-.btn-primary { background: var(--primary); color: #101211; }
-.btn-ghost {
+header h1 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; }
+header h1 span { color: var(--primary); }
+.back {
   background: var(--surface);
   color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
 }
-footer {
+.title { font-size: 1.05rem; font-weight: 700; }
+main {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
   padding: 20px;
-  text-align: center;
-  font-size: 0.85rem;
-  color: var(--muted);
+  flex: 1;
 }
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.list { display: flex; flex-direction: column; gap: 12px; }
+.match {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 18px 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.match:active { transform: scale(0.985); }
+.match.live { border-color: var(--primary); }
+.teams {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+.team { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.team-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 1.3rem;
+}
+.team-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.team-name { font-size: 0.9rem; font-weight: 700; word-break: break-word; }
+.vs { font-weight: 800; color: var(--muted); }
+.live-row { display: flex; justify-content: center; margin-top: 14px; }
+.badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 999px;
+  letter-spacing: 0.06em;
+  background: var(--primary);
+  color: #101211;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+.empty { text-align: center; color: var(--muted); padding: 48px 16px; }
+.hero { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+.hero .teams { width: 100%; }
+.hero .team-logo { width: 76px; height: 76px; }
+.hero .match-card {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 20px 16px;
+}
+.hero .match-card.live { border-color: var(--primary); }
+.links { display: flex; flex-direction: column; gap: 10px; }
+.link-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 0.15s ease;
+}
+.link-item:active { transform: scale(0.985); }
+.link-item span:last-child { color: var(--primary); }
+.hd {
+  background: var(--primary);
+  color: #101211;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 8px;
+  margin-right: 10px;
+}
+.link-left { display: flex; align-items: center; }
 </style>
 </head>
 <body>
-<main>
-  <div class="badge">R</div>
-  <h1>Ramus<span>code</span></h1>
-  <p>Your projects and GitHub repos, together in one place.</p>
-  <div class="actions">
-    <a class="btn btn-primary" href="#">Get the app</a>
-    <a class="btn btn-ghost" href="https://github.com" target="_blank" rel="noopener">GitHub</a>
-  </div>
-</main>
-<footer>&copy; 2026 Ramuscode</footer>
+<div class="screen active" id="screen-home">
+  <header>
+    <div class="logo">N</div>
+    <h1>NPL<span>code</span></h1>
+  </header>
+  <main>
+    <div class="section-title">Latest matches</div>
+    <div class="list" id="matchList"></div>
+  </main>
+</div>
+
+<div class="screen" id="screen-match">
+  <header>
+    <button class="back" id="backBtn">&#8592;</button>
+    <div class="title">Watch</div>
+  </header>
+  <main id="matchDetail"></main>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "ramus-7f7aa.firebaseapp.com",
+  databaseURL: "https://ramus-7f7aa-default-rtdb.firebaseio.com",
+  projectId: "ramus-7f7aa",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const LINK_COUNT = 5;
+const matchList = document.getElementById("matchList");
+const matchDetail = document.getElementById("matchDetail");
+const screenHome = document.getElementById("screen-home");
+const screenMatch = document.getElementById("screen-match");
+
+let teamsData = {};
+let matchesData = {};
+let lastSignature = "";
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+function isLive(m) {
+  return Date.now() >= m.startTime;
+}
+
+function teamHtml(id) {
+  const t = teamsData[id];
+  const name = t && t.name ? esc(t.name) : "TBD";
+  const letter = t && t.name ? esc(t.name.charAt(0).toUpperCase()) : "?";
+  const logo = t && t.logourl
+    ? `<img src="${esc(t.logourl)}" alt="" onerror="this.parentNode.textContent='${letter}'">`
+    : letter;
+  return `<div class="team"><div class="team-logo">${logo}</div><div class="team-name">${name}</div></div>`;
+}
+
+function sortedMatches() {
+  const entries = Object.entries(matchesData);
+  const live = entries.filter(([, m]) => isLive(m)).sort((a, b) => b[1].startTime - a[1].startTime);
+  const upcoming = entries.filter(([, m]) => !isLive(m)).sort((a, b) => a[1].startTime - b[1].startTime);
+  return live.concat(upcoming);
+}
+
+function renderHome() {
+  const list = sortedMatches();
+  if (!list.length) {
+    matchList.innerHTML = '<div class="empty">No matches yet</div>';
+    return;
+  }
+  matchList.innerHTML = list.map(([id, m]) => {
+    const live = isLive(m);
+    return `
+      <div class="match ${live ? "live" : ""}" data-id="${id}">
+        <div class="teams">
+          ${teamHtml(m.team1)}
+          <div class="vs">VS</div>
+          ${teamHtml(m.team2)}
+        </div>
+        ${live ? '<div class="live-row"><span class="badge">LIVE NOW</span></div>' : ""}
+      </div>
+    `;
+  }).join("");
+}
+
+function renderDetail(id) {
+  const m = matchesData[id];
+  if (!m) {
+    matchDetail.innerHTML = '<div class="empty">Match not found</div>';
+    return;
+  }
+  const live = isLive(m);
+  let linksHtml = "";
+  if (!live) {
+    linksHtml = '<div class="empty">Links will appear when the match goes live</div>';
+  } else {
+    const items = [];
+    for (let i = 1; i <= LINK_COUNT; i++) {
+      const u = m.links && m.links["link" + i];
+      if (u) {
+        items.push(`
+          <a class="link-item" href="${esc(u)}" target="_blank" rel="noopener">
+            <span class="link-left"><span class="hd">HD</span>Link ${i}</span>
+            <span>&#9654;</span>
+          </a>
+        `);
+      }
+    }
+    linksHtml = items.length
+      ? `<div class="links">${items.join("")}</div>`
+      : '<div class="empty">No links added yet</div>';
+  }
+  matchDetail.innerHTML = `
+    <div class="hero">
+      <div class="match-card ${live ? "live" : ""}">
+        <div class="teams">
+          ${teamHtml(m.team1)}
+          <div class="vs">VS</div>
+          ${teamHtml(m.team2)}
+        </div>
+        ${live ? '<div class="live-row"><span class="badge">LIVE NOW</span></div>' : ""}
+      </div>
+    </div>
+    <div class="section-title">Watch links</div>
+    ${linksHtml}
+  `;
+}
+
+function route() {
+  const hash = location.hash;
+  if (hash.startsWith("#match/")) {
+    const id = hash.slice(7);
+    screenHome.classList.remove("active");
+    screenMatch.classList.add("active");
+    renderDetail(id);
+    window.scrollTo(0, 0);
+  } else {
+    screenMatch.classList.remove("active");
+    screenHome.classList.add("active");
+    renderHome();
+  }
+}
+
+function currentId() {
+  return location.hash.startsWith("#match/") ? location.hash.slice(7) : null;
+}
+
+function refresh() {
+  const id = currentId();
+  if (id) renderDetail(id);
+  else renderHome();
+}
+
+matchList.addEventListener("click", (e) => {
+  const card = e.target.closest("[data-id]");
+  if (card) location.hash = "#match/" + card.dataset.id;
+});
+
+document.getElementById("backBtn").addEventListener("click", () => {
+  if (history.length > 1) history.back();
+  else location.hash = "";
+});
+
+window.addEventListener("hashchange", route);
+
+onValue(ref(db, "teams"), (snap) => {
+  teamsData = snap.val() || {};
+  refresh();
+});
+
+onValue(ref(db, "matches"), (snap) => {
+  matchesData = snap.val() || {};
+  refresh();
+});
+
+setInterval(() => {
+  const sig = Object.entries(matchesData).map(([id, m]) => id + (isLive(m) ? "1" : "0")).join("|");
+  if (sig !== lastSignature) {
+    lastSignature = sig;
+    refresh();
+  }
+}, 1000);
+
+route();
+</script>
 </body>
 </html>
