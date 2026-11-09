@@ -75,6 +75,7 @@ export default async function handler(req) {
     '<meta property="og:description" content="' + esc(desc) + '">',
     '<meta property="og:url" content="' + esc(pageUrl) + '">',
     '<meta property="og:image" content="' + esc(image) + '">',
+    '<meta property="og:image:secure_url" content="' + esc(image) + '">',
     '<meta property="og:image:type" content="image/png">',
     '<meta property="og:image:width" content="1200">',
     '<meta property="og:image:height" content="630">',
