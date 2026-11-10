@@ -506,13 +506,13 @@ function playerPageUrl(raw, label) {
   return "/player?" + params.toString();
 }
 
-// Second executor: YoNoTV's /page?src=/LINK?id=... player route.
-// Set match.yonoLinkId in Firebase for a match-specific ID; defaults to the
-// example ID supplied (IND2) when no per-match ID has been configured.
-function yonoPlayerPageUrl(label) {
-  const externalId = (match && (match.yonoLinkId || match.externalPlayerId)) || "IND2";
-  const resolverUrl = "https://yonotv.pages.dev/LINK?id=" + encodeURIComponent(String(externalId));
-  const params = new URLSearchParams({ src: resolverUrl });
+// Second executor: always use the single YoNoTV stream ID supplied.
+// Do not read yonoLinkId/externalPlayerId from Firebase or derive an ID
+// from the NPL stream URL. The resolver URL is fixed to IND2 only.
+function yonoPlayerPageUrl() {
+  const resolverUrl = "https://yonotv.pages.dev/LINK?id=IND2";
+  const params = new URLSearchParams();
+  params.set("src", resolverUrl);
   return "https://yonotv.pages.dev/page?" + params.toString();
 }
 
