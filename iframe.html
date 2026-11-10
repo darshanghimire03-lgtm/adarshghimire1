@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPL Live Match Player</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.player-container {
+    width: 100%;
+    max-width: 1200px;
+    background: #000;
+    overflow: hidden;
+}
+
+.player {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+}
+
+.player iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+
+@media (max-width: 600px) {
+    .player-container {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="player-container">
+    <div class="player">
+
+        <iframe
+            src="https://npl-tv.pages.dev/mdpplyrr?manifest=https://ott-lb.nettv.com.np/npl/live_match3/index.mpd&keyid=b4d7fc89103597185058cc4c81a1800d&key=17062472ba2a3f1db709d3bb7761c936"
+            title="NPL Live Match"
+            allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+            allowfullscreen
+            loading="eager">
+        </iframe>
+
+    </div>
+</div>
+
+</body>
+</html>
