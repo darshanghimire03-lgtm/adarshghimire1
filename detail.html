@@ -1,585 +1,142 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Watch - NPLcode</title>
-<meta name="theme-color" content="#0C0F0D">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Match Details</title>
 <style>
-:root {
-  --bg: #0C0F0D;
-  --surface: #151A17;
-  --surface-2: #1C231F;
-  --primary: #A3E635;
-  --primary-soft: rgba(163, 230, 53, 0.12);
-  --text: #F4F6F4;
-  --muted: #8C9790;
-  --line: rgba(255, 255, 255, 0.07);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  min-height: 100vh;
-  padding-bottom: env(safe-area-inset-bottom);
-  background-image: radial-gradient(600px 300px at 50% -80px, rgba(163, 230, 53, 0.10), transparent);
-  background-repeat: no-repeat;
-}
-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(12, 15, 13, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
-  padding: calc(14px + env(safe-area-inset-top)) 20px 14px;
-}
-.bar {
-  max-width: 560px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.back {
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  width: 40px;
-  height: 40px;
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  transition: transform 0.15s ease;
-}
-.back:active { transform: scale(0.92); }
-.title { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; flex: 1; }
-.title span { color: var(--primary); }
-.share-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--primary-soft);
-  color: var(--primary);
-  border: 1px solid rgba(163, 230, 53, 0.35);
-  border-radius: 13px;
-  height: 40px;
-  padding: 0 14px;
-  font-size: 0.82rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-.share-btn:active { transform: scale(0.94); }
-.share-btn[hidden] { display: none; }
-.share-btn svg { width: 16px; height: 16px; }
-main {
-  width: 100%;
-  max-width: 560px;
-  margin: 0 auto;
-  padding: 22px 20px 40px;
-}
-.match-card {
-  background: linear-gradient(180deg, var(--surface-2), var(--surface));
-  border: 1px solid var(--line);
-  border-radius: 28px;
-  padding: 24px 16px 20px;
-  margin-bottom: 26px;
-}
-.match-card.live {
-  border-color: rgba(163, 230, 53, 0.65);
-  box-shadow: 0 0 0 1px rgba(163, 230, 53, 0.15), 0 14px 50px -14px rgba(163, 230, 53, 0.4);
-}
-.teams {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 8px;
-  text-align: center;
-}
-.team { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
-.team-logo {
-  width: 84px;
-  height: 84px;
-  border-radius: 24px;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--primary);
-  font-weight: 800;
-  font-size: 1.8rem;
-}
-.team-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.team-name {
-  font-size: 0.98rem;
-  font-weight: 800;
-  max-width: 100%;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  word-break: break-word;
-}
-.team.winner .team-logo { border-color: var(--primary); box-shadow: 0 0 0 1px rgba(163, 230, 53, 0.25); }
-.win-tag {
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #0C0F0D;
-  background: var(--primary);
-  padding: 3px 8px;
-  border-radius: 999px;
-}
-.vs {
-  font-weight: 800;
-  font-size: 0.78rem;
-  color: var(--muted);
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.info {
-  margin-top: 22px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-.when { font-size: 0.85rem; color: var(--muted); font-weight: 600; text-align: center; }
-.badge {
-  font-size: 0.72rem;
-  font-weight: 800;
-  padding: 7px 15px;
-  border-radius: 999px;
-  letter-spacing: 0.07em;
-}
-.badge.live { background: var(--primary); color: #0C0F0D; animation: pulse 1.4s ease-in-out infinite; }
-.badge.notstarted { background: var(--bg); color: var(--text); border: 1px solid var(--line); }
-.badge.ended { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
-.badge.tomorrow { background: var(--primary-soft); color: var(--primary); border: 1px solid rgba(163, 230, 53, 0.35); }
-.badge.days { background: var(--bg); color: var(--primary); border: 1px solid var(--line); }
-.section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 0 12px;
-}
-.section-title {
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.links { display: flex; flex-direction: column; gap: 12px; }
-.link-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(180deg, var(--surface-2), var(--surface));
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 16px;
-  color: var(--text);
-  text-decoration: none;
-  font-weight: 800;
-  transition: transform 0.15s ease, border-color 0.2s ease;
-}
-.link-item:active { transform: scale(0.98); border-color: var(--primary); }
-.link-left { display: flex; align-items: center; gap: 12px; }
-.play {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  background: var(--primary);
-  color: #0C0F0D;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  padding-left: 2px;
-}
-.link-text { display: flex; flex-direction: column; gap: 2px; }
-.link-text small { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
-.hd {
-  background: var(--primary-soft);
-  color: var(--primary);
-  border: 1px solid rgba(163, 230, 53, 0.35);
-  font-size: 0.68rem;
-  font-weight: 800;
-  padding: 4px 9px;
-  border-radius: 8px;
-  letter-spacing: 0.06em;
-}
-.empty {
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.9rem;
-  padding: 30px 16px;
-  border: 1px dashed var(--line);
-  border-radius: 20px;
-}
-.empty a { color: var(--primary); font-weight: 800; text-decoration: none; display: inline-block; margin-top: 12px; }
-.skeleton {
-  height: 220px;
-  border-radius: 28px;
-  background: linear-gradient(100deg, var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%);
-  background-size: 200% 100%;
-  animation: shimmer 1.3s linear infinite;
-  margin-bottom: 14px;
-}
-.skeleton.small { height: 64px; border-radius: 18px; }
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: calc(28px + env(safe-area-inset-bottom));
-  transform: translate(-50%, 20px);
-  background: var(--primary);
-  color: #0C0F0D;
-  font-size: 0.85rem;
-  font-weight: 800;
-  padding: 11px 20px;
-  border-radius: 999px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 50;
-}
-.toast.show { opacity: 1; transform: translate(-50%, 0); }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-@media (prefers-reduced-motion: reduce) {
-  .badge.live, .skeleton { animation: none; }
-  .link-item, .back, .share-btn, .toast { transition: none; }
-}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,Arial,sans-serif;background:#090d16;color:#f5f7fb;padding:18px}
+.container{max-width:700px;margin:auto}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:25px}
+.back{color:#aab8d0;text-decoration:none}
+.card{background:#131b2b;border:1px solid #26344b;border-radius:16px;padding:20px;margin-bottom:16px}
+.teams{display:flex;align-items:center;justify-content:space-around;text-align:center;gap:12px}
+.team{flex:1;font-size:17px;font-weight:700}
+.team img{width:65px;height:65px;object-fit:contain;display:block;margin:0 auto 10px}
+.vs{color:#8291aa;font-weight:800}
+.meta{color:#9eabc0;text-align:center;margin-top:17px;font-size:13px}
+h2{font-size:18px;margin-bottom:15px}
+.links{display:grid;gap:10px}
+.link{display:flex;justify-content:space-between;align-items:center;background:#1c2940;padding:15px;border-radius:10px;color:white;text-decoration:none;border:1px solid #30415e}
+.link:active{background:#263c5e}
+.status{color:#9eabc0;text-align:center;padding:25px}
 </style>
 </head>
 <body>
-<header>
-  <div class="bar">
-    <a class="back" id="backBtn" href="/" aria-label="Back">&#8592;</a>
-    <div class="title">NPL<span>code</span></div>
-    <button class="share-btn" id="shareBtn" type="button" hidden aria-label="Share match">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>
-      Share
-    </button>
-  </div>
+<div class="container">
+<header class="header">
+<a href="index.html" class="back">← Back</a>
+<strong>Match Details</strong>
 </header>
-<main id="detail">
-  <div class="skeleton"></div>
-  <div class="skeleton small"></div>
-  <div class="skeleton small"></div>
-</main>
-<div class="toast" id="toast"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+<div id="content" class="status">Loading match...</div>
+</div>
 
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "ramus-7f7aa.firebaseapp.com",
-  databaseURL: "https://ramus-7f7aa-default-rtdb.firebaseio.com",
-  projectId: "ramus-7f7aa",
-  appId: "YOUR_APP_ID"
-};
+<script>
+const DATA_URL="https://npl-tv.pages.dev/data.json";
+const PLAYER_PAGE="player.html";
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const params=new URLSearchParams(location.search);
+const matchId=params.get("match");
 
-const LINK_COUNT = 5;
-const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
-const detail = document.getElementById("detail");
-const shareBtn = document.getElementById("shareBtn");
-const toastEl = document.getElementById("toast");
+const content=document.getElementById("content");
 
-function getMatchId() {
-  const fromQuery = new URLSearchParams(location.search).get("id");
-  if (fromQuery) return fromQuery;
-  const parts = location.pathname.split("/").filter(Boolean);
-  if (parts[0] === "match" && parts[1]) {
-    try {
-      return decodeURIComponent(parts[1]);
-    } catch (err) {
-      return parts[1];
-    }
-  }
-  const fromHash = location.hash.replace(/^#/, "");
-  return fromHash || null;
+function escapeHTML(value){
+return String(value??"").replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",
+'"':"&quot;","'":"&#39;"
+})[c]);
 }
 
-const matchId = getMatchId();
+function getLinks(match){
+const links=[];
 
-let teamsData = {};
-let match = null;
-let loaded = false;
-let failed = false;
-let lastSignature = "";
-let toastTimer = null;
+if(match.common?.url){
+links.push({
+id:"1",
+name:match.common.name||"Watch Live",
+url:match.common.url
+});
+}
 
-document.getElementById("backBtn").addEventListener("click", (e) => {
-  let sameOrigin = false;
-  try {
-    sameOrigin = document.referrer && new URL(document.referrer).origin === location.origin;
-  } catch (err) {
-    sameOrigin = false;
-  }
-  if (sameOrigin && history.length > 1) {
-    e.preventDefault();
-    history.back();
-  }
+Object.keys(match).forEach(key=>{
+const found=key.match(/^link(\d+)$/);
+if(found && match[key]?.url){
+links.push({
+id:found[1],
+name:match[key].name||"Stream "+found[1],
+url:match[key].url
+});
+}
 });
 
-function showToast(text) {
-  toastEl.textContent = text;
-  toastEl.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2200);
+return links;
 }
 
-async function copyText(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch (err) {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    let ok = false;
-    try {
-      ok = document.execCommand("copy");
-    } catch (err2) {
-      ok = false;
-    }
-    ta.remove();
-    return ok;
-  }
+async function loadMatch(){
+if(!matchId){
+content.innerHTML="No match ID provided.";
+return;
 }
 
-function teamName(id) {
-  const t = teamsData[id];
-  return t && t.name ? t.name : "TBD";
+try{
+const response=await fetch(DATA_URL+"?t="+Date.now());
+if(!response.ok)throw Error("Unable to load match data");
+
+const data=await response.json();
+const match=data[matchId];
+
+if(!match)throw Error("Match not found");
+
+const home=match.home||match.team1||match.team_a||"Team 1";
+const away=match.away||match.team2||match.team_b||"Team 2";
+
+const homeLogo=match.homeLogo||match.team1_logo||"";
+const awayLogo=match.awayLogo||match.team2_logo||"";
+
+const links=getLinks(match);
+
+content.innerHTML=`
+<div class="card">
+<div class="teams">
+<div class="team">
+${homeLogo?`<img src="${escapeHTML(homeLogo)}" alt="">`:""}
+${escapeHTML(home)}
+</div>
+<div class="vs">VS</div>
+<div class="team">
+${awayLogo?`<img src="${escapeHTML(awayLogo)}" alt="">`:""}
+${escapeHTML(away)}
+</div>
+</div>
+<div class="meta">
+${escapeHTML(match.date||"")}
+${match.time?" · "+escapeHTML(match.time):""}
+${match.tournament?" · "+escapeHTML(match.tournament):""}
+</div>
+</div>
+
+<div class="card">
+<h2>Available Streams</h2>
+<div class="links">
+${links.length?links.map(link=>`
+<a class="link" href="${PLAYER_PAGE}?match=${encodeURIComponent(matchId)}&id=${encodeURIComponent(link.id)}">
+<span>${escapeHTML(link.name)}</span>
+<span>▶</span>
+</a>
+`).join(""):"<p>No streaming links available.</p>"}
+</div>
+</div>
+`;
+
+}catch(error){
+content.innerHTML=`<div class="card status">${escapeHTML(error.message)}</div>`;
+}
 }
 
-async function shareMatch() {
-  if (!match || !matchId) return;
-  const url = location.origin + "/match/" + encodeURIComponent(matchId);
-  const title = teamName(match.team1) + " vs " + teamName(match.team2);
-  const text = title + " - Watch live on NPLcode";
-  if (navigator.share) {
-    try {
-      await navigator.share({ title, text, url });
-      return;
-    } catch (err) {
-      if (err && err.name === "AbortError") return;
-    }
-  }
-  const ok = await copyText(url);
-  showToast(ok ? "Match link copied" : url);
-}
-
-shareBtn.addEventListener("click", shareMatch);
-
-function esc(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  }[c]));
-}
-
-function playerUrl(linkNumber) {
-  return "/player.html?match=" + encodeURIComponent(matchId) + "&id=" + linkNumber;
-}
-
-function dayNumber(ms) {
-  const d = new Date(ms);
-  return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
-}
-
-function formatTime(ms) {
-  return new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-function formatDate(ms) {
-  return new Date(ms).toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" });
-}
-
-function duration(ms) {
-  const mins = Math.max(1, Math.round(ms / 60000));
-  if (mins < 60) return mins + " min";
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  return m ? h + "h " + m + "m" : h + "h";
-}
-
-function getInfo(m, now) {
-  const start = m.startTime;
-  const dayDiff = dayNumber(start) - dayNumber(now);
-  let state;
-  if (now < start) state = "notstarted";
-  else if (m.ended !== true && now < start + LIVE_MS) state = "live";
-  else state = "ended";
-
-  let visible = true;
-  let group = "today";
-  if (dayDiff > 0) group = "upcoming";
-  if (dayDiff < 0) {
-    if (state === "live") group = "today";
-    else visible = false;
-  }
-  return { state, dayDiff, visible, group };
-}
-
-function winnerOf(m) {
-  return m.winner && (m.winner === m.team1 || m.winner === m.team2) ? m.winner : null;
-}
-
-function whenText(m, info, now) {
-  if (info.state === "live") return "Started " + duration(now - m.startTime) + " ago";
-  if (info.state === "ended") {
-    const w = winnerOf(m);
-    return w ? "Winner: " + teamName(w) : "Match ended";
-  }
-  if (info.group === "today") return "Starts in " + duration(m.startTime - now);
-  return formatDate(m.startTime);
-}
-
-function teamHtml(id, isWinner) {
-  const t = teamsData[id];
-  const name = t && t.name ? esc(t.name) : "TBD";
-  const letter = t && t.name ? esc(t.name.charAt(0).toUpperCase()) : "?";
-  const logo = t && t.logourl
-    ? `<img src="${esc(t.logourl)}" alt="" onerror="this.parentNode.textContent='${letter}'">`
-    : letter;
-  const tag = isWinner ? '<div class="win-tag">WINNER</div>' : "";
-  return `<div class="team ${isWinner ? "winner" : ""}"><div class="team-logo">${logo}</div><div class="team-name">${name}</div>${tag}</div>`;
-}
-
-function tagHtml(info) {
-  if (info.group === "today") {
-    if (info.state === "live") return '<span class="badge live">LIVE NOW</span>';
-    if (info.state === "ended") return '<span class="badge ended">MATCH ENDED</span>';
-    return '<span class="badge notstarted">NOT STARTED</span>';
-  }
-  if (info.dayDiff === 1) return '<span class="badge tomorrow">TOMORROW</span>';
-  return `<span class="badge days">${info.dayDiff} DAYS LEFT</span>`;
-}
-
-function notFound(text) {
-  shareBtn.hidden = true;
-  detail.innerHTML = `<div class="empty">${text}<br><a href="/">&#8592; Back to matches</a></div>`;
-}
-
-function render() {
-  if (failed) {
-    notFound("Could not load match. Please check your connection and try again.");
-    return;
-  }
-  if (!loaded) return;
-
-  const now = Date.now();
-  const info = match && typeof match.startTime === "number" ? getInfo(match, now) : null;
-  if (!match || !info || !info.visible) {
-    notFound("Match not found");
-    return;
-  }
-
-  shareBtn.hidden = false;
-  const winnerId = info.state === "ended" ? winnerOf(match) : null;
-
-  const t1 = teamsData[match.team1];
-  const t2 = teamsData[match.team2];
-  document.title = (t1 && t1.name ? t1.name : "TBD") + " vs " + (t2 && t2.name ? t2.name : "TBD") + " - NPLcode";
-
-  let linksHtml;
-  if (info.state === "live") {
-    const items = [];
-    for (let i = 1; i <= LINK_COUNT; i++) {
-      const u = match.links && match.links["link" + i];
-      if (u) {
-        items.push(`
-          <a class="link-item" href="${esc(playerUrl(i))}">
-            <span class="link-left">
-              <span class="play">&#9654;</span>
-              <span class="link-text">Stream ${i}<small>Opens in player</small></span>
-            </span>
-            <span class="hd">HD</span>
-          </a>
-        `);
-      }
-    }
-    linksHtml = items.length
-      ? `<div class="links">${items.join("")}</div>`
-      : '<div class="empty">No links added yet</div>';
-  } else if (info.state === "ended") {
-    linksHtml = '<div class="empty">This match has ended</div>';
-  } else {
-    linksHtml = '<div class="empty">Links will appear when the match goes live</div>';
-  }
-
-  detail.innerHTML = `
-    <div class="match-card ${info.state === "live" ? "live" : ""}">
-      <div class="teams">
-        ${teamHtml(match.team1, winnerId === match.team1)}
-        <div class="vs">VS</div>
-        ${teamHtml(match.team2, winnerId === match.team2)}
-      </div>
-      <div class="info">
-        ${tagHtml(info)}
-        <div class="when">${esc(formatTime(match.startTime))} &middot; ${esc(whenText(match, info, now))}</div>
-      </div>
-    </div>
-    <div class="section-head"><div class="section-title">Watch links</div></div>
-    ${linksHtml}
-  `;
-}
-
-function onError() {
-  failed = true;
-  render();
-}
-
-if (!matchId) {
-  loaded = true;
-  render();
-} else {
-  onValue(ref(db, "teams"), (snap) => {
-    teamsData = snap.val() || {};
-    render();
-  }, onError);
-
-  onValue(ref(db, "matches/" + matchId), (snap) => {
-    match = snap.val();
-    loaded = true;
-    failed = false;
-    render();
-  }, onError);
-
-  setInterval(() => {
-    if (!match || typeof match.startTime !== "number") return;
-    const now = Date.now();
-    const i = getInfo(match, now);
-    const sig = i.state + i.dayDiff + (i.visible ? "v" : "h") + whenText(match, i, now);
-    if (sig !== lastSignature) {
-      lastSignature = sig;
-      render();
-    }
-  }, 1000);
-}
+loadMatch();
 </script>
 </body>
 </html>

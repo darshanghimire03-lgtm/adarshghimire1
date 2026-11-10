@@ -1,560 +1,253 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0C0F0D">
-<title>LIVE | NPLcode</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23151A17'/%3E%3Ctext x='32' y='44' font-size='36' font-weight='900' text-anchor='middle' fill='%23A3E635' font-family='system-ui'%3EN%3C/text%3E%3C/svg%3E">
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live Player</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
 <style>
-:root {
-  --bg: #0C0F0D;
-  --surface: #151A17;
-  --surface-2: #1C231F;
-  --primary: #A3E635;
-  --primary-soft: rgba(163, 230, 53, 0.12);
-  --text: #F4F6F4;
-  --muted: #8C9790;
-  --line: rgba(255, 255, 255, 0.07);
-  --shadow: 0 10px 40px -12px rgba(163, 230, 53, 0.3);
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#f5f7fb;--card:#fff;--text:#172033;
+--muted:#748096;--border:#e4e8ef;--accent:#2563eb
 }
-body.light {
-  --bg: #F4F6F3;
-  --surface: #FFFFFF;
-  --surface-2: #F0F3EE;
-  --primary: #65A30D;
-  --primary-soft: rgba(101, 163, 13, 0.12);
-  --text: #202820;
-  --muted: #717B73;
-  --line: rgba(0, 0, 0, 0.09);
-  --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+[data-theme=dark]{
+--bg:#090d16;--card:#131b2b;--text:#f5f7fb;
+--muted:#9eabc0;--border:#26344b
 }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  min-height: 100vh;
-  padding-bottom: env(safe-area-inset-bottom);
-  transition: background 0.2s, color 0.2s;
-}
-button { font: inherit; cursor: pointer; border: none; }
-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
-  padding: calc(14px + env(safe-area-inset-top)) 20px 14px;
-}
-.bar {
-  max-width: 900px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 13px;
-  background: var(--surface);
-  border: 1px solid rgba(163, 230, 53, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  font-size: 1.1rem;
-  color: var(--primary);
-}
-.brand { flex: 1; }
-.brand h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
-.brand h1 span { color: var(--primary); }
-.brand p { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
-.live-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--primary-soft);
-  border: 1px solid rgba(163, 230, 53, 0.35);
-  color: var(--primary);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  padding: 7px 12px;
-  border-radius: 999px;
-}
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--primary);
-  animation: pulse 1.4s ease-in-out infinite;
-}
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-main {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 18px 20px 40px;
-}
-.top-controls { display: flex; gap: 10px; margin-bottom: 16px; }
-.control-btn {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  color: var(--text);
-  padding: 11px 17px;
-  border-radius: 14px;
-  font-size: 13px;
-  font-weight: 700;
-  transition: 0.2s;
-}
-.control-btn:hover { border-color: var(--primary); }
-.control-btn.primary { background: var(--primary); color: #0C0F0D; border-color: var(--primary); }
-.ad-slot {
-  display: none;
-  width: 100%;
-  margin: 0 0 16px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 8px;
-  overflow: hidden;
-  text-align: center;
-  position: relative;
-}
-.ad-slot.on { display: block; }
-.ad-slot::before {
-  content: "Advertisement";
-  display: block;
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-.ad-slot iframe { border: 0; max-width: 100%; display: block; margin: 0 auto; }
-.notice {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--primary);
-  color: var(--muted);
-  padding: 14px;
-  border-radius: 14px;
-  font-size: 13px;
-  line-height: 1.6;
-  margin-bottom: 16px;
-}
-.notice strong { color: var(--primary); }
-.video-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-.video-heading h2 {
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.live-status {
-  color: var(--primary);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.video-container {
-  position: relative;
-  background: #000;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  border: 1px solid rgba(163, 230, 53, 0.45);
-  margin-bottom: 16px;
-}
-.video-container iframe,
-.video-container video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: #000;
-  display: none;
-}
-.video-container video { object-fit: contain; }
-.video-container.mode-iframe iframe { display: block; }
-.video-container.mode-hls video { display: block; }
-.fullscreen-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: var(--primary);
-  color: #0C0F0D;
-  padding: 9px 14px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 800;
-  z-index: 5;
-}
-.fullscreen-btn:hover { opacity: 0.9; }
-.video-container:fullscreen {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  aspect-ratio: auto;
-  border-radius: 0;
-  border: none;
-  background: #000;
-}
-.empty-player {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 20px;
-  color: var(--muted);
-  font-size: 14px;
-  background: var(--surface);
-  z-index: 4;
-}
-.empty-player.off { display: none; }
-.chat-btn {
-  width: 100%;
-  padding: 14px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  color: var(--text);
-  font-weight: 700;
-  font-size: 14px;
-  transition: 0.2s;
-  margin-bottom: 12px;
-}
-.chat-btn:hover, .chat-btn.active { border-color: var(--primary); color: var(--primary); }
-#chat-frame {
-  display: none;
-  width: 100%;
-  height: 400px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  margin-bottom: 16px;
-  background: var(--surface);
-}
-.disclaimer {
-  margin-top: 10px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  padding: 20px;
-  border-radius: 20px;
-}
-.disclaimer h3 { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; color: var(--primary); }
-.disclaimer p { color: var(--muted); font-size: 12px; line-height: 1.8; margin-bottom: 10px; }
-.disclaimer b { color: var(--text); }
-footer { text-align: center; padding: 25px 10px; color: var(--muted); font-size: 12px; }
-footer span { color: var(--primary); font-weight: 700; }
-@media (max-width: 500px) {
-  main { padding: 14px 14px 32px; }
-  .control-btn { flex: 1; padding: 11px 8px; font-size: 12px; }
-  .video-container { border-radius: 16px; }
-  .disclaimer { padding: 16px; }
-}
-@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.container{max-width:950px;margin:auto;padding:18px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+header a{color:var(--accent);text-decoration:none}
+.controls{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap}
+button{border:0;padding:11px 16px;border-radius:9px;background:var(--accent);color:white;font-weight:600;cursor:pointer}
+.player{width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden;position:relative}
+video,iframe{width:100%;height:100%;border:0;display:block;background:#000;object-fit:contain}
+iframe{position:absolute;inset:0}
+#message{color:var(--muted);text-align:center;padding:25px;background:var(--card);border-radius:10px;margin-top:12px}
+.info{margin-top:16px;background:var(--card);border:1px solid var(--border);padding:17px;border-radius:12px}
+.info p{color:var(--muted);font-size:13px;margin-top:6px}
+.embed{width:100%;margin-top:12px;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:12px;border-radius:8px;min-height:75px;resize:vertical}
+.hidden{display:none!important}
 </style>
 </head>
+
 <body>
+<div class="container">
 
 <header>
-  <div class="bar">
-    <div class="logo">N</div>
-    <div class="brand">
-      <h1>NPL<span>code</span></h1>
-      <p>Live player</p>
-    </div>
-    <div class="live-pill"><span class="dot"></span>LIVE</div>
-  </div>
+<a href="javascript:history.back()">← Back</a>
+<strong>LIVE PLAYER</strong>
+<button id="themeBtn">☾</button>
 </header>
 
-<main>
+<div class="controls">
+<button id="fullscreenBtn">⛶ Fullscreen</button>
+<button id="refreshBtn">↻ Refresh</button>
+</div>
 
-  <div class="top-controls">
-    <button class="control-btn primary" id="refresh-btn">↻ &nbsp;Refresh</button>
-    <button class="control-btn" id="theme-toggle">☀ &nbsp;Light Mode</button>
-  </div>
+<div class="player" id="player">
+<video id="video" controls autoplay muted playsinline></video>
+<iframe id="frame"
+allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+allowfullscreen
+referrerpolicy="strict-origin-when-cross-origin"
+class="hidden"></iframe>
+</div>
 
-  <div class="ad-slot" id="ad-top"></div>
+<div id="message">Loading stream...</div>
 
-  <div class="notice">
-    <strong>Streaming notice</strong><br>
-    If a stream doesn't load, try another link or refresh the player.
-    Some third-party streams may require additional network permissions.
-  </div>
+<div class="info">
+<strong>Stream Information</strong>
+<p id="streamInfo">Connecting...</p>
+</div>
 
-  <div class="video-heading">
-    <h2>Live Player</h2>
-    <div class="live-status"><span class="dot"></span>LIVE</div>
-  </div>
+<div class="info">
+<strong>Embed Player</strong>
+<p>Copy this code to embed this player on another website.</p>
+<textarea class="embed" id="embedCode" readonly></textarea>
+<button id="copyEmbed">Copy Embed Code</button>
+</div>
 
-  <div class="video-container" id="video-container">
-    <video id="video-player" controls autoplay muted playsinline controlsList="nodownload"></video>
-    <iframe
-      id="video-frame"
-      title="Live Player"
-      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-      allowfullscreen
-      referrerpolicy="strict-origin-when-cross-origin"></iframe>
-    <div class="empty-player" id="empty-player">Loading stream…</div>
-    <button class="fullscreen-btn" id="fullscreen-button">⛶ Fullscreen</button>
-  </div>
-
-  <div class="ad-slot" id="ad-middle"></div>
-
-  <button class="chat-btn" id="chat-toggle-btn">☰ &nbsp;Show LIVE Chat</button>
-  <iframe id="chat-frame" title="Live Chat" loading="lazy"></iframe>
-
-  <div class="ad-slot" id="ad-bottom"></div>
-
-  <section class="disclaimer">
-    <h3>Legal Disclaimer</h3>
-    <p><b>Content Hosting:</b> This page does not host or upload video content. Streams are displayed through third-party embedded sources.</p>
-    <p><b>Copyright Notice:</b> All trademarks, logos and media belong to their respective owners. No ownership of third-party content is claimed.</p>
-    <p><b>Legal Responsibility:</b> Users are responsible for ensuring that their access to third-party content complies with applicable laws.</p>
-    <p><b>DMCA Compliance:</b> Copyright owners can contact the relevant hosting provider regarding potentially infringing content.</p>
-  </section>
-
-  <footer>
-    Powered by <span>NPLcode</span>
-    <br><br>
-    © 2026 All Rights Reserved
-  </footer>
-
-</main>
+</div>
 
 <script>
-const REDIRECT = false;
-const DATABASE_URL = "https://ramus-7f7aa-default-rtdb.firebaseio.com";
+const DATA_URL="https://npl-tv.pages.dev/data.json";
 
-const ADS = {
-  top: "",
-  middle: "",
-  bottom: ""
+const params=new URLSearchParams(location.search);
+const matchId=params.get("match");
+const linkId=params.get("id");
+
+const video=document.getElementById("video");
+const frame=document.getElementById("frame");
+const message=document.getElementById("message");
+const player=document.getElementById("player");
+const info=document.getElementById("streamInfo");
+
+let hls=null;
+
+function showMessage(text){
+message.textContent=text;
+message.classList.remove("hidden");
+}
+
+function hideMessage(){
+message.classList.add("hidden");
+}
+
+function destroyPlayer(){
+if(hls){
+hls.destroy();
+hls=null;
+}
+video.pause();
+video.removeAttribute("src");
+video.load();
+frame.removeAttribute("src");
+frame.classList.add("hidden");
+video.classList.remove("hidden");
+}
+
+function getType(obj,url){
+if(obj.type==="hls"||obj.type==="iframe"||
+obj.type==="mp4")return obj.type;
+
+if(/\.m3u8(?:$|[?#])/i.test(url))return "hls";
+if(/\.mp4(?:$|[?#])/i.test(url))return "mp4";
+if(/\.webm(?:$|[?#])/i.test(url))return "mp4";
+
+return "iframe";
+}
+
+async function loadStream(){
+destroyPlayer();
+
+if(!matchId||!linkId){
+showMessage("Missing match ID or stream ID.");
+return;
+}
+
+showMessage("Loading stream...");
+
+try{
+const response=await fetch(DATA_URL+"?t="+Date.now());
+
+if(!response.ok)throw Error("Unable to fetch stream data.");
+
+const data=await response.json();
+const match=data[matchId];
+
+if(!match)throw Error("Match not found.");
+
+const selected=linkId==="1"&&match.common?.url
+?match.common
+:match["link"+linkId];
+
+if(!selected?.url)throw Error("Stream link not found.");
+
+const url=selected.url;
+
+if(!/^https?:\/\//i.test(url)){
+throw Error("Invalid stream URL.");
+}
+
+const type=getType(selected,url);
+
+info.textContent=selected.name||"Stream "+linkId;
+
+if(type==="hls"){
+if(Hls.isSupported()){
+hls=new Hls({
+enableWorker:true,
+maxBufferLength:30
+});
+
+hls.loadSource(url);
+hls.attachMedia(video);
+
+hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+hideMessage();
+video.play().catch(()=>showMessage("Press Play to start streaming."));
+});
+
+hls.on(Hls.Events.ERROR,(event,data)=>{
+if(data.fatal){
+showMessage("Stream playback failed. Try refreshing or another link.");
+}
+});
+
+}else if(video.canPlayType("application/vnd.apple.mpegurl")){
+video.src=url;
+video.onloadedmetadata=()=>{
+hideMessage();
+video.play().catch(()=>showMessage("Press Play to start."));
+};
+}else{
+throw Error("HLS playback is not supported by this browser.");
+}
+
+}else if(type==="mp4"){
+video.src=url;
+video.onloadedmetadata=()=>{
+hideMessage();
+video.play().catch(()=>showMessage("Press Play to start."));
+};
+video.onerror=()=>showMessage("Video could not be loaded.");
+
+}else{
+video.classList.add("hidden");
+frame.classList.remove("hidden");
+frame.src=url;
+hideMessage();
+}
+
+}catch(error){
+showMessage(error.message);
+}
+}
+
+document.getElementById("refreshBtn").onclick=loadStream;
+
+document.getElementById("fullscreenBtn").onclick=async()=>{
+try{
+if(document.fullscreenElement){
+await document.exitFullscreen();
+}else if(player.requestFullscreen){
+await player.requestFullscreen();
+}else if(video.webkitEnterFullscreen){
+video.webkitEnterFullscreen();
+}
+}catch(e){
+showMessage("Fullscreen is unavailable in this browser.");
+}
 };
 
-function mountAd(id, code, height) {
-  const slot = document.getElementById(id);
-  if (!slot || !code || !code.trim()) return;
-  const frame = document.createElement("iframe");
-  frame.width = "100%";
-  frame.height = height;
-  frame.setAttribute("scrolling", "no");
-  frame.setAttribute("sandbox", "allow-scripts allow-popups allow-popups-to-escape-sandbox allow-same-origin");
-  frame.srcdoc = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>html,body{margin:0;padding:0;background:transparent;display:flex;justify-content:center;align-items:center}</style></head><body>' + code + '</body></html>';
-  slot.appendChild(frame);
-  slot.classList.add("on");
+document.getElementById("themeBtn").onclick=()=>{
+const dark=document.documentElement.dataset.theme==="dark";
+document.documentElement.dataset.theme=dark?"light":"dark";
+localStorage.setItem("playerTheme",dark?"light":"dark");
+};
+
+const savedTheme=localStorage.getItem("playerTheme");
+document.documentElement.dataset.theme=savedTheme||"dark";
+
+document.getElementById("copyEmbed").onclick=async()=>{
+const code=`<iframe src="${location.href}" width="100%" height="400" allowfullscreen></iframe>`;
+try{
+await navigator.clipboard.writeText(code);
+document.getElementById("copyEmbed").textContent="Copied!";
+}catch(e){
+document.getElementById("embedCode").value=code;
 }
+};
 
-mountAd("ad-top", ADS.top, "90");
-mountAd("ad-middle", ADS.middle, "250");
-mountAd("ad-bottom", ADS.bottom, "90");
+document.getElementById("embedCode").value=
+`<iframe src="${location.href}" width="100%" height="400" allowfullscreen></iframe>`;
 
-function extractAfterSrc(input) {
-  let value = String(input).trim();
-  const first = value.match(/[?&]src=/i);
-  if (first && !/^https?:\/\/[^\s?#]*\.m3u8/i.test(value)) {
-    value = value.slice(first.index + first[0].length).trim();
-  }
-  const wrapper = /^https?:\/\/[^\s]*?[?&]src=((?:https?:\/\/|https?%3A).*)$/i;
-  for (let i = 0; i < 5; i++) {
-    if (!/^https?:\/\//i.test(value)) {
-      try {
-        value = decodeURIComponent(value);
-      } catch {
-        break;
-      }
-    }
-    const m = value.match(wrapper);
-    if (!m) break;
-    value = m[1];
-  }
-  return value;
-}
-
-function extractSrcFromPage() {
-  const full = location.search + location.hash;
-  const first = full.match(/[?&]src=/i);
-  if (!first) return "";
-  return extractAfterSrc(full.slice(first.index + first[0].length));
-}
-
-async function resolveFromMatch(matchId, linkId) {
-  const endpoint = DATABASE_URL + "/matches/" + encodeURIComponent(matchId) + "/links/link" + encodeURIComponent(linkId) + ".json";
-  const res = await fetch(endpoint, { cache: "no-store" });
-  if (!res.ok) throw new Error("request failed");
-  const value = await res.json();
-  if (typeof value !== "string" || !value.trim()) throw new Error("link not found");
-  return extractAfterSrc(value);
-}
-
-const container = document.getElementById("video-container");
-const videoFrame = document.getElementById("video-frame");
-const videoEl = document.getElementById("video-player");
-const emptyPlayer = document.getElementById("empty-player");
-
-function showMessage(text) {
-  emptyPlayer.textContent = text;
-  emptyPlayer.classList.remove("off");
-  container.classList.remove("mode-iframe", "mode-hls");
-}
-
-function playUrl(url) {
-  let parsed;
-  try {
-    parsed = new URL(url);
-  } catch {
-    showMessage("Invalid stream link.");
-    return;
-  }
-  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-    showMessage("Invalid stream link.");
-    return;
-  }
-  if (REDIRECT) {
-    location.replace(parsed.href);
-    return;
-  }
-  emptyPlayer.classList.add("off");
-  if (/\.m3u8(\?|#|$)/i.test(parsed.pathname + parsed.search + parsed.hash) || /\.m3u8$/i.test(parsed.pathname)) {
-    container.classList.remove("mode-iframe");
-    container.classList.add("mode-hls");
-    if (window.Hls && Hls.isSupported()) {
-      const hls = new Hls({ maxMaxBufferLength: 100 });
-      hls.loadSource(parsed.href);
-      hls.attachMedia(videoEl);
-      hls.on(Hls.Events.ERROR, function (event, data) {
-        if (!data.fatal) return;
-        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
-        else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
-        else {
-          hls.destroy();
-          showMessage("Stream failed to load. Try another link.");
-        }
-      });
-    } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
-      videoEl.src = parsed.href;
-      videoEl.play().catch(() => {});
-    } else {
-      showMessage("This browser cannot play this stream.");
-    }
-  } else {
-    container.classList.remove("mode-hls");
-    container.classList.add("mode-iframe");
-    videoFrame.src = parsed.href;
-  }
-}
-
-async function start() {
-  const params = new URLSearchParams(location.search);
-  const matchId = params.get("match");
-  const linkId = params.get("id");
-
-  if (matchId && linkId && /^[1-9]\d*$/.test(linkId)) {
-    try {
-      const url = await resolveFromMatch(matchId, linkId);
-      playUrl(url);
-    } catch {
-      showMessage("Stream not found. Go back and try another link.");
-    }
-    return;
-  }
-
-  const direct = extractSrcFromPage();
-  if (direct) {
-    playUrl(direct);
-    return;
-  }
-
-  showMessage("No stream selected. Go back and choose a stream.");
-}
-
-start();
-
-const chatFrame = document.getElementById("chat-frame");
-const chatButton = document.getElementById("chat-toggle-btn");
-const externalChatUrl = "https://dns-tv.pages.dev/VIP/chat2";
-let chatVisible = false;
-
-chatButton.addEventListener("click", () => {
-  chatVisible = !chatVisible;
-  if (chatVisible) {
-    chatFrame.style.display = "block";
-    if (!chatFrame.dataset.loaded) {
-      chatFrame.src = externalChatUrl;
-      chatFrame.dataset.loaded = "true";
-    }
-    chatButton.textContent = "✕  Hide LIVE Chat";
-    chatButton.classList.add("active");
-  } else {
-    chatFrame.style.display = "none";
-    chatButton.textContent = "☰  Show LIVE Chat";
-    chatButton.classList.remove("active");
-  }
-});
-
-const themeButton = document.getElementById("theme-toggle");
-themeButton.addEventListener("click", () => {
-  document.body.classList.toggle("light");
-  const light = document.body.classList.contains("light");
-  themeButton.textContent = light ? "☾  Dark Mode" : "☀  Light Mode";
-  document.querySelector('meta[name="theme-color"]').setAttribute("content", light ? "#F4F6F3" : "#0C0F0D");
-});
-
-document.getElementById("refresh-btn").addEventListener("click", () => {
-  location.reload();
-});
-
-const fullscreenButton = document.getElementById("fullscreen-button");
-
-async function toggleFullscreen() {
-  try {
-    if (!document.fullscreenElement) {
-      if (container.requestFullscreen) {
-        await container.requestFullscreen();
-      } else if (container.webkitRequestFullscreen) {
-        container.webkitRequestFullscreen();
-      }
-      if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock("landscape").catch(() => {});
-      }
-    } else {
-      await document.exitFullscreen();
-    }
-  } catch (error) {
-    console.warn("Fullscreen unavailable:", error);
-  }
-}
-
-fullscreenButton.addEventListener("click", toggleFullscreen);
-
-document.addEventListener("fullscreenchange", () => {
-  const isFullscreen = !!document.fullscreenElement;
-  fullscreenButton.style.display = isFullscreen ? "none" : "block";
-  if (!isFullscreen && screen.orientation && screen.orientation.unlock) {
-    screen.orientation.unlock();
-  }
-});
+loadStream();
 </script>
-
 </body>
 </html>
