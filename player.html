@@ -386,7 +386,7 @@ main {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getDatabase, ref, onValue, push, set, onDisconnect } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { getDatabase, ref, onValue, set, remove, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
@@ -401,6 +401,9 @@ const db = getDatabase(app);
 
 const LINK_COUNT = 2;
 const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
+const BEAT_MS = 20000;
+const ACTIVE_MS = 90000;
+const PRUNE_MS = 180000;
 const root = document.getElementById("app");
 const backBtn = document.getElementById("backBtn");
 const toastEl = document.getElementById("toast");
@@ -451,6 +454,8 @@ let match = null;
 let loaded = false;
 let failed = false;
 let viewers = 0;
+let presenceData = {};
+let serverOffset = 0;
 let reloadN = 0;
 let lastSignature = "";
 let lastPlayerKey = null;
@@ -760,19 +765,100 @@ function onError() {
   render();
 }
 
-function startPresence() {
+function makeSessionId() {
+  const rand = () => Math.random().toString(36).slice(2, 10);
+  const fresh = Date.now().toString(36) + rand() + rand();
   try {
-    const roomRef = ref(db, "presence/" + matchId);
-    const me = push(roomRef);
-    onValue(ref(db, ".info/connected"), (snap) => {
-      if (snap.val() !== true) return;
-      onDisconnect(me).remove().then(() => set(me, { t: Date.now() })).catch(() => {});
+    const key = "npl_sid";
+    let id = sessionStorage.getItem(key);
+    if (!id) {
+      id = fresh;
+      sessionStorage.setItem(key, id);
+    }
+    return id;
+  } catch (err) {
+    return fresh;
+  }
+}
+
+function entryTime(v) {
+  if (v && typeof v === "object") return typeof v.t === "number" ? v.t : 0;
+  return typeof v === "number" ? v : 0;
+}
+
+function recountViewers() {
+  const now = Date.now() + serverOffset;
+  let n = 0;
+  for (const key of Object.keys(presenceData)) {
+    const t = entryTime(presenceData[key]);
+    if (t && now - t < ACTIVE_MS) n++;
+  }
+  if (n !== viewers) {
+    viewers = n;
+    render();
+  }
+}
+
+function pruneStale(roomPath) {
+  const now = Date.now() + serverOffset;
+  for (const key of Object.keys(presenceData)) {
+    const t = entryTime(presenceData[key]);
+    if (t && now - t > PRUNE_MS) {
+      remove(ref(db, roomPath + "/" + key)).catch(() => {});
+    }
+  }
+}
+
+function startPresence() {
+  const roomPath = "presence/" + matchId;
+  const me = ref(db, roomPath + "/" + makeSessionId());
+  let connected = false;
+  let warned = false;
+
+  function warn(err) {
+    if (warned) return;
+    warned = true;
+    console.warn("[NPLcode] Viewer count needs Firebase rules for 'presence/{matchId}' (read + write). Error:", err && err.message ? err.message : err);
+  }
+
+  function beat() {
+    if (!connected) return;
+    set(me, { t: serverTimestamp() }).catch(warn);
+  }
+
+  onValue(ref(db, ".info/serverTimeOffset"), (snap) => {
+    serverOffset = typeof snap.val() === "number" ? snap.val() : 0;
+    recountViewers();
+  });
+
+  onValue(ref(db, ".info/connected"), (snap) => {
+    connected = snap.val() === true;
+    if (!connected) return;
+    onDisconnect(me).remove().then(beat).catch((err) => {
+      warn(err);
+      beat();
     });
-    onValue(roomRef, (snap) => {
-      viewers = snap.numChildren();
-      render();
-    }, () => {});
-  } catch (err) {}
+  });
+
+  onValue(ref(db, roomPath), (snap) => {
+    presenceData = snap.val() || {};
+    recountViewers();
+  }, warn);
+
+  setInterval(beat, BEAT_MS);
+  setInterval(() => {
+    recountViewers();
+    pruneStale(roomPath);
+  }, 15000);
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") beat();
+  });
+  window.addEventListener("online", beat);
+  window.addEventListener("pagehide", () => {
+    remove(me).catch(() => {});
+  });
+  window.addEventListener("pageshow", beat);
 }
 
 if (!matchId) {
