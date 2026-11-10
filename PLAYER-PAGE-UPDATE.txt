@@ -1,9 +1,0 @@
-NPLcode dual player executors
-
-Each live stream has two player actions:
-1. NPL Player: opens the existing local player.html?src=... executor using the stream URL saved in the NPLcode match record.
-2. YoNoTV Player: opens https://yonotv.pages.dev/page?src=https%3A%2F%2Fyonotv.pages.dev%2FLINK%3Fid%3DIND2.
-
-The YoNoTV executor always uses the fixed resolver URL https://yonotv.pages.dev/LINK?id=IND2. It does not read yonoLinkId or externalPlayerId from Firebase and does not extract an ID from the NPL stream URL.
-
-Deploy all project files to the same Vercel project. Keep detail.html and player.html in the project root.

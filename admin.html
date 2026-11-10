@@ -599,13 +599,17 @@ function teamBlock(id) {
   return `<div class="mt">${logo}<div class="mt-name">${name}</div></div>`;
 }
 
-function linkChips(links) {
+function playerUrl(matchId, n) {
+  return "/match/player/" + encodeURIComponent(matchId) + "?link=" + n;
+}
+
+function linkChips(matchId, links) {
   if (!links) return "";
   const chips = [];
   for (let i = 1; i <= LINK_COUNT; i++) {
     const u = links["link" + i];
     if (u) {
-      chips.push(`<a class="chip" href="${escapeHtml(u)}" target="_blank" rel="noopener">Link ${i}</a>`);
+      chips.push(`<a class="chip" href="${escapeHtml(playerUrl(matchId, i))}" target="_blank" rel="noopener">Link ${i}</a>`);
     }
   }
   return chips.length ? `<div class="chips">${chips.join("")}</div>` : "";
@@ -686,7 +690,7 @@ function renderMatches() {
           ${badge}
         </div>
         ${winnerLine}
-        ${linkChips(m.links)}
+        ${linkChips(id, m.links)}
         ${actions}
       </div>
     `;
