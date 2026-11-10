@@ -311,8 +311,20 @@ function getMatchId() {
   const parts = location.pathname.split("/").filter(Boolean);
   const matchIndex = parts.findIndex(part => part.toLowerCase() === "match");
   if (matchIndex !== -1 && parts[matchIndex + 1]) {
-    try { return decodeURIComponent(parts[matchIndex + 1]).trim(); }
-    catch (_) { return parts[matchIndex + 1].trim(); }
+    let segment = parts[matchIndex + 1];
+    try { segment = decodeURIComponent(segment).trim(); }
+    catch (_) { segment = segment.trim(); }
+
+    // These are page routes, not Firebase match keys. This prevents
+    // /match/player (or /match/detail) from being queried as a match ID.
+    const reserved = new Set(["player", "player.html", "detail", "detail.html", "index", "index.html", "admin", "admin.html"]);
+    if (!reserved.has(segment.toLowerCase())) return segment;
+
+    // Some old links may have put the real match ID after /match/player/.
+    if (parts[matchIndex + 2]) {
+      try { return decodeURIComponent(parts[matchIndex + 2]).trim(); }
+      catch (_) { return parts[matchIndex + 2].trim(); }
+    }
   }
 
   const fromHash = location.hash.replace(/^#/, "").trim();
@@ -406,8 +418,7 @@ function dayNumber(ms) {
 }
 
 function formatTime(ms) {
-  if (!Number.isFinite(Number(ms)) || Number(ms) <= 0) return "Schedule unavailable";
-  return new Date(Number(ms)).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 function formatDate(ms) {
@@ -423,31 +434,21 @@ function duration(ms) {
 }
 
 function getInfo(m, now) {
-  const start = Number(m && m.startTime);
-  // A valid match record must not be rejected just because its schedule is
-  // missing or stored in an unexpected format. Keep its watch links accessible.
-  if (!Number.isFinite(start) || start <= 0) {
-    return {
-      state: m && m.ended === true ? "ended" : "live",
-      dayDiff: 0,
-      visible: true,
-      group: "today",
-      scheduleMissing: true
-    };
-  }
-
+  const start = m.startTime;
   const dayDiff = dayNumber(start) - dayNumber(now);
   let state;
-  if (m.ended === true) state = "ended";
-  else if (now < start) state = "notstarted";
-  else if (now < start + LIVE_MS) state = "live";
+  if (now < start) state = "notstarted";
+  else if (m.ended !== true && now < start + LIVE_MS) state = "live";
   else state = "ended";
 
   let visible = true;
   let group = "today";
   if (dayDiff > 0) group = "upcoming";
-  if (dayDiff < 0 && state !== "live") visible = false;
-  return { state, dayDiff, visible, group, scheduleMissing: false };
+  if (dayDiff < 0) {
+    if (state === "live") group = "today";
+    else visible = false;
+  }
+  return { state, dayDiff, visible, group };
 }
 
 function winnerOf(m) {
@@ -455,7 +456,6 @@ function winnerOf(m) {
 }
 
 function whenText(m, info, now) {
-  if (info.scheduleMissing) return "Match schedule not provided";
   if (info.state === "live") return "Started " + duration(now - m.startTime) + " ago";
   if (info.state === "ended") {
     const w = winnerOf(m);
@@ -477,7 +477,6 @@ function teamHtml(id, isWinner) {
 }
 
 function tagHtml(info) {
-  if (info.scheduleMissing) return '<span class="badge live">MATCH AVAILABLE</span>';
   if (info.group === "today") {
     if (info.state === "live") return '<span class="badge live">LIVE NOW</span>';
     if (info.state === "ended") return '<span class="badge ended">MATCH ENDED</span>';
@@ -504,7 +503,7 @@ function playerPageUrl(raw, label) {
   const url = safeStreamUrl(raw);
   if (!url) return null;
   const params = new URLSearchParams({ src: url, title: label || "Live stream" });
-  return "player.html?" + params.toString();
+  return "/player?" + params.toString();
 }
 
 // Second executor: YoNoTV's /page?src=/LINK?id=... player route.
@@ -525,11 +524,11 @@ function render() {
   if (!loaded) return;
 
   const now = Date.now();
-  const info = match ? getInfo(match, now) : null;
-  // Only a missing database record is "not found"; schedule formatting is
-  // handled separately so valid records are never hidden by a date issue.
+  const info = match && typeof match.startTime === "number" ? getInfo(match, now) : null;
+  // A real match remains available after its scheduled day. Previously old
+  // matches were incorrectly hidden and displayed as "Match not found".
   if (!match || !info) {
-    notFound("No match record exists for ID: " + esc(matchId || "unknown") + ". Check that the URL uses the Firebase match key.");
+    notFound("Match not found. Check the match ID or make sure the match exists in Firebase.");
     return;
   }
 
@@ -605,73 +604,32 @@ async function readFirebase(path) {
 }
 
 function normalizeMatch(data) {
-  if (!data || typeof data !== "object" || Array.isArray(data)) return null;
+  if (!data || typeof data !== "object") return null;
   const copy = { ...data };
-
-  // Support the current admin format and common legacy date field names.
-  let rawTime = copy.startTime;
-  if (rawTime == null) rawTime = copy.start_time ?? copy.dateTime ?? copy.matchTime ?? copy.time;
-  let parsedTime = typeof rawTime === "number" ? rawTime : Number(rawTime);
-  if (!Number.isFinite(parsedTime) || parsedTime <= 0) {
-    parsedTime = Date.parse(rawTime || "");
+  if (typeof copy.startTime !== "number") {
+    const numeric = Number(copy.startTime);
+    copy.startTime = Number.isFinite(numeric) && numeric > 0
+      ? numeric
+      : Date.parse(copy.startTime);
   }
-  copy.startTime = Number.isFinite(parsedTime) && parsedTime > 0 ? parsedTime : null;
-
-  // Normalize legacy team/link property names without changing stored data.
-  copy.team1 = copy.team1 ?? copy.homeTeam ?? copy.teamA ?? copy.team1Id;
-  copy.team2 = copy.team2 ?? copy.awayTeam ?? copy.teamB ?? copy.team2Id;
-  if (!copy.links || typeof copy.links !== "object") {
-    copy.links = copy.watchLinks || copy.streams || {};
-  }
+  if (!Number.isFinite(copy.startTime)) return null;
   return copy;
-}
-
-function findMatchInCollection(collection, requestedId) {
-  if (!collection || typeof collection !== "object" || Array.isArray(collection)) return null;
-  if (Object.prototype.hasOwnProperty.call(collection, requestedId)) {
-    return normalizeMatch(collection[requestedId]);
-  }
-  const wanted = String(requestedId).trim().toLowerCase();
-  for (const [key, value] of Object.entries(collection)) {
-    if (key.toLowerCase() === wanted) return normalizeMatch(value);
-    if (!value || typeof value !== "object") continue;
-    const aliases = [value.id, value.matchId, value.slug, value.match_id, value.key]
-      .filter(v => v != null).map(v => String(v).trim().toLowerCase());
-    if (aliases.includes(wanted)) return normalizeMatch(value);
-  }
-  return null;
 }
 
 async function loadMatch() {
   if (!matchId) {
     loaded = true;
-    notFound("Missing match ID. Open a match from the matches list, or use /match/MATCH_ID.");
+    notFound("Missing match ID in the URL. Open a match using /match/MATCH_ID.");
     return;
   }
-
   try {
     const safeId = encodeURIComponent(matchId);
-    // Read the exact Firebase child first. If the URL uses an alias rather
-    // than the Firebase push key, fall back to the full matches collection.
-    let matchData = await readFirebase("matches/" + safeId);
-    let found = normalizeMatch(matchData);
-
-    if (!found) {
-      const allMatches = await readFirebase("matches");
-      found = findMatchInCollection(allMatches, matchId);
-    }
-
-    // Teams are optional for loading a match: a teams read failure must not
-    // turn a valid match record into a false "Match not found" page.
-    try {
-      const teamData = await readFirebase("teams");
-      teamsData = teamData && typeof teamData === "object" ? teamData : {};
-    } catch (teamError) {
-      console.warn("NPLcode teams data unavailable:", teamError);
-      teamsData = {};
-    }
-
-    match = found;
+    const [matchData, teamData] = await Promise.all([
+      readFirebase("matches/" + safeId),
+      readFirebase("teams")
+    ]);
+    match = normalizeMatch(matchData);
+    teamsData = teamData && typeof teamData === "object" ? teamData : {};
     loaded = true;
     failed = false;
     render();
@@ -679,19 +637,13 @@ async function loadMatch() {
     console.error("NPLcode match load error:", error);
     failed = true;
     loaded = true;
-    notFound("Could not contact the match database. Check your Firebase Realtime Database URL, read rules, and internet connection.");
+    notFound("Unable to load match data. Check Firebase read permissions and your internet connection.");
   }
 }
 
 loadMatch();
-// Refresh the page data periodically, but don't let overlapping requests race.
-let refreshRunning = false;
-setInterval(async () => {
-  if (refreshRunning) return;
-  refreshRunning = true;
-  try { await loadMatch(); }
-  finally { refreshRunning = false; }
-}, 15000);
+// Refresh match state/links periodically so admin changes appear without reload.
+setInterval(loadMatch, 10000);
 </script>
 </body>
 </html>

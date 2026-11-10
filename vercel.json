@@ -1,6 +1,21 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/match/:id", "destination": "/api/match?id=:id" }
+    {
+      "source": "/match/player",
+      "destination": "/player.html"
+    },
+    {
+      "source": "/match/player.html",
+      "destination": "/player.html"
+    },
+    {
+      "source": "/player",
+      "destination": "/player.html"
+    },
+    {
+      "source": "/match/:id",
+      "destination": "/api/match?id=:id"
+    }
   ]
 }
