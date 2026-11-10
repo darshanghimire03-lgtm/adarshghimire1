@@ -301,7 +301,6 @@ const db = getDatabase(app);
 
 const LINK_COUNT = 5;
 const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
-const PLAYER_PATH = "/player.html?src=";
 const detail = document.getElementById("detail");
 const shareBtn = document.getElementById("shareBtn");
 const toastEl = document.getElementById("toast");
@@ -402,26 +401,8 @@ function esc(s) {
   }[c]));
 }
 
-function extractAfterSrc(input) {
-  let value = String(input).trim();
-  const wrapper = /^https?:\/\/[^\s]*?[?&]src=((?:https?:\/\/|https?%3A).*)$/i;
-  for (let i = 0; i < 5; i++) {
-    if (!/^https?:\/\//i.test(value)) {
-      try {
-        value = decodeURIComponent(value);
-      } catch (err) {
-        break;
-      }
-    }
-    const m = value.match(wrapper);
-    if (!m) break;
-    value = m[1];
-  }
-  return value;
-}
-
-function playerUrl(u) {
-  return PLAYER_PATH + extractAfterSrc(u);
+function playerUrl(linkNumber) {
+  return "/player.html?match=" + encodeURIComponent(matchId) + "&id=" + linkNumber;
 }
 
 function dayNumber(ms) {
@@ -531,7 +512,7 @@ function render() {
       const u = match.links && match.links["link" + i];
       if (u) {
         items.push(`
-          <a class="link-item" href="${esc(playerUrl(u))}">
+          <a class="link-item" href="${esc(playerUrl(i))}">
             <span class="link-left">
               <span class="play">&#9654;</span>
               <span class="link-text">Stream ${i}<small>Opens in player</small></span>

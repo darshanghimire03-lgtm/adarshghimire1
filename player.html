@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#0C0F0D">
 <title>LIVE | NPLcode</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23151A17'/%3E%3Ctext x='32' y='44' font-size='36' font-weight='900' text-anchor='middle' fill='%23A3E635' font-family='system-ui'%3EN%3C/text%3E%3C/svg%3E">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
 <style>
 :root {
   --bg: #0C0F0D;
@@ -181,7 +182,19 @@ main {
   border: 1px solid rgba(163, 230, 53, 0.45);
   margin-bottom: 16px;
 }
-.video-container iframe { width: 100%; height: 100%; border: none; display: block; }
+.video-container iframe,
+.video-container video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000;
+  display: none;
+}
+.video-container video { object-fit: contain; }
+.video-container.mode-iframe iframe { display: block; }
+.video-container.mode-hls video { display: block; }
 .fullscreen-btn {
   position: absolute;
   top: 12px;
@@ -207,7 +220,7 @@ main {
 .empty-player {
   position: absolute;
   inset: 0;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -215,8 +228,9 @@ main {
   color: var(--muted);
   font-size: 14px;
   background: var(--surface);
+  z-index: 4;
 }
-.empty-player.on { display: flex; }
+.empty-player.off { display: none; }
 .chat-btn {
   width: 100%;
   padding: 14px;
@@ -294,13 +308,14 @@ footer span { color: var(--primary); font-weight: 700; }
   </div>
 
   <div class="video-container" id="video-container">
+    <video id="video-player" controls autoplay muted playsinline controlsList="nodownload"></video>
     <iframe
       id="video-frame"
       title="Live Player"
       allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
       allowfullscreen
       referrerpolicy="strict-origin-when-cross-origin"></iframe>
-    <div class="empty-player" id="empty-player">No stream selected. Open this page with a stream link.</div>
+    <div class="empty-player" id="empty-player">Loading stream…</div>
     <button class="fullscreen-btn" id="fullscreen-button">⛶ Fullscreen</button>
   </div>
 
@@ -329,6 +344,7 @@ footer span { color: var(--primary); font-weight: 700; }
 
 <script>
 const REDIRECT = false;
+const DATABASE_URL = "https://ramus-7f7aa-default-rtdb.firebaseio.com";
 
 const ADS = {
   top: "",
@@ -353,11 +369,12 @@ mountAd("ad-top", ADS.top, "90");
 mountAd("ad-middle", ADS.middle, "250");
 mountAd("ad-bottom", ADS.bottom, "90");
 
-function extractSrc() {
-  const full = location.search + location.hash;
-  const first = full.match(/[?&]src=/i);
-  if (!first) return "";
-  let value = full.slice(first.index + first[0].length).trim();
+function extractAfterSrc(input) {
+  let value = String(input).trim();
+  const first = value.match(/[?&]src=/i);
+  if (first && !/^https?:\/\/[^\s?#]*\.m3u8/i.test(value)) {
+    value = value.slice(first.index + first[0].length).trim();
+  }
   const wrapper = /^https?:\/\/[^\s]*?[?&]src=((?:https?:\/\/|https?%3A).*)$/i;
   for (let i = 0; i < 5; i++) {
     if (!/^https?:\/\//i.test(value)) {
@@ -374,27 +391,104 @@ function extractSrc() {
   return value;
 }
 
-const videoFrame = document.getElementById("video-frame");
-const emptyPlayer = document.getElementById("empty-player");
-const streamUrl = extractSrc();
+function extractSrcFromPage() {
+  const full = location.search + location.hash;
+  const first = full.match(/[?&]src=/i);
+  if (!first) return "";
+  return extractAfterSrc(full.slice(first.index + first[0].length));
+}
 
-let loaded = false;
-if (streamUrl) {
+async function resolveFromMatch(matchId, linkId) {
+  const endpoint = DATABASE_URL + "/matches/" + encodeURIComponent(matchId) + "/links/link" + encodeURIComponent(linkId) + ".json";
+  const res = await fetch(endpoint, { cache: "no-store" });
+  if (!res.ok) throw new Error("request failed");
+  const value = await res.json();
+  if (typeof value !== "string" || !value.trim()) throw new Error("link not found");
+  return extractAfterSrc(value);
+}
+
+const container = document.getElementById("video-container");
+const videoFrame = document.getElementById("video-frame");
+const videoEl = document.getElementById("video-player");
+const emptyPlayer = document.getElementById("empty-player");
+
+function showMessage(text) {
+  emptyPlayer.textContent = text;
+  emptyPlayer.classList.remove("off");
+  container.classList.remove("mode-iframe", "mode-hls");
+}
+
+function playUrl(url) {
+  let parsed;
   try {
-    const parsed = new URL(streamUrl);
-    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
-      if (REDIRECT) {
-        location.replace(parsed.href);
-      } else {
-        videoFrame.src = parsed.href;
-        loaded = true;
-      }
-    }
+    parsed = new URL(url);
   } catch {
-    console.warn("Invalid video URL");
+    showMessage("Invalid stream link.");
+    return;
+  }
+  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+    showMessage("Invalid stream link.");
+    return;
+  }
+  if (REDIRECT) {
+    location.replace(parsed.href);
+    return;
+  }
+  emptyPlayer.classList.add("off");
+  if (/\.m3u8(\?|#|$)/i.test(parsed.pathname + parsed.search + parsed.hash) || /\.m3u8$/i.test(parsed.pathname)) {
+    container.classList.remove("mode-iframe");
+    container.classList.add("mode-hls");
+    if (window.Hls && Hls.isSupported()) {
+      const hls = new Hls({ maxMaxBufferLength: 100 });
+      hls.loadSource(parsed.href);
+      hls.attachMedia(videoEl);
+      hls.on(Hls.Events.ERROR, function (event, data) {
+        if (!data.fatal) return;
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
+        else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
+        else {
+          hls.destroy();
+          showMessage("Stream failed to load. Try another link.");
+        }
+      });
+    } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
+      videoEl.src = parsed.href;
+      videoEl.play().catch(() => {});
+    } else {
+      showMessage("This browser cannot play this stream.");
+    }
+  } else {
+    container.classList.remove("mode-hls");
+    container.classList.add("mode-iframe");
+    videoFrame.src = parsed.href;
   }
 }
-if (!loaded && !REDIRECT) emptyPlayer.classList.add("on");
+
+async function start() {
+  const params = new URLSearchParams(location.search);
+  const matchId = params.get("match");
+  const linkId = params.get("id");
+
+  if (matchId && linkId && /^[1-9]\d*$/.test(linkId)) {
+    try {
+      const url = await resolveFromMatch(matchId, linkId);
+      playUrl(url);
+    } catch {
+      showMessage("Stream not found. Go back and try another link.");
+    }
+    return;
+  }
+
+  const direct = extractSrcFromPage();
+  if (direct) {
+    playUrl(direct);
+    return;
+  }
+
+  showMessage("No stream selected. Go back and choose a stream.");
+}
+
+start();
 
 const chatFrame = document.getElementById("chat-frame");
 const chatButton = document.getElementById("chat-toggle-btn");
@@ -430,16 +524,15 @@ document.getElementById("refresh-btn").addEventListener("click", () => {
   location.reload();
 });
 
-const videoContainer = document.getElementById("video-container");
 const fullscreenButton = document.getElementById("fullscreen-button");
 
 async function toggleFullscreen() {
   try {
     if (!document.fullscreenElement) {
-      if (videoContainer.requestFullscreen) {
-        await videoContainer.requestFullscreen();
-      } else if (videoContainer.webkitRequestFullscreen) {
-        videoContainer.webkitRequestFullscreen();
+      if (container.requestFullscreen) {
+        await container.requestFullscreen();
+      } else if (container.webkitRequestFullscreen) {
+        container.webkitRequestFullscreen();
       }
       if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock("landscape").catch(() => {});
