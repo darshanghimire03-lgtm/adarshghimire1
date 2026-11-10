@@ -157,6 +157,7 @@ main {
 }
 .badge.notstarted { background: var(--bg); color: var(--text); border: 1px solid var(--line); }
 .badge.ended { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+.stage { position: relative; width: 100%; }
 .player-wrap {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -167,6 +168,63 @@ main {
   box-shadow: 0 20px 60px -30px rgba(0, 0, 0, 0.9);
 }
 .player-wrap iframe { display: block; width: 100%; height: 100%; }
+.react {
+  position: absolute;
+  right: 10px;
+  bottom: 46px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.react-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(14px) scale(0.85);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.react.open .react-menu { opacity: 1; transform: none; pointer-events: auto; }
+.rx-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background: rgba(12, 15, 13, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 1.05rem;
+  font-weight: 900;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease;
+}
+.rx-btn:active { transform: scale(0.86); }
+.rx-four { color: #38BDF8; }
+.rx-six { color: #A3E635; }
+.rx-wicket { color: #F43F5E; }
+.rx-fab {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--primary);
+  color: #0C0F0D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 22px -4px rgba(163, 230, 53, 0.7);
+  transition: transform 0.15s ease;
+}
+.rx-fab:active { transform: scale(0.9); }
+.rx-fab .ic { width: 22px; height: 22px; transition: transform 0.25s ease; }
+.react.open .rx-fab .ic { transform: rotate(90deg); }
 .thumb {
   position: relative;
   width: 100%;
@@ -359,6 +417,220 @@ main {
   text-align: center;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+.fx {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  overflow: hidden;
+}
+.fx-scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.fx-scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(circle at 50% 45%, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.62));
+  opacity: 0;
+  animation: fxDim 3.2s ease forwards;
+}
+.fx-word {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(4.5rem, 26vw, 11rem);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--fc);
+  text-shadow: 0 0 32px var(--fc), 0 8px 0 rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  animation: fxPop 2.6s 0.35s ease-out forwards;
+}
+.fx-sub {
+  position: relative;
+  z-index: 2;
+  margin-top: 10px;
+  font-size: clamp(0.9rem, 4vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text);
+  opacity: 0;
+  animation: fxFade 2.3s 0.7s ease-out forwards;
+}
+.fx-ball {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  width: clamp(28px, 7vw, 44px);
+  height: clamp(28px, 7vw, 44px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #FF7B7B, #C81E1E 65%, #7F1212);
+  box-shadow: 0 0 24px rgba(255, 90, 90, 0.8);
+}
+.fx-ball::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 47%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.75);
+}
+.fx-ball.arc { bottom: 16vh; animation: fxArc 1.5s ease-out forwards; }
+.fx-ball.ground { bottom: 13vh; animation: fxGround 1.25s cubic-bezier(0.2, 0.6, 0.3, 1) forwards; }
+.fx-ball.hit { top: calc(20vh + clamp(52px, 15vw, 84px)); animation: fxHit 0.45s ease-in forwards; }
+.cf {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--c);
+  opacity: 0;
+  animation: fxConfetti 1.9s ease-out var(--dl) forwards;
+}
+.fx-rope {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: calc(13vh - 4px);
+  border-top: 4px dotted rgba(244, 246, 244, 0.85);
+  opacity: 0;
+  animation: fxRope 2s ease forwards;
+}
+.fx-trail {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  width: 100vw;
+  bottom: calc(13vh + clamp(12px, 3vw, 20px));
+  height: 5px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, transparent, var(--fc));
+  transform-origin: left center;
+  transform: scaleX(0);
+  animation: fxTrail 1.25s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+}
+.fx-word.slide { animation: fxSlide 2.3s 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) forwards; }
+.fx-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(circle at 50% 40%, rgba(244, 63, 94, 0.7), rgba(244, 63, 94, 0.1) 70%);
+  opacity: 0;
+  animation: fxFlash 1s 0.4s ease-out forwards;
+}
+.fx-stumps {
+  position: absolute;
+  z-index: 2;
+  top: 20vh;
+  left: 50%;
+  width: clamp(100px, 30vw, 190px);
+  transform: translateX(-50%);
+  overflow: visible;
+}
+.fx-scene.wicket { animation: fxShake 0.5s 0.42s linear; }
+.fx-scene.wicket .fx-word { animation-delay: 0.5s; }
+.fx-scene.wicket { justify-content: flex-end; padding-bottom: 20vh; }
+.st { transform-box: fill-box; transform-origin: 50% 100%; }
+.st rect { fill: #EBD9A8; }
+.bail { fill: #F4F6F4; transform-box: fill-box; transform-origin: 50% 50%; }
+.s1 { animation: fxS1 1.4s 0.42s ease-in forwards; }
+.s2 { animation: fxS2 1.4s 0.42s ease-in forwards; }
+.s3 { animation: fxS3 1.4s 0.42s ease-in forwards; }
+.b1 { animation: fxB1 1.3s 0.42s ease-out forwards; }
+.b2 { animation: fxB2 1.3s 0.42s ease-out forwards; }
+@keyframes fxDim { 0% { opacity: 0; } 12% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes fxPop {
+  0% { opacity: 0; transform: scale(0.2) rotate(-10deg); }
+  14% { opacity: 1; transform: scale(1.3) rotate(3deg); }
+  24% { opacity: 1; transform: scale(1) rotate(0); }
+  80% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 0; transform: scale(1.25); }
+}
+@keyframes fxSlide {
+  0% { opacity: 0; transform: translateX(-70vw) skewX(-14deg); }
+  22% { opacity: 1; transform: translateX(0) skewX(-6deg); }
+  30% { transform: translateX(0) skewX(0); }
+  78% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(70vw) skewX(-14deg); }
+}
+@keyframes fxFade {
+  0% { opacity: 0; transform: translateY(14px); }
+  20% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes fxArc {
+  0% { transform: translate(-12vw, 0) scale(1) rotate(0); }
+  45% { transform: translate(50vw, -52vh) scale(2.4) rotate(540deg); }
+  100% { transform: translate(115vw, -80vh) scale(0.6) rotate(1080deg); }
+}
+@keyframes fxGround {
+  0% { transform: translateX(-12vw) rotate(0); }
+  100% { transform: translateX(112vw) rotate(1440deg); }
+}
+@keyframes fxTrail {
+  0% { transform: scaleX(0); opacity: 1; }
+  80% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+@keyframes fxRope { 0% { opacity: 0; } 15% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes fxConfetti {
+  0% { opacity: 1; transform: translate(-50%, -50%) rotate(0) scale(0.4); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y) + 18vh)) rotate(var(--r)) scale(1); }
+}
+@keyframes fxHit {
+  0% { opacity: 1; transform: translateX(-10vw) rotate(0); }
+  95% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(calc(50vw - 20px)) rotate(900deg); }
+}
+@keyframes fxFlash { 0% { opacity: 0; } 15% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes fxShake {
+  0%, 100% { transform: translate(0, 0); }
+  15% { transform: translate(-10px, 6px); }
+  30% { transform: translate(9px, -7px); }
+  45% { transform: translate(-8px, -5px); }
+  60% { transform: translate(7px, 6px); }
+  80% { transform: translate(-4px, 3px); }
+}
+@keyframes fxS1 {
+  0% { transform: none; opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: translate(-60px, 24px) rotate(-75deg); opacity: 0; }
+}
+@keyframes fxS2 {
+  0% { transform: none; opacity: 1; }
+  40% { transform: translate(6px, -90px) rotate(20deg); opacity: 1; }
+  100% { transform: translate(20px, 40px) rotate(70deg); opacity: 0; }
+}
+@keyframes fxS3 {
+  0% { transform: none; opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: translate(60px, 24px) rotate(75deg); opacity: 0; }
+}
+@keyframes fxB1 {
+  0% { transform: none; opacity: 1; }
+  100% { transform: translate(-70px, -90px) rotate(-300deg); opacity: 0; }
+}
+@keyframes fxB2 {
+  0% { transform: none; opacity: 1; }
+  100% { transform: translate(70px, -110px) rotate(320deg); opacity: 0; }
+}
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @media (max-width: 420px) {
@@ -383,10 +655,11 @@ main {
   <div class="skeleton video"></div>
 </main>
 <div class="toast" id="toast"></div>
+<div class="fx" id="fx"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getDatabase, ref, onValue, set, remove, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { getDatabase, ref, onValue, set, remove, push, query, limitToLast, onChildAdded, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
@@ -404,9 +677,12 @@ const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
 const BEAT_MS = 20000;
 const ACTIVE_MS = 90000;
 const PRUNE_MS = 180000;
+const FX_COOLDOWN_MS = 1500;
+const FX_FRESH_MS = 7000;
 const root = document.getElementById("app");
 const backBtn = document.getElementById("backBtn");
 const toastEl = document.getElementById("toast");
+const fxEl = document.getElementById("fx");
 
 const ICON = {
   play: '<svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
@@ -416,8 +692,11 @@ const ICON = {
   clock: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   flag: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/></svg>',
   trophy: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>',
-  off: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>'
+  off: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>',
+  spark: '<svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z"/></svg>'
 };
+
+const FX_KINDS = { four: 1, six: 1, wicket: 1 };
 
 function safeDecode(s) {
   try {
@@ -460,6 +739,9 @@ let reloadN = 0;
 let lastSignature = "";
 let lastPlayerKey = null;
 let toastTimer = null;
+let fxTimer = null;
+let lastSend = 0;
+const seenFx = new Set();
 
 function matchUrl() {
   return "/match/" + encodeURIComponent(matchId);
@@ -562,6 +844,80 @@ async function shareMatch() {
   showToast(ok ? "Match link copied" : url);
 }
 
+function confetti(n, colors, base) {
+  let s = "";
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const d = 22 + Math.random() * 38;
+    const x = Math.cos(a) * d;
+    const y = Math.sin(a) * d * 0.9 - 8;
+    const r = Math.round(Math.random() * 720 - 360);
+    const dl = (base + Math.random() * 0.25).toFixed(2);
+    s += '<i class="cf" style="--x:' + x.toFixed(1) + "vw;--y:" + y.toFixed(1) + "vh;--r:" + r + "deg;--c:" + colors[i % colors.length] + ";--dl:" + dl + 's"></i>';
+  }
+  return s;
+}
+
+function fxHtml(kind) {
+  if (kind === "six") {
+    return '<div class="fx-scene six" style="--fc:#A3E635"><div class="fx-ball arc"></div>' +
+      confetti(36, ["#A3E635", "#F4F6F4", "#FACC15", "#38BDF8", "#F43F5E"], 0.55) +
+      '<div class="fx-word">SIX</div><div class="fx-sub">Out of the park</div></div>';
+  }
+  if (kind === "four") {
+    return '<div class="fx-scene four" style="--fc:#38BDF8"><div class="fx-rope"></div><div class="fx-trail"></div><div class="fx-ball ground"></div>' +
+      '<div class="fx-word slide">FOUR</div><div class="fx-sub">Straight to the rope</div></div>';
+  }
+  return '<div class="fx-scene wicket" style="--fc:#F43F5E"><div class="fx-flash"></div>' +
+    '<svg class="fx-stumps" viewBox="0 0 120 150">' +
+    '<g class="st s1"><rect x="16" y="24" width="12" height="120" rx="4"/></g>' +
+    '<g class="st s2"><rect x="54" y="24" width="12" height="120" rx="4"/></g>' +
+    '<g class="st s3"><rect x="92" y="24" width="12" height="120" rx="4"/></g>' +
+    '<rect class="bail b1" x="18" y="16" width="40" height="7" rx="3"/>' +
+    '<rect class="bail b2" x="62" y="16" width="40" height="7" rx="3"/></svg>' +
+    '<div class="fx-ball hit"></div><div class="fx-word">WICKET</div><div class="fx-sub">Clean bowled</div></div>';
+}
+
+function playFx(kind) {
+  if (!fxEl || !FX_KINDS[kind]) return;
+  clearTimeout(fxTimer);
+  fxEl.innerHTML = fxHtml(kind);
+  try {
+    if (navigator.vibrate) navigator.vibrate(kind === "wicket" ? [120, 60, 200] : 80);
+  } catch (err) {}
+  fxTimer = setTimeout(() => {
+    fxEl.innerHTML = "";
+  }, 3500);
+}
+
+function sendFx(kind) {
+  if (!matchId || !FX_KINDS[kind]) return;
+  const now = Date.now();
+  if (now - lastSend < FX_COOLDOWN_MS) return;
+  lastSend = now;
+  const r = push(ref(db, "reactions/" + matchId), { k: kind, t: serverTimestamp() });
+  r.catch(() => {
+    playFx(kind);
+  });
+  setTimeout(() => {
+    remove(r).catch(() => {});
+  }, 12000);
+}
+
+function startReactions() {
+  const q = query(ref(db, "reactions/" + matchId), limitToLast(1));
+  onChildAdded(q, (snap) => {
+    const v = snap.val();
+    if (!v || !FX_KINDS[v.k]) return;
+    if (seenFx.has(snap.key)) return;
+    seenFx.add(snap.key);
+    const now = Date.now() + serverOffset;
+    const t = typeof v.t === "number" ? v.t : now;
+    if (Math.abs(now - t) > FX_FRESH_MS) return;
+    playFx(v.k);
+  }, () => {});
+}
+
 if (matchId) backBtn.setAttribute("href", matchUrl());
 
 backBtn.addEventListener("click", (e) => {
@@ -587,6 +943,15 @@ root.addEventListener("click", (e) => {
       showToast("Stream reloaded");
     }
     if (a === "share") shareMatch();
+    if (a === "fab") {
+      const box = document.getElementById("react");
+      if (box) box.classList.toggle("open");
+    }
+    if (a === "fx") {
+      const box = document.getElementById("react");
+      if (box) box.classList.remove("open");
+      sendFx(act.getAttribute("data-kind"));
+    }
     return;
   }
   const link = e.target.closest("a[data-link]");
@@ -657,6 +1022,19 @@ function thumbNoLinks() {
   `;
 }
 
+function reactHtml() {
+  return `
+    <div class="react" id="react">
+      <div class="react-menu">
+        <button class="rx-btn rx-four" type="button" data-act="fx" data-kind="four" aria-label="Four">4</button>
+        <button class="rx-btn rx-six" type="button" data-act="fx" data-kind="six" aria-label="Six">6</button>
+        <button class="rx-btn rx-wicket" type="button" data-act="fx" data-kind="wicket" aria-label="Wicket">W</button>
+      </div>
+      <button class="rx-fab" type="button" data-act="fab" aria-label="Reactions">${ICON.spark}</button>
+    </div>
+  `;
+}
+
 function notFound(text) {
   lastPlayerKey = null;
   root.innerHTML = `<div class="empty">${text}<br><a href="${matchId ? esc(matchUrl()) : "/"}">&#8592; Back</a></div>`;
@@ -711,7 +1089,7 @@ function render() {
   if (state === "live" && activeNo) {
     const src = match.links["link" + activeNo].trim();
     playerKey = "p|" + activeNo + "|" + src + "|" + reloadN;
-    playerHtml = `<div class="player-wrap"><iframe src="${esc(src)}" width="100%" height="100%" style="aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+    playerHtml = `<div class="stage"><div class="player-wrap"><iframe src="${esc(src)}" width="100%" height="100%" style="aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>${reactHtml()}</div>`;
   } else if (state === "live") {
     playerKey = "nolinks";
     playerHtml = thumbNoLinks();
@@ -878,6 +1256,7 @@ if (!matchId) {
   }, onError);
 
   startPresence();
+  startReactions();
 
   setInterval(() => {
     if (!match || typeof match.startTime !== "number") return;
