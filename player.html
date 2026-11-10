@@ -15,7 +15,6 @@
   --text: #F4F6F4;
   --muted: #8C9790;
   --line: rgba(255, 255, 255, 0.07);
-  --danger: #F87171;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { -webkit-text-size-adjust: 100%; }
@@ -168,20 +167,86 @@ main {
   box-shadow: 0 20px 60px -30px rgba(0, 0, 0, 0.9);
 }
 .player-wrap iframe { display: block; width: 100%; height: 100%; }
-.player-wrap.placeholder {
+.thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: clamp(16px, 3vw, 22px);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  color: var(--muted);
+  gap: clamp(6px, 1.6vw, 12px);
   text-align: center;
-  padding: 20px;
-  font-size: 0.92rem;
-  font-weight: 600;
-  background: radial-gradient(400px 200px at 50% 40%, rgba(163, 230, 53, 0.08), #050605);
+  padding: 16px;
+  background:
+    radial-gradient(60% 75% at 50% 30%, rgba(163, 230, 53, 0.22), transparent 70%),
+    linear-gradient(160deg, #111812, #050605);
+  box-shadow: 0 20px 60px -30px rgba(0, 0, 0, 0.9);
 }
-.player-wrap.placeholder .ic { width: 38px; height: 38px; color: var(--primary); }
+.thumb::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 34px 34px;
+  -webkit-mask-image: radial-gradient(circle at 50% 45%, #000 20%, transparent 72%);
+  mask-image: radial-gradient(circle at 50% 45%, #000 20%, transparent 72%);
+}
+.thumb > * { position: relative; }
+.thumb.ended {
+  background:
+    radial-gradient(60% 75% at 50% 30%, rgba(140, 151, 144, 0.16), transparent 70%),
+    linear-gradient(160deg, #101312, #050605);
+}
+.thumb-brand { display: flex; align-items: center; gap: clamp(8px, 2vw, 12px); }
+.thumb-logo {
+  width: clamp(36px, 8vw, 54px);
+  height: clamp(36px, 8vw, 54px);
+  border-radius: clamp(11px, 2.4vw, 16px);
+  background: linear-gradient(145deg, #1F2A22, #131814);
+  border: 1px solid rgba(163, 230, 53, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: clamp(1rem, 3.4vw, 1.5rem);
+  color: var(--primary);
+}
+.thumb-word { font-size: clamp(1.1rem, 4vw, 1.8rem); font-weight: 900; letter-spacing: -0.02em; }
+.thumb-word span { color: var(--primary); }
+.thumb.ended .thumb-logo { border-color: var(--line); color: var(--muted); }
+.thumb.ended .thumb-word span { color: var(--muted); }
+.thumb-title {
+  font-size: clamp(1.15rem, 5vw, 2.3rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.thumb-sub {
+  font-size: clamp(0.78rem, 2.4vw, 1rem);
+  color: var(--muted);
+  font-weight: 600;
+  max-width: 90%;
+}
+.thumb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-soft);
+  border: 1px solid rgba(163, 230, 53, 0.35);
+  color: var(--primary);
+  border-radius: 999px;
+  padding: clamp(5px, 1.2vw, 8px) clamp(10px, 2.4vw, 16px);
+  font-size: clamp(0.72rem, 2.2vw, 0.92rem);
+  font-weight: 800;
+}
+.thumb-chip .ic { width: 16px; height: 16px; }
+.thumb.ended .thumb-chip { background: var(--surface); border-color: var(--line); color: var(--text); }
 .controls {
   margin: 14px 0 clamp(18px, 4vw, 26px);
   display: flex;
@@ -345,9 +410,9 @@ const ICON = {
   eye: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
   refresh: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>',
   share: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>',
-  tv: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M8 2l4 4 4-4"/></svg>',
   clock: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   flag: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/></svg>',
+  trophy: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>',
   off: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>'
 };
 
@@ -412,6 +477,10 @@ function esc(s) {
 function teamName(id) {
   const t = teamsData[id];
   return t && t.name ? t.name : "TBD";
+}
+
+function winnerOf(m) {
+  return m.winner && (m.winner === m.team1 || m.winner === m.team2) ? m.winner : null;
 }
 
 function duration(ms) {
@@ -543,8 +612,44 @@ function badgeHtml(state) {
   return '<span class="badge notstarted">NOT STARTED</span>';
 }
 
-function placeholder(icon, text) {
-  return `<div class="player-wrap placeholder">${icon}<div>${text}</div></div>`;
+function thumbBrand() {
+  return '<div class="thumb-brand"><div class="thumb-logo">N</div><div class="thumb-word">NPL<span>code</span></div></div>';
+}
+
+function thumbNotStarted(m, now) {
+  return `
+    <div class="thumb">
+      ${thumbBrand()}
+      <div class="thumb-title">Match not started yet</div>
+      <div class="thumb-chip">${ICON.clock}Starts in ${esc(duration(m.startTime - now))}</div>
+      <div class="thumb-sub">${esc(formatDateTime(m.startTime))}</div>
+    </div>
+  `;
+}
+
+function thumbEnded(m) {
+  const w = winnerOf(m);
+  const chip = w
+    ? `<div class="thumb-chip">${ICON.trophy}Winner: ${esc(teamName(w))}</div>`
+    : `<div class="thumb-chip">${ICON.flag}Full time</div>`;
+  return `
+    <div class="thumb ended">
+      ${thumbBrand()}
+      <div class="thumb-title">Match Ended</div>
+      ${chip}
+      <div class="thumb-sub">Thanks for watching on NPLcode</div>
+    </div>
+  `;
+}
+
+function thumbNoLinks() {
+  return `
+    <div class="thumb">
+      ${thumbBrand()}
+      <div class="thumb-title">Stream coming soon</div>
+      <div class="thumb-chip">${ICON.off}No links added yet</div>
+    </div>
+  `;
 }
 
 function notFound(text) {
@@ -574,7 +679,7 @@ function render() {
 
   const available = [];
   let activeNo = 0;
-  if (state !== "ended") {
+  if (state === "live") {
     for (let i = 1; i <= LINK_COUNT; i++) {
       const u = match.links && match.links["link" + i];
       if (isHttpUrl(u)) available.push(i);
@@ -598,16 +703,19 @@ function render() {
 
   let playerHtml;
   let playerKey;
-  if (activeNo) {
+  if (state === "live" && activeNo) {
     const src = match.links["link" + activeNo].trim();
     playerKey = "p|" + activeNo + "|" + src + "|" + reloadN;
     playerHtml = `<div class="player-wrap"><iframe src="${esc(src)}" width="100%" height="100%" style="aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+  } else if (state === "live") {
+    playerKey = "nolinks";
+    playerHtml = thumbNoLinks();
   } else if (state === "ended") {
-    playerKey = "empty-ended";
-    playerHtml = placeholder(ICON.flag, "This match has ended");
+    playerKey = "ended|" + (match.winner || "");
+    playerHtml = thumbEnded(match);
   } else {
-    playerKey = "empty-none";
-    playerHtml = placeholder(ICON.off, "No links added yet");
+    playerKey = "soon|" + duration(match.startTime - now);
+    playerHtml = thumbNotStarted(match, now);
   }
 
   if (playerKey !== lastPlayerKey) {
@@ -623,7 +731,7 @@ function render() {
         ${state === "notstarted" ? `<span class="pill">${ICON.clock}Starts ${esc(new Date(match.startTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }))}</span>` : ""}
       </div>
       <div class="actions">
-        <button class="icon-btn" type="button" data-act="reload" aria-label="Reload stream" title="Reload stream">${ICON.refresh}</button>
+        ${state === "live" ? `<button class="icon-btn" type="button" data-act="reload" aria-label="Reload stream" title="Reload stream">${ICON.refresh}</button>` : ""}
         <button class="icon-btn" type="button" data-act="share" aria-label="Share match" title="Share match">${ICON.share}</button>
       </div>
     </div>
