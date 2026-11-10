@@ -402,8 +402,26 @@ function esc(s) {
   }[c]));
 }
 
+function extractAfterSrc(input) {
+  let value = String(input).trim();
+  const wrapper = /^https?:\/\/[^\s]*?[?&]src=((?:https?:\/\/|https?%3A).*)$/i;
+  for (let i = 0; i < 5; i++) {
+    if (!/^https?:\/\//i.test(value)) {
+      try {
+        value = decodeURIComponent(value);
+      } catch (err) {
+        break;
+      }
+    }
+    const m = value.match(wrapper);
+    if (!m) break;
+    value = m[1];
+  }
+  return value;
+}
+
 function playerUrl(u) {
-  return PLAYER_PATH + String(u).trim();
+  return PLAYER_PATH + extractAfterSrc(u);
 }
 
 function dayNumber(ms) {

@@ -355,17 +355,23 @@ mountAd("ad-bottom", ADS.bottom, "90");
 
 function extractSrc() {
   const full = location.search + location.hash;
-  const match = full.match(/[?&]src=/i);
-  if (!match) return "";
-  let value = full.slice(match.index + match[0].length);
-  if (!/^https?:\/\//i.test(value)) {
-    try {
-      value = decodeURIComponent(value);
-    } catch {
-      return "";
+  const first = full.match(/[?&]src=/i);
+  if (!first) return "";
+  let value = full.slice(first.index + first[0].length).trim();
+  const wrapper = /^https?:\/\/[^\s]*?[?&]src=((?:https?:\/\/|https?%3A).*)$/i;
+  for (let i = 0; i < 5; i++) {
+    if (!/^https?:\/\//i.test(value)) {
+      try {
+        value = decodeURIComponent(value);
+      } catch {
+        break;
+      }
     }
+    const m = value.match(wrapper);
+    if (!m) break;
+    value = m[1];
   }
-  return value.trim();
+  return value;
 }
 
 const videoFrame = document.getElementById("video-frame");
