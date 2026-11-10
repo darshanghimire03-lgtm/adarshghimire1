@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0C0F0D">
+<title>LIVE | NPLcode</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23151A17'/%3E%3Ctext x='32' y='44' font-size='36' font-weight='900' text-anchor='middle' fill='%23A3E635' font-family='system-ui'%3EN%3C/text%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #0C0F0D;
+  --surface: #151A17;
+  --surface-2: #1C231F;
+  --primary: #A3E635;
+  --primary-soft: rgba(163, 230, 53, 0.12);
+  --text: #F4F6F4;
+  --muted: #8C9790;
+  --line: rgba(255, 255, 255, 0.07);
+  --shadow: 0 10px 40px -12px rgba(163, 230, 53, 0.3);
+}
+body.light {
+  --bg: #F4F6F3;
+  --surface: #FFFFFF;
+  --surface-2: #F0F3EE;
+  --primary: #65A30D;
+  --primary-soft: rgba(101, 163, 13, 0.12);
+  --text: #202820;
+  --muted: #717B73;
+  --line: rgba(0, 0, 0, 0.09);
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  transition: background 0.2s, color 0.2s;
+}
+button { font: inherit; cursor: pointer; border: none; }
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  padding: calc(14px + env(safe-area-inset-top)) 20px 14px;
+}
+.bar {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: var(--surface);
+  border: 1px solid rgba(163, 230, 53, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+.brand { flex: 1; }
+.brand h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+.brand h1 span { color: var(--primary); }
+.brand p { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--primary-soft);
+  border: 1px solid rgba(163, 230, 53, 0.35);
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 7px 12px;
+  border-radius: 999px;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+main {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 18px 20px 40px;
+}
+.top-controls { display: flex; gap: 10px; margin-bottom: 16px; }
+.control-btn {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 11px 17px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: 0.2s;
+}
+.control-btn:hover { border-color: var(--primary); }
+.control-btn.primary { background: var(--primary); color: #0C0F0D; border-color: var(--primary); }
+.ad-slot {
+  display: none;
+  width: 100%;
+  margin: 0 0 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 8px;
+  overflow: hidden;
+  text-align: center;
+  position: relative;
+}
+.ad-slot.on { display: block; }
+.ad-slot::before {
+  content: "Advertisement";
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.ad-slot iframe { border: 0; max-width: 100%; display: block; margin: 0 auto; }
+.notice {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--primary);
+  color: var(--muted);
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.notice strong { color: var(--primary); }
+.video-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.video-heading h2 {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.live-status {
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.video-container {
+  position: relative;
+  background: #000;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(163, 230, 53, 0.45);
+  margin-bottom: 16px;
+}
+.video-container iframe { width: 100%; height: 100%; border: none; display: block; }
+.fullscreen-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--primary);
+  color: #0C0F0D;
+  padding: 9px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  z-index: 5;
+}
+.fullscreen-btn:hover { opacity: 0.9; }
+.video-container:fullscreen {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  aspect-ratio: auto;
+  border-radius: 0;
+  border: none;
+  background: #000;
+}
+.empty-player {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 14px;
+  background: var(--surface);
+}
+.empty-player.on { display: flex; }
+.chat-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 14px;
+  transition: 0.2s;
+  margin-bottom: 12px;
+}
+.chat-btn:hover, .chat-btn.active { border-color: var(--primary); color: var(--primary); }
+#chat-frame {
+  display: none;
+  width: 100%;
+  height: 400px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  background: var(--surface);
+}
+.disclaimer {
+  margin-top: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 20px;
+  border-radius: 20px;
+}
+.disclaimer h3 { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; color: var(--primary); }
+.disclaimer p { color: var(--muted); font-size: 12px; line-height: 1.8; margin-bottom: 10px; }
+.disclaimer b { color: var(--text); }
+footer { text-align: center; padding: 25px 10px; color: var(--muted); font-size: 12px; }
+footer span { color: var(--primary); font-weight: 700; }
+@media (max-width: 500px) {
+  main { padding: 14px 14px 32px; }
+  .control-btn { flex: 1; padding: 11px 8px; font-size: 12px; }
+  .video-container { border-radius: 16px; }
+  .disclaimer { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <div class="logo">N</div>
+    <div class="brand">
+      <h1>NPL<span>code</span></h1>
+      <p>Live player</p>
+    </div>
+    <div class="live-pill"><span class="dot"></span>LIVE</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="top-controls">
+    <button class="control-btn primary" id="refresh-btn">↻ &nbsp;Refresh</button>
+    <button class="control-btn" id="theme-toggle">☀ &nbsp;Light Mode</button>
+  </div>
+
+  <div class="ad-slot" id="ad-top"></div>
+
+  <div class="notice">
+    <strong>Streaming notice</strong><br>
+    If a stream doesn't load, try another link or refresh the player.
+    Some third-party streams may require additional network permissions.
+  </div>
+
+  <div class="video-heading">
+    <h2>Live Player</h2>
+    <div class="live-status"><span class="dot"></span>LIVE</div>
+  </div>
+
+  <div class="video-container" id="video-container">
+    <iframe
+      id="video-frame"
+      title="Live Player"
+      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+      allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    <div class="empty-player" id="empty-player">No stream selected. Open this page with a stream link.</div>
+    <button class="fullscreen-btn" id="fullscreen-button">⛶ Fullscreen</button>
+  </div>
+
+  <div class="ad-slot" id="ad-middle"></div>
+
+  <button class="chat-btn" id="chat-toggle-btn">☰ &nbsp;Show LIVE Chat</button>
+  <iframe id="chat-frame" title="Live Chat" loading="lazy"></iframe>
+
+  <div class="ad-slot" id="ad-bottom"></div>
+
+  <section class="disclaimer">
+    <h3>Legal Disclaimer</h3>
+    <p><b>Content Hosting:</b> This page does not host or upload video content. Streams are displayed through third-party embedded sources.</p>
+    <p><b>Copyright Notice:</b> All trademarks, logos and media belong to their respective owners. No ownership of third-party content is claimed.</p>
+    <p><b>Legal Responsibility:</b> Users are responsible for ensuring that their access to third-party content complies with applicable laws.</p>
+    <p><b>DMCA Compliance:</b> Copyright owners can contact the relevant hosting provider regarding potentially infringing content.</p>
+  </section>
+
+  <footer>
+    Powered by <span>NPLcode</span>
+    <br><br>
+    © 2026 All Rights Reserved
+  </footer>
+
+</main>
+
+<script>
+const REDIRECT = false;
+
+const ADS = {
+  top: "",
+  middle: "",
+  bottom: ""
+};
+
+function mountAd(id, code, height) {
+  const slot = document.getElementById(id);
+  if (!slot || !code || !code.trim()) return;
+  const frame = document.createElement("iframe");
+  frame.width = "100%";
+  frame.height = height;
+  frame.setAttribute("scrolling", "no");
+  frame.setAttribute("sandbox", "allow-scripts allow-popups allow-popups-to-escape-sandbox allow-same-origin");
+  frame.srcdoc = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>html,body{margin:0;padding:0;background:transparent;display:flex;justify-content:center;align-items:center}</style></head><body>' + code + '</body></html>';
+  slot.appendChild(frame);
+  slot.classList.add("on");
+}
+
+mountAd("ad-top", ADS.top, "90");
+mountAd("ad-middle", ADS.middle, "250");
+mountAd("ad-bottom", ADS.bottom, "90");
+
+function extractSrc() {
+  const full = location.search + location.hash;
+  const match = full.match(/[?&]src=/i);
+  if (!match) return "";
+  let value = full.slice(match.index + match[0].length);
+  if (!/^https?:\/\//i.test(value)) {
+    try {
+      value = decodeURIComponent(value);
+    } catch {
+      return "";
+    }
+  }
+  return value.trim();
+}
+
+const videoFrame = document.getElementById("video-frame");
+const emptyPlayer = document.getElementById("empty-player");
+const streamUrl = extractSrc();
+
+let loaded = false;
+if (streamUrl) {
+  try {
+    const parsed = new URL(streamUrl);
+    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+      if (REDIRECT) {
+        location.replace(parsed.href);
+      } else {
+        videoFrame.src = parsed.href;
+        loaded = true;
+      }
+    }
+  } catch {
+    console.warn("Invalid video URL");
+  }
+}
+if (!loaded && !REDIRECT) emptyPlayer.classList.add("on");
+
+const chatFrame = document.getElementById("chat-frame");
+const chatButton = document.getElementById("chat-toggle-btn");
+const externalChatUrl = "https://dns-tv.pages.dev/VIP/chat2";
+let chatVisible = false;
+
+chatButton.addEventListener("click", () => {
+  chatVisible = !chatVisible;
+  if (chatVisible) {
+    chatFrame.style.display = "block";
+    if (!chatFrame.dataset.loaded) {
+      chatFrame.src = externalChatUrl;
+      chatFrame.dataset.loaded = "true";
+    }
+    chatButton.textContent = "✕  Hide LIVE Chat";
+    chatButton.classList.add("active");
+  } else {
+    chatFrame.style.display = "none";
+    chatButton.textContent = "☰  Show LIVE Chat";
+    chatButton.classList.remove("active");
+  }
+});
+
+const themeButton = document.getElementById("theme-toggle");
+themeButton.addEventListener("click", () => {
+  document.body.classList.toggle("light");
+  const light = document.body.classList.contains("light");
+  themeButton.textContent = light ? "☾  Dark Mode" : "☀  Light Mode";
+  document.querySelector('meta[name="theme-color"]').setAttribute("content", light ? "#F4F6F3" : "#0C0F0D");
+});
+
+document.getElementById("refresh-btn").addEventListener("click", () => {
+  location.reload();
+});
+
+const videoContainer = document.getElementById("video-container");
+const fullscreenButton = document.getElementById("fullscreen-button");
+
+async function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      if (videoContainer.requestFullscreen) {
+        await videoContainer.requestFullscreen();
+      } else if (videoContainer.webkitRequestFullscreen) {
+        videoContainer.webkitRequestFullscreen();
+      }
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock("landscape").catch(() => {});
+      }
+    } else {
+      await document.exitFullscreen();
+    }
+  } catch (error) {
+    console.warn("Fullscreen unavailable:", error);
+  }
+}
+
+fullscreenButton.addEventListener("click", toggleFullscreen);
+
+document.addEventListener("fullscreenchange", () => {
+  const isFullscreen = !!document.fullscreenElement;
+  fullscreenButton.style.display = isFullscreen ? "none" : "block";
+  if (!isFullscreen && screen.orientation && screen.orientation.unlock) {
+    screen.orientation.unlock();
+  }
+});
+</script>
+
+</body>
+</html>

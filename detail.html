@@ -301,6 +301,7 @@ const db = getDatabase(app);
 
 const LINK_COUNT = 5;
 const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
+const PLAYER_PATH = "/player.html?src=";
 const detail = document.getElementById("detail");
 const shareBtn = document.getElementById("shareBtn");
 const toastEl = document.getElementById("toast");
@@ -399,6 +400,10 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   }[c]));
+}
+
+function playerUrl(u) {
+  return PLAYER_PATH + String(u).trim();
 }
 
 function dayNumber(ms) {
@@ -508,10 +513,10 @@ function render() {
       const u = match.links && match.links["link" + i];
       if (u) {
         items.push(`
-          <a class="link-item" href="${esc(u)}" target="_blank" rel="noopener noreferrer">
+          <a class="link-item" href="${esc(playerUrl(u))}">
             <span class="link-left">
               <span class="play">&#9654;</span>
-              <span class="link-text">Stream ${i}<small>Opens in a new tab</small></span>
+              <span class="link-text">Stream ${i}<small>Opens in player</small></span>
             </span>
             <span class="hd">HD</span>
           </a>
