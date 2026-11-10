@@ -1,10 +1,11 @@
-NPLcode Player Page Update
+NPLcode dual player executors
 
-- Match detail page now sends each watch-link click to player.html.
-- player.html plays direct HLS (.m3u8), MP4/WebM/Ogg, and DASH (.mpd) video URLs in a video element.
-- Other HTTP(S) URLs are treated as provider embed pages and displayed in a fullscreen-capable iframe.
+Each live stream now has two player actions:
+1. NPL Player: opens the existing local player.html?src=... executor.
+2. YoNoTV Player: opens https://yonotv.pages.dev/page?src=https://yonotv.pages.dev/LINK?id=IND2 (URL-encoded as a query parameter).
 
-Important limitation:
-A generic third-party webpage cannot be converted into a video-only stream from browser JavaScript. The provider must supply a direct media URL or a video-only embed URL. Same-origin policy prevents NPLcode from inspecting/extracting video elements from unrelated websites. DRM-protected streams require the provider's authorized player/license flow.
+The YoNoTV executor ID defaults to IND2, matching the example supplied. To use a different ID for a specific match, add yonoLinkId to that match record in Firebase (for example: yonoLinkId: "IND3"). The legacy externalPlayerId field is also accepted.
 
-Deploy all project files to the same Vercel project. Keep player.html in the same directory as detail.html.
+The two executors are independent: the NPL Player uses the stream URL saved in the NPLcode match record, while the YoNoTV Player uses the configured YoNoTV resolver ID.
+
+Deploy all project files to the same Vercel project. Keep detail.html and player.html in the project root.

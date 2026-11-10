@@ -199,8 +199,13 @@ main {
   font-weight: 800;
   transition: transform 0.15s ease, border-color 0.2s ease;
 }
-.link-item:active { transform: scale(0.98); border-color: var(--primary); }
-.link-left { display: flex; align-items: center; gap: 12px; }
+.link-item:active { transform: scale(0.99); border-color: var(--primary); }
+.link-left { display: flex; align-items: center; gap: 12px; min-width:0; }
+.link-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+.executor-btn { display:inline-flex; align-items:center; justify-content:center; min-height:36px; padding:8px 11px; border-radius:10px; border:1px solid rgba(163,230,53,.35); background:var(--primary-soft); color:var(--primary); text-decoration:none; font-size:.72rem; font-weight:850; white-space:nowrap; }
+.executor-btn.secondary { border-color:rgba(255,255,255,.14); background:rgba(255,255,255,.05); color:var(--text); }
+@media(max-width:520px){.link-item{align-items:flex-start;gap:10px;padding:13px}.link-actions{gap:6px}.executor-btn{padding:7px 8px;font-size:.66rem}.hd{display:none}}
+
 .play {
   width: 36px;
   height: 36px;
@@ -498,6 +503,16 @@ function playerPageUrl(raw, label) {
   return "player.html?" + params.toString();
 }
 
+// Second executor: YoNoTV's /page?src=/LINK?id=... player route.
+// Set match.yonoLinkId in Firebase for a match-specific ID; defaults to the
+// example ID supplied (IND2) when no per-match ID has been configured.
+function yonoPlayerPageUrl(label) {
+  const externalId = (match && (match.yonoLinkId || match.externalPlayerId)) || "IND2";
+  const resolverUrl = "https://yonotv.pages.dev/LINK?id=" + encodeURIComponent(String(externalId));
+  const params = new URLSearchParams({ src: resolverUrl });
+  return "https://yonotv.pages.dev/page?" + params.toString();
+}
+
 function render() {
   if (failed) {
     notFound("Could not load match. Please check your connection and try again.");
@@ -527,14 +542,18 @@ function render() {
       const u = typeof raw === "string" ? safeStreamUrl(raw) : null;
       if (u) {
         const playerUrl = playerPageUrl(u, "Stream " + i);
+        const yonoUrl = yonoPlayerPageUrl("Stream " + i);
         if (playerUrl) items.push(`
-          <a class="link-item" href="${esc(playerUrl)}">
+          <div class="link-item">
             <span class="link-left">
               <span class="play">&#9654;</span>
-              <span class="link-text">Stream ${i}<small>Open video player</small></span>
+              <span class="link-text">Stream ${i}<small>Choose a player</small></span>
             </span>
-            <span class="hd">HD</span>
-          </a>
+            <span class="link-actions">
+              <a class="executor-btn" href="${esc(playerUrl)}">NPL Player</a>
+              <a class="executor-btn secondary" href="${esc(yonoUrl)}" target="_blank" rel="noopener noreferrer">YoNoTV Player ↗</a>
+            </span>
+          </div>
         `);
       }
     }
