@@ -44,7 +44,7 @@ export default async function handler(req) {
   let html = await pageRes.text();
   const headers = {
     "content-type": "text/html; charset=utf-8",
-    "cache-control": "public, s-maxage=60, stale-while-revalidate=300"
+    "cache-control": "no-store, max-age=0"
   };
 
   if (!id) return new Response(html, { headers });
