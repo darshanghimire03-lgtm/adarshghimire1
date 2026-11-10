@@ -1,0 +1,10 @@
+NPLcode Player Page Update
+
+- Match detail page now sends each watch-link click to player.html.
+- player.html plays direct HLS (.m3u8), MP4/WebM/Ogg, and DASH (.mpd) video URLs in a video element.
+- Other HTTP(S) URLs are treated as provider embed pages and displayed in a fullscreen-capable iframe.
+
+Important limitation:
+A generic third-party webpage cannot be converted into a video-only stream from browser JavaScript. The provider must supply a direct media URL or a video-only embed URL. Same-origin policy prevents NPLcode from inspecting/extracting video elements from unrelated websites. DRM-protected streams require the provider's authorized player/license flow.
+
+Deploy all project files to the same Vercel project. Keep player.html in the same directory as detail.html.

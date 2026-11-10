@@ -1,253 +1,62 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Live Player</title>
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b09">
+<title>Live Player - NPLcode</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
---bg:#f5f7fb;--card:#fff;--text:#172033;
---muted:#748096;--border:#e4e8ef;--accent:#2563eb
-}
-[data-theme=dark]{
---bg:#090d16;--card:#131b2b;--text:#f5f7fb;
---muted:#9eabc0;--border:#26344b
-}
-body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.container{max-width:950px;margin:auto;padding:18px}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-header a{color:var(--accent);text-decoration:none}
-.controls{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap}
-button{border:0;padding:11px 16px;border-radius:9px;background:var(--accent);color:white;font-weight:600;cursor:pointer}
-.player{width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden;position:relative}
-video,iframe{width:100%;height:100%;border:0;display:block;background:#000;object-fit:contain}
-iframe{position:absolute;inset:0}
-#message{color:var(--muted);text-align:center;padding:25px;background:var(--card);border-radius:10px;margin-top:12px}
-.info{margin-top:16px;background:var(--card);border:1px solid var(--border);padding:17px;border-radius:12px}
-.info p{color:var(--muted);font-size:13px;margin-top:6px}
-.embed{width:100%;margin-top:12px;background:var(--bg);color:var(--text);border:1px solid var(--border);padding:12px;border-radius:8px;min-height:75px;resize:vertical}
-.hidden{display:none!important}
+:root{color-scheme:dark;--bg:#080b09;--panel:#151b17;--line:rgba(255,255,255,.09);--lime:#a3e635;--text:#f4f7f4;--muted:#9aa59d}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+body{min-height:100dvh;display:flex;flex-direction:column}.top{height:58px;display:flex;align-items:center;gap:14px;padding:0 16px;background:#101511;border-bottom:1px solid var(--line)}
+.back{color:var(--text);text-decoration:none;font-size:25px;line-height:1;width:34px}.brand{font-weight:850;font-size:18px}.brand span{color:var(--lime)}.spacer{flex:1}.status{font-size:11px;color:var(--lime);font-weight:800;letter-spacing:.1em}
+main{width:min(100%,1000px);margin:auto;padding:20px 14px 30px}.heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.heading h1{font-size:16px;margin:0;font-weight:800}.heading p{font-size:12px;color:var(--muted);margin:4px 0 0}.screen{position:relative;width:100%;aspect-ratio:16/9;background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;place-items:center}.screen video,.screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;display:block}.screen video{object-fit:contain}.message{padding:24px;text-align:center;color:var(--muted);font-size:14px}.tools{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:12px;color:var(--muted);font-size:12px}.tools a{color:var(--lime);text-decoration:none;font-weight:750}.hint{line-height:1.5;margin-top:16px;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:12px}.hint strong{color:var(--text)}
+@media(max-width:520px){main{padding:14px 10px 24px}.screen{border-radius:8px}.heading h1{font-size:14px}}
 </style>
 </head>
-
 <body>
-<div class="container">
-
-<header>
-<a href="javascript:history.back()">← Back</a>
-<strong>LIVE PLAYER</strong>
-<button id="themeBtn">☾</button>
-</header>
-
-<div class="controls">
-<button id="fullscreenBtn">⛶ Fullscreen</button>
-<button id="refreshBtn">↻ Refresh</button>
-</div>
-
-<div class="player" id="player">
-<video id="video" controls autoplay muted playsinline></video>
-<iframe id="frame"
-allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-allowfullscreen
-referrerpolicy="strict-origin-when-cross-origin"
-class="hidden"></iframe>
-</div>
-
-<div id="message">Loading stream...</div>
-
-<div class="info">
-<strong>Stream Information</strong>
-<p id="streamInfo">Connecting...</p>
-</div>
-
-<div class="info">
-<strong>Embed Player</strong>
-<p>Copy this code to embed this player on another website.</p>
-<textarea class="embed" id="embedCode" readonly></textarea>
-<button id="copyEmbed">Copy Embed Code</button>
-</div>
-
-</div>
-
-<script>
-const DATA_URL="https://npl-tv.pages.dev/data.json";
-
+<header class="top"><a class="back" id="back" href="javascript:history.back()" aria-label="Back">&#8592;</a><div class="brand">NPL<span>code</span></div><div class="spacer"></div><div class="status">LIVE PLAYER</div></header>
+<main>
+  <div class="heading"><div><h1 id="title">Live stream</h1><p id="kind">Loading player…</p></div></div>
+  <div class="screen" id="screen"><div class="message">Loading stream…</div></div>
+  <div class="tools"><a id="open" href="#" target="_blank" rel="noopener noreferrer">Open source ↗</a><span>Use fullscreen for a larger view</span></div>
+  <div class="hint" id="hint" hidden></div>
+</main>
+<script type="module">
+import Hls from "https://cdn.jsdelivr.net/npm/hls.js@1.5.17/+esm";
 const params=new URLSearchParams(location.search);
-const matchId=params.get("match");
-const linkId=params.get("id");
-
-const video=document.getElementById("video");
-const frame=document.getElementById("frame");
-const message=document.getElementById("message");
-const player=document.getElementById("player");
-const info=document.getElementById("streamInfo");
-
-let hls=null;
-
-function showMessage(text){
-message.textContent=text;
-message.classList.remove("hidden");
+const raw=params.get("src");
+const title=params.get("title")||"Live stream";
+const screen=document.getElementById("screen");
+const hint=document.getElementById("hint");
+document.getElementById("title").textContent=title;
+document.title=title+" - NPLcode";
+function message(text){screen.innerHTML="";const el=document.createElement("div");el.className="message";el.textContent=text;screen.appendChild(el)}
+function safeUrl(value){try{const u=new URL(value);return ["http:","https:"].includes(u.protocol)?u.href:null}catch{return null}}
+const src=safeUrl(raw||"");
+if(!src){message("Invalid or missing stream URL. Return to the match page and choose a stream.");}
+else{
+ document.getElementById("open").href=src;
+ const lower=src.toLowerCase();
+ if(/\.m3u8(?:$|[?#])/.test(lower)){
+   document.getElementById("kind").textContent="HLS video stream";
+   const video=document.createElement("video");video.controls=true;video.autoplay=true;video.playsInline=true;video.setAttribute("webkit-playsinline","");video.preload="metadata";screen.replaceChildren(video);
+   if(video.canPlayType("application/vnd.apple.mpegurl")){video.src=src;video.play().catch(()=>{});}
+   else if(Hls.isSupported()){const hls=new Hls({enableWorker:true,lowLatencyMode:true});hls.loadSource(src);hls.attachMedia(video);hls.on(Hls.Events.MANIFEST_PARSED,()=>video.play().catch(()=>{}));hls.on(Hls.Events.ERROR,(_,data)=>{if(data.fatal)message("Unable to play this stream. It may be offline or its server may block browser playback (CORS).")});}
+   else message("This browser does not support HLS playback.");
+ }else if(/\.(mp4|webm|ogg)(?:$|[?#])/.test(lower)){
+   document.getElementById("kind").textContent="Direct video";
+   const video=document.createElement("video");video.controls=true;video.autoplay=true;video.playsInline=true;video.preload="metadata";video.src=src;screen.replaceChildren(video);video.play().catch(()=>{});
+ }else if(/\.mpd(?:$|[?#])/.test(lower)){
+   document.getElementById("kind").textContent="MPEG-DASH stream";
+   const video=document.createElement("video");video.controls=true;video.playsInline=true;video.preload="metadata";screen.replaceChildren(video);
+   import("https://cdn.dashjs.org/latest/dash.all.min.js").then(()=>{if(window.dashjs){window.dashjs.MediaPlayer().create().initialize(video,src,true)}else message("DASH player could not be initialized.")}).catch(()=>message("DASH playback is unavailable. DRM-protected streams may require an authorized provider player."));
+ }else{
+   document.getElementById("kind").textContent="External player page";
+   const frame=document.createElement("iframe");frame.src=src;frame.title=title;frame.allow="autoplay; encrypted-media; fullscreen; picture-in-picture";frame.allowFullscreen=true;frame.referrerPolicy="strict-origin-when-cross-origin";frame.loading="eager";screen.replaceChildren(frame);
+   hint.hidden=false;hint.innerHTML="<strong>Note:</strong> This source is a webpage/embed, not a direct video file. The player displays the provider's embedded page. NPLcode cannot extract or hide the provider's surrounding website unless that provider supplies a video-only embed URL.";
+ }
 }
-
-function hideMessage(){
-message.classList.add("hidden");
-}
-
-function destroyPlayer(){
-if(hls){
-hls.destroy();
-hls=null;
-}
-video.pause();
-video.removeAttribute("src");
-video.load();
-frame.removeAttribute("src");
-frame.classList.add("hidden");
-video.classList.remove("hidden");
-}
-
-function getType(obj,url){
-if(obj.type==="hls"||obj.type==="iframe"||
-obj.type==="mp4")return obj.type;
-
-if(/\.m3u8(?:$|[?#])/i.test(url))return "hls";
-if(/\.mp4(?:$|[?#])/i.test(url))return "mp4";
-if(/\.webm(?:$|[?#])/i.test(url))return "mp4";
-
-return "iframe";
-}
-
-async function loadStream(){
-destroyPlayer();
-
-if(!matchId||!linkId){
-showMessage("Missing match ID or stream ID.");
-return;
-}
-
-showMessage("Loading stream...");
-
-try{
-const response=await fetch(DATA_URL+"?t="+Date.now());
-
-if(!response.ok)throw Error("Unable to fetch stream data.");
-
-const data=await response.json();
-const match=data[matchId];
-
-if(!match)throw Error("Match not found.");
-
-const selected=linkId==="1"&&match.common?.url
-?match.common
-:match["link"+linkId];
-
-if(!selected?.url)throw Error("Stream link not found.");
-
-const url=selected.url;
-
-if(!/^https?:\/\//i.test(url)){
-throw Error("Invalid stream URL.");
-}
-
-const type=getType(selected,url);
-
-info.textContent=selected.name||"Stream "+linkId;
-
-if(type==="hls"){
-if(Hls.isSupported()){
-hls=new Hls({
-enableWorker:true,
-maxBufferLength:30
-});
-
-hls.loadSource(url);
-hls.attachMedia(video);
-
-hls.on(Hls.Events.MANIFEST_PARSED,()=>{
-hideMessage();
-video.play().catch(()=>showMessage("Press Play to start streaming."));
-});
-
-hls.on(Hls.Events.ERROR,(event,data)=>{
-if(data.fatal){
-showMessage("Stream playback failed. Try refreshing or another link.");
-}
-});
-
-}else if(video.canPlayType("application/vnd.apple.mpegurl")){
-video.src=url;
-video.onloadedmetadata=()=>{
-hideMessage();
-video.play().catch(()=>showMessage("Press Play to start."));
-};
-}else{
-throw Error("HLS playback is not supported by this browser.");
-}
-
-}else if(type==="mp4"){
-video.src=url;
-video.onloadedmetadata=()=>{
-hideMessage();
-video.play().catch(()=>showMessage("Press Play to start."));
-};
-video.onerror=()=>showMessage("Video could not be loaded.");
-
-}else{
-video.classList.add("hidden");
-frame.classList.remove("hidden");
-frame.src=url;
-hideMessage();
-}
-
-}catch(error){
-showMessage(error.message);
-}
-}
-
-document.getElementById("refreshBtn").onclick=loadStream;
-
-document.getElementById("fullscreenBtn").onclick=async()=>{
-try{
-if(document.fullscreenElement){
-await document.exitFullscreen();
-}else if(player.requestFullscreen){
-await player.requestFullscreen();
-}else if(video.webkitEnterFullscreen){
-video.webkitEnterFullscreen();
-}
-}catch(e){
-showMessage("Fullscreen is unavailable in this browser.");
-}
-};
-
-document.getElementById("themeBtn").onclick=()=>{
-const dark=document.documentElement.dataset.theme==="dark";
-document.documentElement.dataset.theme=dark?"light":"dark";
-localStorage.setItem("playerTheme",dark?"light":"dark");
-};
-
-const savedTheme=localStorage.getItem("playerTheme");
-document.documentElement.dataset.theme=savedTheme||"dark";
-
-document.getElementById("copyEmbed").onclick=async()=>{
-const code=`<iframe src="${location.href}" width="100%" height="400" allowfullscreen></iframe>`;
-try{
-await navigator.clipboard.writeText(code);
-document.getElementById("copyEmbed").textContent="Copied!";
-}catch(e){
-document.getElementById("embedCode").value=code;
-}
-};
-
-document.getElementById("embedCode").value=
-`<iframe src="${location.href}" width="100%" height="400" allowfullscreen></iframe>`;
-
-loadStream();
 </script>
 </body>
 </html>

@@ -184,13 +184,6 @@ main {
   text-transform: uppercase;
 }
 .links { display: flex; flex-direction: column; gap: 12px; }
-.player-wrap { margin: 0 0 22px; background: #050706; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
-.player-top { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 14px; background:var(--surface); color:var(--muted); font-size:.78rem; font-weight:800; }
-.player-screen { position:relative; width:100%; aspect-ratio:16/9; background:#000; }
-.player-screen video,.player-screen iframe { width:100%; height:100%; border:0; display:block; background:#000; }
-.player-message { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:24px; color:#cbd5ce; font-size:.9rem; }
-.player-actions { display:flex; gap:8px; padding:12px; background:var(--surface); }
-.player-actions a { color:var(--primary); text-decoration:none; font-size:.8rem; font-weight:800; }
 .link-item { width:100%; cursor:pointer; text-align:left; font:inherit; }
 .link-item.active { border-color:var(--primary); background:var(--primary-soft); }
 .link-item {
@@ -490,9 +483,6 @@ function notFound(text) {
   detail.innerHTML = `<div class="empty">${text}<br><a href="/">&#8592; Back to matches</a></div>`;
 }
 
-let activeStreamUrl = "";
-let hlsPlayer = null;
-
 function safeStreamUrl(raw) {
   try {
     const u = new URL(raw, location.href);
@@ -501,55 +491,11 @@ function safeStreamUrl(raw) {
   } catch (_) { return null; }
 }
 
-function stopCurrentPlayer() {
-  if (hlsPlayer) { hlsPlayer.destroy(); hlsPlayer = null; }
-  const screen = document.getElementById("playerScreen");
-  if (screen) screen.innerHTML = '<div class="player-message">Select a stream below to start watching</div>';
-}
-
-function playStream(raw, label) {
+function playerPageUrl(raw, label) {
   const url = safeStreamUrl(raw);
-  if (!url) { showToast("Invalid stream URL"); return; }
-  activeStreamUrl = url;
-  const screen = document.getElementById("playerScreen");
-  const title = document.getElementById("playerLabel");
-  if (!screen) return;
-  if (hlsPlayer) { hlsPlayer.destroy(); hlsPlayer = null; }
-  screen.innerHTML = "";
-  if (/\.m3u8(?:$|[?#])/i.test(url)) {
-    const video = document.createElement("video");
-    video.controls = true; video.autoplay = true; video.playsInline = true;
-    video.setAttribute("webkit-playsinline", "");
-    screen.appendChild(video);
-    if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = url;
-      video.play().catch(() => {});
-    } else if (Hls.isSupported()) {
-      hlsPlayer = new Hls({ enableWorker: true, lowLatencyMode: true });
-      hlsPlayer.loadSource(url); hlsPlayer.attachMedia(video);
-      hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
-      hlsPlayer.on(Hls.Events.ERROR, (_, data) => {
-        if (data.fatal) showPlayerMessage("This HLS stream could not be played. The server may block browser access (CORS) or the stream may be offline.");
-      });
-    } else {
-      showPlayerMessage("This browser does not support HLS playback.");
-    }
-  } else {
-    const frame = document.createElement("iframe");
-    frame.src = url;
-    frame.title = label || "Live stream";
-    frame.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
-    frame.allowFullscreen = true;
-    frame.referrerPolicy = "no-referrer-when-downgrade";
-    screen.appendChild(frame);
-  }
-  if (title) title.textContent = label || "Selected stream";
-  document.querySelectorAll(".link-item").forEach(el => el.classList.toggle("active", el.dataset.url === url));
-}
-
-function showPlayerMessage(message) {
-  const screen = document.getElementById("playerScreen");
-  if (screen) screen.innerHTML = '<div class="player-message">' + esc(message) + '</div>';
+  if (!url) return null;
+  const params = new URLSearchParams({ src: url, title: label || "Live stream" });
+  return "player.html?" + params.toString();
 }
 
 function render() {
@@ -580,14 +526,15 @@ function render() {
       const raw = match.links && match.links["link" + i];
       const u = typeof raw === "string" ? safeStreamUrl(raw) : null;
       if (u) {
-        items.push(`
-          <button class="link-item ${activeStreamUrl === u ? "active" : ""}" type="button" data-url="${esc(u)}" data-label="Stream ${i}">
+        const playerUrl = playerPageUrl(u, "Stream " + i);
+        if (playerUrl) items.push(`
+          <a class="link-item" href="${esc(playerUrl)}">
             <span class="link-left">
               <span class="play">&#9654;</span>
-              <span class="link-text">Stream ${i}<small>Play on this page</small></span>
+              <span class="link-text">Stream ${i}<small>Open video player</small></span>
             </span>
             <span class="hd">HD</span>
-          </button>
+          </a>
         `);
       }
     }
@@ -612,26 +559,9 @@ function render() {
         <div class="when">${esc(formatTime(match.startTime))} &middot; ${esc(whenText(match, info, now))}</div>
       </div>
     </div>
-    ${info.state === "live" ? `
-      <section class="player-wrap" aria-label="Live stream player">
-        <div class="player-top"><span>LIVE PLAYER</span><span id="playerLabel">Choose a stream</span></div>
-        <div class="player-screen" id="playerScreen"><div class="player-message">Select a stream below to start watching</div></div>
-        <div class="player-actions"><a href="${activeStreamUrl || '#'}" id="openStream" target="_blank" rel="noopener noreferrer">Open stream separately ↗</a></div>
-      </section>` : ""}
     <div class="section-head"><div class="section-title">Watch links</div></div>
     ${linksHtml}
   `;
-  detail.querySelectorAll(".link-item[data-url]").forEach(button => {
-    button.addEventListener("click", () => {
-      playStream(button.dataset.url, button.dataset.label);
-      const open = document.getElementById("openStream");
-      if (open) open.href = button.dataset.url;
-    });
-  });
-  if (activeStreamUrl && info.state === "live") {
-    const selected = detail.querySelector(`.link-item[data-url="${CSS.escape(activeStreamUrl)}"]`);
-    if (selected) playStream(activeStreamUrl, selected.dataset.label);
-  }
 }
 
 function onError() {
