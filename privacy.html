@@ -1,0 +1,793 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPL Live Player</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #090d16;
+  --panel: #111827;
+  --panel2: #1b2536;
+  --border: #263247;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --accent: #ff4757;
+  --green: #2ed573;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header {
+  height: 65px;
+  padding: 0 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 21px;
+  font-weight: bold;
+}
+
+.live {
+  background: var(--accent);
+  color: white;
+  padding: 4px 9px;
+  font-size: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  min-height: calc(100vh - 65px);
+}
+
+.sidebar {
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  padding: 15px;
+}
+
+.search {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel2);
+  color: white;
+  outline: none;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.section-title {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.match {
+  padding: 13px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  background: var(--panel2);
+  transition: .2s;
+}
+
+.match:hover,
+.match.active {
+  border-color: var(--accent);
+  background: #25283a;
+}
+
+.match-name {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.match-meta {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 5px;
+}
+
+.main {
+  padding: 20px;
+  min-width: 0;
+}
+
+.player-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 13px;
+}
+
+.player-header h2 {
+  font-size: 18px;
+}
+
+.player-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.player-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: #000;
+}
+
+.placeholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--muted);
+  gap: 12px;
+  text-align: center;
+  padding: 15px;
+}
+
+.play-icon {
+  font-size: 48px;
+}
+
+.controls {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.controls h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--panel2);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: .2s;
+}
+
+button:hover {
+  border-color: var(--accent);
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.sources {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 9px;
+  margin-top: 13px;
+}
+
+.source {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  color: white;
+  text-align: left;
+}
+
+.source.active {
+  border-color: var(--accent);
+  background: #38202b;
+}
+
+.source small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.embed-box {
+  display: none;
+  margin-top: 15px;
+  padding: 15px;
+  background: #080c13;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.embed-box.show {
+  display: block;
+}
+
+.embed-box textarea {
+  width: 100%;
+  height: 110px;
+  resize: vertical;
+  background: #131b29;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: #a5f3fc;
+  padding: 12px;
+  font-size: 12px;
+  font-family: monospace;
+  margin: 10px 0;
+  outline: none;
+}
+
+.status {
+  padding: 12px;
+  margin-top: 13px;
+  background: var(--panel2);
+  border-radius: 7px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.empty {
+  text-align: center;
+  padding: 35px 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media(max-width: 750px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .main {
+    padding: 12px;
+  }
+
+  .player-header h2 {
+    font-size: 15px;
+  }
+
+  .player-wrap {
+    border-radius: 8px;
+  }
+
+  button {
+    padding: 10px;
+  }
+}
+
+@media(max-width: 380px) {
+  .btn-row button {
+    flex: 1 1 100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">NPL LIVE</div>
+  <span class="live">● LIVE</span>
+</header>
+
+<div class="container">
+
+  <aside class="sidebar">
+
+    <input
+      class="search"
+      id="search"
+      placeholder="🔍 Search NPL matches..."
+    >
+
+    <div class="section-title">NPL Matches</div>
+
+    <div id="matchList"></div>
+
+  </aside>
+
+  <main class="main">
+
+    <div class="player-header">
+      <h2 id="matchTitle">Select an NPL match</h2>
+      <span class="live">NPL</span>
+    </div>
+
+    <div class="player-wrap" id="player">
+
+      <div class="placeholder">
+        <div class="play-icon">▶</div>
+        <div>Select a match to start watching</div>
+      </div>
+
+    </div>
+
+    <div class="controls">
+
+      <h3>Player Controls</h3>
+
+      <div class="btn-row">
+
+        <button class="primary" id="nextBtn">
+          ⏭ Next Source
+        </button>
+
+        <button id="openBtn">
+          ↗ Open New Tab
+        </button>
+
+        <button id="embedBtn">
+          &lt;/&gt; Show Embed Code
+        </button>
+
+      </div>
+
+      <div class="sources" id="sourceList"></div>
+
+      <div class="embed-box" id="embedBox">
+
+        <h3>Iframe Embed Code</h3>
+
+        <textarea id="embedCode" readonly></textarea>
+
+        <div class="btn-row">
+          <button class="primary" id="copyBtn">
+            📋 Copy Embed Code
+          </button>
+
+          <button id="hideEmbedBtn">
+            Hide Code
+          </button>
+        </div>
+
+      </div>
+
+      <div class="status" id="status">
+        Ready. Select an NPL match.
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+
+/* ======================================
+   NPL MATCH DATA
+   Add your authorized iframe URLs here.
+====================================== */
+
+const NPL_MATCHES = {
+
+  npllive: {
+    title: "NPL Live",
+    sources: [
+      {
+        name: "Link 1",
+        url: "https://npl-tv.pages.dev/mdpplyrr?manifest=https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/b3b3fkmrbl/out/v1/1084d5c9a97a4c5b9f9554c88f486646/cenc.mpd&keyid=82dfca238e8c4b430a3269db71965db9&key=a00b28caf4ac628e77a553d440c0ddca"
+      },
+      {
+        name: "Link 2",
+        url: "https://npl-tv.pages.dev/mdpplyrr?manifest=https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/avqlywnuzx/out/v1/aefca6420f944a9482e117f315de535f/cenc.mpd&keyid=1994b1df7dfd2e8a8d7b9bf3fb900285&key=22a1444b3da18e139191665b3d652835"
+      },
+      {
+        name: "Link 3",
+        url: "https://npl-tv.pages.dev/mdpplyrr?manifest=https://abfjk4haaaaaaaamkitc5445rybm6.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash-sd/enc/iwpchve3wl/out/v1/946019f85dc64ae99ff9ce64a9727a62/cenc-sd.mpd&keyid=286eb7dc538143790fa9913639531920&key=e3f5cb08d14d9e9c08438c673819540f"
+      },
+      {
+        name: "Link 4",
+        url: "https://npl-tv.pages.dev/mdpplyrr?manifest=https://ott-edge-mtdc.nettv.com.np/npl/live_match3/index.mpd&keyid=b4d7fc89103597185058cc4c81a1800d&key=17062472ba2a3f1db709d3bb7761c936"
+      },
+      {
+        name: "Link 5",
+        url: "https://npl-tv.pages.dev/iplyrr?src=https://wearwait.net/e/2259bb3d9sr2r"
+      },
+      {
+        name: "Link 6",
+        url: "https://wearwait.net/e/2259bb3d9sr2r"
+      },
+      {
+        name: "Link 7",
+        url: "https://npl-tv.pages.dev/mdpplyrr?manifest=https://ott-lb.nettv.com.np/npl/live_match3/index.mpd&keyid=b4d7fc89103597185058cc4c81a1800d&key=17062472ba2a3f1db709d3bb7761c936"
+      }
+    ]
+  },
+
+  lumbini: {
+    title: "Lumbini",
+    sources: [
+      {
+        name: "Link 1",
+        url: "https://example.com/your-authorized-npl-player"
+      }
+    ]
+  },
+
+  kathmandu: {
+    title: "Kathmandu",
+    sources: [
+      {
+        name: "Link 1",
+        url: "https://example.com/your-authorized-npl-player"
+      }
+    ]
+  }
+
+};
+
+
+/* ======================================
+   STATE
+====================================== */
+
+let currentMatch = null;
+let currentIndex = -1;
+
+const player = document.getElementById("player");
+const matchList = document.getElementById("matchList");
+const sourceList = document.getElementById("sourceList");
+const status = document.getElementById("status");
+const embedBox = document.getElementById("embedBox");
+const embedCode = document.getElementById("embedCode");
+
+
+/* ======================================
+   RENDER MATCHES
+====================================== */
+
+function renderMatches(query = "") {
+
+  const matches = Object.entries(NPL_MATCHES)
+    .filter(([key, match]) =>
+      (key + " " + match.title)
+        .toLowerCase()
+        .includes(query.toLowerCase())
+    );
+
+  if (!matches.length) {
+    matchList.innerHTML =
+      '<div class="empty">No NPL matches found.</div>';
+    return;
+  }
+
+  matchList.innerHTML = matches.map(([key, match]) => `
+    <div class="match ${currentMatch === key ? "active" : ""}"
+         data-id="${key}">
+
+      <div class="match-name">${match.title}</div>
+
+      <div class="match-meta">
+        NPL · ${match.sources.length} Sources
+      </div>
+
+    </div>
+  `).join("");
+
+  matchList.querySelectorAll(".match").forEach(el => {
+    el.addEventListener("click", () => {
+      selectMatch(el.dataset.id);
+    });
+  });
+
+}
+
+
+/* ======================================
+   SELECT MATCH
+====================================== */
+
+function selectMatch(key) {
+
+  currentMatch = key;
+  currentIndex = -1;
+
+  const match = NPL_MATCHES[key];
+
+  document.getElementById("matchTitle").textContent =
+    match.title;
+
+  embedBox.classList.remove("show");
+
+  player.innerHTML = `
+    <div class="placeholder">
+      <div class="play-icon">▶</div>
+      <div>Select a source below</div>
+    </div>
+  `;
+
+  renderMatches(
+    document.getElementById("search").value
+  );
+
+  renderSources();
+
+  setStatus("Select a source to load the player.");
+
+}
+
+
+/* ======================================
+   RENDER SOURCES
+====================================== */
+
+function renderSources() {
+
+  if (!currentMatch) return;
+
+  const sources = NPL_MATCHES[currentMatch].sources;
+
+  sourceList.innerHTML = sources.map((source, index) => `
+    <button
+      class="source ${currentIndex === index ? "active" : ""}"
+      data-index="${index}">
+
+      ${source.name}
+
+      <small>IFRAME PLAYER</small>
+
+    </button>
+  `).join("");
+
+  sourceList.querySelectorAll(".source").forEach(btn => {
+    btn.addEventListener("click", () => {
+      loadSource(Number(btn.dataset.index));
+    });
+  });
+
+}
+
+
+/* ======================================
+   LOAD IFRAME
+====================================== */
+
+function loadSource(index) {
+
+  if (!currentMatch) return;
+
+  const sources = NPL_MATCHES[currentMatch].sources;
+  const source = sources[index];
+
+  if (!source || !source.url ||
+      !/^https:\/\//i.test(source.url)) {
+    setStatus("Invalid or missing HTTPS iframe URL.");
+    return;
+  }
+
+  currentIndex = index;
+
+  player.innerHTML = "";
+
+  const iframe = document.createElement("iframe");
+
+  iframe.src = source.url;
+
+  iframe.title = NPL_MATCHES[currentMatch].title;
+
+  iframe.allow =
+    "autoplay; fullscreen; encrypted-media; picture-in-picture";
+
+  iframe.allowFullscreen = true;
+
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+
+  player.appendChild(iframe);
+
+  renderSources();
+
+  updateEmbedCode();
+
+  setStatus("Loaded " + source.name +
+    ". Playback depends on the source website.");
+
+}
+
+
+/* ======================================
+   GENERATE EMBED CODE
+====================================== */
+
+function updateEmbedCode() {
+
+  if (!currentMatch || currentIndex < 0) return;
+
+  const url =
+    NPL_MATCHES[currentMatch].sources[currentIndex].url;
+
+  const code =
+    `<iframe src="${url}" ` +
+    `width="100%" height="100%" ` +
+    `style="aspect-ratio:16/9;border:0;" ` +
+    `allow="autoplay; fullscreen; encrypted-media; picture-in-picture" ` +
+    `allowfullscreen loading="lazy"></iframe>`;
+
+  embedCode.value = code;
+
+}
+
+
+/* ======================================
+   SHOW / HIDE EMBED CODE
+====================================== */
+
+document.getElementById("embedBtn")
+.addEventListener("click", () => {
+
+  if (currentIndex < 0) {
+    setStatus("First select a player source.");
+    return;
+  }
+
+  updateEmbedCode();
+
+  embedBox.classList.add("show");
+
+  embedBox.scrollIntoView({
+    behavior: "smooth",
+    block: "nearest"
+  });
+
+});
+
+
+document.getElementById("hideEmbedBtn")
+.addEventListener("click", () => {
+  embedBox.classList.remove("show");
+});
+
+
+/* ======================================
+   COPY EMBED CODE
+====================================== */
+
+document.getElementById("copyBtn")
+.addEventListener("click", async () => {
+
+  if (!embedCode.value) return;
+
+  try {
+
+    await navigator.clipboard.writeText(embedCode.value);
+
+    document.getElementById("copyBtn").textContent =
+      "✓ Copied!";
+
+  } catch (error) {
+
+    embedCode.select();
+
+    const copied = document.execCommand("copy");
+
+    document.getElementById("copyBtn").textContent =
+      copied ? "✓ Copied!" : "Select and copy manually";
+
+  }
+
+  setTimeout(() => {
+    document.getElementById("copyBtn").textContent =
+      "📋 Copy Embed Code";
+  }, 2000);
+
+});
+
+
+/* ======================================
+   NEXT SOURCE
+====================================== */
+
+document.getElementById("nextBtn")
+.addEventListener("click", () => {
+
+  if (!currentMatch) {
+    setStatus("Select a match first.");
+    return;
+  }
+
+  const total = NPL_MATCHES[currentMatch].sources.length;
+
+  if (!total) return;
+
+  const next = (currentIndex + 1) % total;
+
+  loadSource(next);
+
+});
+
+
+/* ======================================
+   OPEN NEW TAB
+====================================== */
+
+document.getElementById("openBtn")
+.addEventListener("click", () => {
+
+  if (!currentMatch || currentIndex < 0) {
+    setStatus("Select a source first.");
+    return;
+  }
+
+  const url =
+    NPL_MATCHES[currentMatch].sources[currentIndex].url;
+
+  window.open(url, "_blank", "noopener,noreferrer");
+
+});
+
+
+/* ======================================
+   SEARCH
+====================================== */
+
+document.getElementById("search")
+.addEventListener("input", event => {
+
+  renderMatches(event.target.value.trim());
+
+});
+
+
+/* ======================================
+   INITIALIZE
+====================================== */
+
+renderMatches();
+
+</script>
+
+</body>
+</html>
