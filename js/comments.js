@@ -38,6 +38,10 @@ function nowMs() {
   return Date.now() + serverOffset;
 }
 
+function commentsPath(id) {
+  return "matches/" + id + "/comments";
+}
+
 function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -132,9 +136,9 @@ function loadPerson(uid) {
 }
 
 function personOf(c) {
-  const known = people.get(c.u);
+  const known = people.get(c.uid);
   if (known) return { name: known.name, photo: known.photo };
-  loadPerson(c.u);
+  loadPerson(c.uid);
   return { name: "User", photo: "" };
 }
 
@@ -159,13 +163,13 @@ function syncProfile() {
 }
 
 function isMine(c) {
-  return !!(profile && c.u && c.u === profile.uid);
+  return !!(profile && c.uid && c.uid === profile.uid);
 }
 
 function msgHtml(c) {
   const p = personOf(c);
   const hue = nameHue(p.name);
-  return `<div class="msg ${isMine(c) ? "mine" : ""}"><div class="msg-av" style="background:hsl(${hue},70%,68%)">${avatarInner(p.name, p.photo)}</div><div class="msg-body"><span class="msg-name" style="color:hsl(${hue},70%,72%)">${esc(p.name)}</span><span class="msg-text">${esc(c.m)}</span></div></div>`;
+  return `<div class="msg ${isMine(c) ? "mine" : ""}"><div class="msg-av" style="background:hsl(${hue},70%,68%)">${avatarInner(p.name, p.photo)}</div><div class="msg-body"><span class="msg-name" style="color:hsl(${hue},70%,72%)">${esc(p.name)}</span><span class="msg-text">${esc(c.text)}</span></div></div>`;
 }
 
 function scrollToBottom() {
@@ -244,9 +248,9 @@ function submitMessage(form) {
   input.value = "";
   input.focus();
   stick = true;
-  push(ref(db, "comments/" + matchId), {
-    u: profile.uid,
-    m: text,
+  push(ref(db, commentsPath(matchId)), {
+    uid: profile.uid,
+    text: text,
     t: serverTimestamp()
   }).catch(() => {
     showToast("Could not send comment");
@@ -268,7 +272,7 @@ function isExpired(c) {
 
 function deleteComment(key) {
   if (!matchId || !key) return;
-  remove(ref(db, "comments/" + matchId + "/" + key)).catch(() => {});
+  remove(ref(db, commentsPath(matchId) + "/" + key)).catch(() => {});
 }
 
 function sweepExpired() {
@@ -289,17 +293,17 @@ export function startComments(id) {
     serverOffset = typeof snap.val() === "number" ? snap.val() : 0;
   });
 
-  const q = query(ref(db, "comments/" + id), limitToLast(KEEP_MSGS));
+  const q = query(ref(db, commentsPath(id)), limitToLast(KEEP_MSGS));
 
   onChildAdded(q, (snap) => {
     const v = snap.val();
-    if (!v || typeof v.m !== "string" || typeof v.u !== "string") return;
+    if (!v || typeof v.text !== "string" || typeof v.uid !== "string") return;
     if (seen.has(snap.key)) return;
     seen.add(snap.key);
     const c = {
       key: snap.key,
-      u: v.u,
-      m: v.m.slice(0, MAX_MSG),
+      uid: v.uid,
+      text: v.text.slice(0, MAX_MSG),
       t: typeof v.t === "number" ? v.t : nowMs()
     };
     if (isExpired(c)) {

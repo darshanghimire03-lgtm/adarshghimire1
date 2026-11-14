@@ -20,6 +20,7 @@ const PRUNE_MS = 180000;
 const COUNTDOWN_MS = 3000;
 const DELETE_MIN_MS = 5000;
 const DELETE_MAX_MS = 15000;
+const MATCH_FIELDS = ["startTime", "team1", "team2", "winner", "ended", "links"];
 const WA_URL = "https://whatsapp.com/channel/0029Vb8vBWZ6WaKmmQZnWX3o";
 const SITE_URL = "https://" + location.host;
 const SHARE_TEXT = "Watch live matches on NPLcode";
@@ -472,10 +473,9 @@ function scheduleCountdown() {
 async function deleteMatchData() {
   if (deleting || !matchId) return;
   deleting = true;
-  const paths = ["matches/", "comments/", "presence/"];
-  await Promise.all(paths.map((p) => remove(ref(db, p + matchId)).catch((err) => {
-    console.warn("[NPLcode] Could not delete " + p + matchId, err && err.message ? err.message : err);
-  })));
+  await remove(ref(db, "matches/" + matchId)).catch((err) => {
+    console.warn("[NPLcode] Could not delete matches/" + matchId, err && err.message ? err.message : err);
+  });
 }
 
 function checkEnded() {
@@ -538,7 +538,7 @@ function stopPresence() {
 }
 
 function startPresence() {
-  const roomPath = "presence/" + matchId;
+  const roomPath = "matches/" + matchId + "/presence";
   const me = ref(db, roomPath + "/" + makeSessionId());
   presenceMe = me;
   let connected = false;
@@ -547,7 +547,7 @@ function startPresence() {
   function warn(err) {
     if (warned) return;
     warned = true;
-    console.warn("[NPLcode] Viewer count needs Firebase rules for 'presence/{matchId}' (read + write). Error:", err && err.message ? err.message : err);
+    console.warn("[NPLcode] Viewer count needs Firebase rules for 'matches/{matchId}/presence' (read + write). Error:", err && err.message ? err.message : err);
   }
 
   function beat() {
@@ -591,6 +591,40 @@ function startPresence() {
   window.addEventListener("pageshow", beat);
 }
 
+function listenMatch() {
+  const parts = {};
+  const got = new Set();
+
+  function apply() {
+    if (got.size < MATCH_FIELDS.length) return;
+    if (typeof parts.startTime === "number") {
+      match = {
+        startTime: parts.startTime,
+        team1: parts.team1,
+        team2: parts.team2,
+        winner: parts.winner,
+        ended: parts.ended,
+        links: parts.links
+      };
+    } else if (!(match && getState(match, nowMs()) === "ended")) {
+      match = null;
+    }
+    loaded = true;
+    failed = false;
+    render();
+    checkEnded();
+    scheduleCountdown();
+  }
+
+  MATCH_FIELDS.forEach((field) => {
+    onValue(ref(db, "matches/" + matchId + "/" + field), (snap) => {
+      parts[field] = snap.val();
+      got.add(field);
+      apply();
+    }, onError);
+  });
+}
+
 if (!matchId) {
   loaded = true;
   render();
@@ -600,20 +634,7 @@ if (!matchId) {
     render();
   }, onError);
 
-  onValue(ref(db, "matches/" + matchId), (snap) => {
-    const v = snap.val();
-    if (v) {
-      match = v;
-    } else if (!(match && getState(match, nowMs()) === "ended")) {
-      match = null;
-    }
-    loaded = true;
-    failed = false;
-    render();
-    checkEnded();
-    scheduleCountdown();
-  }, onError);
-
+  listenMatch();
   startPresence();
   startComments(matchId);
 
