@@ -1,4 +1,4 @@
-import { db, authDb, ref, get, push, query, limitToLast, onChildAdded, serverTimestamp } from "/js/firebase-config.js";
+import { db, ref, get, push, remove, query, limitToLast, onValue, onChildAdded, onChildRemoved, serverTimestamp } from "/js/firebase-config.js";
 import { loadPartial, fillTemplate } from "/js/layout.js";
 import { getCurrentUser, signInGoogle } from "/js/auth.js";
 
@@ -7,6 +7,8 @@ const MAX_MSG = 200;
 const SEND_GAP_MS = 2000;
 const KEEP_MSGS = 80;
 const STICK_PX = 60;
+const COMMENT_TTL_MS = 10 * 60 * 1000;
+const SWEEP_MS = 15000;
 
 const ICON = {
   send: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>',
@@ -18,6 +20,8 @@ let matchId = null;
 let started = false;
 let comments = [];
 const seen = new Set();
+const people = new Map();
+const loading = new Set();
 let els = null;
 let footInTpl = "";
 let footOutTpl = "";
@@ -27,6 +31,12 @@ let stick = true;
 let unread = 0;
 let lastPost = 0;
 let toastTimer = null;
+let renderTimer = null;
+let serverOffset = 0;
+
+function nowMs() {
+  return Date.now() + serverOffset;
+}
 
 function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
@@ -81,7 +91,7 @@ function fallbackProfile(user) {
 async function loadProfile(user) {
   const base = fallbackProfile(user);
   try {
-    const snap = await get(ref(authDb, "users/" + user.uid));
+    const snap = await get(ref(db, "users/" + user.uid));
     const v = snap.val();
     if (v) {
       return {
@@ -94,6 +104,40 @@ async function loadProfile(user) {
   return base;
 }
 
+function scheduleRender() {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(() => {
+    renderList();
+  }, 80);
+}
+
+function loadPerson(uid) {
+  if (!uid || people.has(uid) || loading.has(uid)) return;
+  loading.add(uid);
+  get(ref(db, "users/" + uid))
+    .then((snap) => {
+      const v = snap.val();
+      people.set(uid, {
+        name: cleanName(v && v.fullName) || "User",
+        photo: v && isHttpUrl(v.profileUrl) ? v.profileUrl : ""
+      });
+    })
+    .catch(() => {
+      people.set(uid, { name: "User", photo: "" });
+    })
+    .finally(() => {
+      loading.delete(uid);
+      scheduleRender();
+    });
+}
+
+function personOf(c) {
+  const known = people.get(c.u);
+  if (known) return { name: known.name, photo: known.photo };
+  loadPerson(c.u);
+  return { name: "User", photo: "" };
+}
+
 function syncProfile() {
   const user = getCurrentUser();
   if (!user) {
@@ -102,11 +146,13 @@ function syncProfile() {
   }
   if (profile && profile.uid === user.uid) return;
   profile = fallbackProfile(user);
+  people.set(user.uid, { name: profile.name, photo: profile.photo });
   const uid = user.uid;
   loadProfile(user).then((p) => {
     const cur = getCurrentUser();
     if (!cur || cur.uid !== uid) return;
     profile = p;
+    people.set(uid, { name: p.name, photo: p.photo });
     renderFoot();
     renderList();
   });
@@ -117,8 +163,9 @@ function isMine(c) {
 }
 
 function msgHtml(c) {
-  const hue = nameHue(c.n);
-  return `<div class="msg ${isMine(c) ? "mine" : ""}"><div class="msg-av" style="background:hsl(${hue},70%,68%)">${avatarInner(c.n, c.p)}</div><div class="msg-body"><span class="msg-name" style="color:hsl(${hue},70%,72%)">${esc(c.n)}</span><span class="msg-text">${esc(c.m)}</span></div></div>`;
+  const p = personOf(c);
+  const hue = nameHue(p.name);
+  return `<div class="msg ${isMine(c) ? "mine" : ""}"><div class="msg-av" style="background:hsl(${hue},70%,68%)">${avatarInner(p.name, p.photo)}</div><div class="msg-body"><span class="msg-name" style="color:hsl(${hue},70%,72%)">${esc(p.name)}</span><span class="msg-text">${esc(c.m)}</span></div></div>`;
 }
 
 function scrollToBottom() {
@@ -198,10 +245,8 @@ function submitMessage(form) {
   input.focus();
   stick = true;
   push(ref(db, "comments/" + matchId), {
-    n: profile.name,
-    m: text,
     u: profile.uid,
-    p: profile.photo,
+    m: text,
     t: serverTimestamp()
   }).catch(() => {
     showToast("Could not send comment");
@@ -217,27 +262,62 @@ async function chatLogin(btn) {
   }
 }
 
+function isExpired(c) {
+  return nowMs() - c.t >= COMMENT_TTL_MS;
+}
+
+function deleteComment(key) {
+  if (!matchId || !key) return;
+  remove(ref(db, "comments/" + matchId + "/" + key)).catch(() => {});
+}
+
+function sweepExpired() {
+  const gone = comments.filter(isExpired);
+  if (!gone.length) return;
+  gone.forEach((c) => deleteComment(c.key));
+  comments = comments.filter((c) => !isExpired(c));
+  renderList();
+}
+
 export function startComments(id) {
   if (!id) return;
   matchId = id;
   if (started) return;
   started = true;
+
+  onValue(ref(db, ".info/serverTimeOffset"), (snap) => {
+    serverOffset = typeof snap.val() === "number" ? snap.val() : 0;
+  });
+
   const q = query(ref(db, "comments/" + id), limitToLast(KEEP_MSGS));
+
   onChildAdded(q, (snap) => {
     const v = snap.val();
-    if (!v || typeof v.m !== "string" || typeof v.n !== "string") return;
+    if (!v || typeof v.m !== "string" || typeof v.u !== "string") return;
     if (seen.has(snap.key)) return;
     seen.add(snap.key);
     const c = {
-      n: cleanName(v.n) || "Guest",
+      key: snap.key,
+      u: v.u,
       m: v.m.slice(0, MAX_MSG),
-      u: typeof v.u === "string" ? v.u : "",
-      p: isHttpUrl(v.p) ? v.p : ""
+      t: typeof v.t === "number" ? v.t : nowMs()
     };
+    if (isExpired(c)) {
+      deleteComment(c.key);
+      return;
+    }
     comments.push(c);
     if (comments.length > KEEP_MSGS) comments.shift();
     appendComment(c);
   }, () => {});
+
+  onChildRemoved(q, (snap) => {
+    const before = comments.length;
+    comments = comments.filter((c) => c.key !== snap.key);
+    if (comments.length !== before) renderList();
+  }, () => {});
+
+  setInterval(sweepExpired, SWEEP_MS);
 }
 
 export function refreshComments() {

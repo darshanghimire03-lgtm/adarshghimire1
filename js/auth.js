@@ -1,4 +1,4 @@
-import { auth, authDb, googleProvider as provider, ref, get, set, update, serverTimestamp, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } from "/js/firebase-config.js";
+import { auth, db, googleProvider as provider, ref, get, set, update, serverTimestamp, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } from "/js/firebase-config.js";
 
 const PROMPT_DELAY_MS = 1200;
 const PROMPT_KEY = "npl_auth_prompted";
@@ -76,19 +76,24 @@ function paintUser() {
   }
 }
 
-async function saveUser(u) {
-  const userRef = ref(authDb, "users/" + u.uid);
+export async function ensureUserSaved(target) {
+  const u = target || user;
+  if (!u) return;
+  const userRef = ref(db, "users/" + u.uid);
   const snap = await get(userRef);
-  const profile = {
+  const v = snap.val();
+  if (v && v.uid === u.uid) return;
+  if (v) {
+    await update(userRef, { uid: u.uid });
+    return;
+  }
+  await set(userRef, {
+    uid: u.uid,
     fullName: u.displayName || "",
     email: u.email || "",
-    profileUrl: u.photoURL || ""
-  };
-  if (!snap.exists()) {
-    await set(userRef, { ...profile, createdAt: serverTimestamp() });
-  } else {
-    await update(userRef, profile);
-  }
+    profileUrl: u.photoURL || "",
+    createdAt: serverTimestamp()
+  });
 }
 
 function showError(err) {
@@ -198,10 +203,11 @@ export function initAuth() {
     paintUser();
     if (u) {
       try {
-        await saveUser(u);
+        await ensureUserSaved(u);
       } catch (err) {
         console.warn("[NPLcode] Could not save user to database", err);
       }
+      if (user !== u) return;
     }
     if (!ready) {
       ready = true;

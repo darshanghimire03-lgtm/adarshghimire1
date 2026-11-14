@@ -1,0 +1,193 @@
+.cd-lock, .cd-lock body { overflow: hidden; }
+.cd {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #050605;
+  color: #F4F6F4;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.cd[hidden] { display: none; }
+.cd.on { opacity: 1; }
+.cd.out { opacity: 0; }
+.cd-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 55% at 50% 50%, rgba(163, 230, 53, 0.28), transparent 70%),
+    radial-gradient(90% 70% at 50% 120%, rgba(163, 230, 53, 0.16), transparent 70%),
+    linear-gradient(160deg, #0f160f, #050605);
+}
+.cd.started .cd-bg {
+  background:
+    radial-gradient(70% 65% at 50% 50%, rgba(163, 230, 53, 0.5), transparent 70%),
+    linear-gradient(160deg, #142010, #050605);
+}
+.cd-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 15%, transparent 70%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 15%, transparent 70%);
+  animation: cdGrid 6s linear infinite;
+}
+.cd-rings { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.cd-rings i {
+  position: absolute;
+  width: min(60vw, 60vh);
+  height: min(60vw, 60vh);
+  border-radius: 50%;
+  border: 2px solid rgba(163, 230, 53, 0.55);
+  animation: cdRing 2s ease-out infinite;
+  opacity: 0;
+}
+.cd-rings i:nth-child(2) { animation-delay: 0.66s; }
+.cd-rings i:nth-child(3) { animation-delay: 1.32s; }
+.cd-sparks { position: absolute; inset: 0; pointer-events: none; }
+.cd-sparks i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #A3E635;
+  box-shadow: 0 0 14px 2px rgba(163, 230, 53, 0.8);
+  opacity: 0;
+  animation: cdSpark 2.4s ease-out infinite;
+}
+.cd-sparks i:nth-child(1) { --x: -38vw; --y: -30vh; animation-delay: 0s; }
+.cd-sparks i:nth-child(2) { --x: 34vw; --y: -34vh; animation-delay: 0.2s; }
+.cd-sparks i:nth-child(3) { --x: -30vw; --y: 32vh; animation-delay: 0.4s; }
+.cd-sparks i:nth-child(4) { --x: 40vw; --y: 26vh; animation-delay: 0.6s; }
+.cd-sparks i:nth-child(5) { --x: -12vw; --y: -42vh; animation-delay: 0.8s; }
+.cd-sparks i:nth-child(6) { --x: 14vw; --y: 42vh; animation-delay: 1s; }
+.cd-sparks i:nth-child(7) { --x: -44vw; --y: 2vh; animation-delay: 1.2s; }
+.cd-sparks i:nth-child(8) { --x: 44vw; --y: -4vh; animation-delay: 1.4s; }
+.cd-sparks i:nth-child(9) { --x: -22vw; --y: 12vh; animation-delay: 1.6s; }
+.cd-sparks i:nth-child(10) { --x: 24vw; --y: -14vh; animation-delay: 1.8s; }
+.cd-sparks i:nth-child(11) { --x: -6vw; --y: 28vh; animation-delay: 2s; }
+.cd-sparks i:nth-child(12) { --x: 8vw; --y: -26vh; animation-delay: 2.2s; }
+.cd-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 3vh, 24px);
+  text-align: center;
+}
+.cd-brand { display: flex; align-items: center; gap: 10px; }
+.cd-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #1F2A22, #131814);
+  border: 1px solid rgba(163, 230, 53, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: #A3E635;
+  box-shadow: 0 0 26px -4px rgba(163, 230, 53, 0.6);
+}
+.cd-word { font-size: 1.4rem; font-weight: 900; letter-spacing: -0.02em; }
+.cd-word b { color: #A3E635; font-weight: 900; }
+.cd-label {
+  font-size: clamp(0.8rem, 3vw, 1.2rem);
+  font-weight: 800;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #8C9790;
+}
+.cd.started .cd-label { color: #A3E635; }
+.cd-stage {
+  min-height: clamp(160px, 38vh, 340px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cd-num {
+  font-size: clamp(9rem, 42vmin, 22rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #F4F6F4;
+  text-shadow: 0 0 60px rgba(163, 230, 53, 0.65), 0 0 140px rgba(163, 230, 53, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+.cd-num.go {
+  font-size: clamp(4.5rem, 24vmin, 13rem);
+  letter-spacing: 0.02em;
+  background: linear-gradient(180deg, #E4FF9A, #A3E635 55%, #5E9A12);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 0 40px rgba(163, 230, 53, 0.8));
+}
+.cd-num.pop { animation: cdPop 0.95s cubic-bezier(0.2, 0.9, 0.25, 1) both; }
+.cd-num.go.pop { animation: cdGo 1s cubic-bezier(0.2, 1.2, 0.3, 1) both; }
+.cd-bar {
+  width: min(70vw, 360px);
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.cd-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5E9A12, #A3E635);
+  box-shadow: 0 0 16px rgba(163, 230, 53, 0.8);
+  transition: width 0.08s linear;
+}
+@keyframes cdPop {
+  0% { transform: scale(2.2); opacity: 0; filter: blur(12px); }
+  22% { transform: scale(1); opacity: 1; filter: blur(0); }
+  78% { transform: scale(0.94); opacity: 1; }
+  100% { transform: scale(0.55); opacity: 0; }
+}
+@keyframes cdGo {
+  0% { transform: scale(0.3); opacity: 0; }
+  35% { transform: scale(1.15); opacity: 1; }
+  60% { transform: scale(1); }
+  100% { transform: scale(1.04); opacity: 1; }
+}
+@keyframes cdRing {
+  0% { transform: scale(0.3); opacity: 0.9; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+@keyframes cdSpark {
+  0% { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(var(--x), var(--y)) scale(1); opacity: 0; }
+}
+@keyframes cdGrid {
+  from { background-position: 0 0; }
+  to { background-position: 44px 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cd-grid, .cd-rings i, .cd-sparks i { animation: none; }
+  .cd-num.pop, .cd-num.go.pop { animation: none; opacity: 1; }
+  .cd { transition: none; }
+}

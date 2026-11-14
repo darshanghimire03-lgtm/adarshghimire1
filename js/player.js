@@ -1,12 +1,12 @@
-import { db, ref, onValue, set, remove, onDisconnect, serverTimestamp } from "/js/firebase-config.js";
+import { db, ref, set, onValue, remove, onDisconnect, serverTimestamp } from "/js/firebase-config.js";
 import { mountLayout } from "/js/layout.js";
-import { initAuth, getCurrentUser, isAuthReady, signInGoogle } from "/js/auth.js";
+import { initAuth } from "/js/auth.js";
 import { mountComments, refreshComments, startComments } from "/js/comments.js";
+import { playCountdown } from "/js/animation.js";
 
 await mountLayout();
 
 document.addEventListener("auth:change", () => {
-  render();
   refreshComments();
 });
 
@@ -17,14 +17,15 @@ const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
 const BEAT_MS = 20000;
 const ACTIVE_MS = 90000;
 const PRUNE_MS = 180000;
-const WA_POS_KEY = "npl_wa_pos";
-const WA_PAD = 8;
+const COUNTDOWN_MS = 3000;
+const DELETE_MIN_MS = 5000;
+const DELETE_MAX_MS = 15000;
+const WA_URL = "https://whatsapp.com/channel/0029Vb8vBWZ6WaKmmQZnWX3o";
 const SITE_URL = "https://" + location.host;
 const SHARE_TEXT = "Watch live matches on NPLcode";
 const root = document.getElementById("app");
 const backBtn = document.getElementById("backBtn");
 const toastEl = document.getElementById("toast");
-const waBubble = document.getElementById("waBubble");
 const shareSheet = document.getElementById("shareSheet");
 const shareGrid = document.getElementById("shareGrid");
 const shareLinkEl = document.getElementById("shareLink");
@@ -43,8 +44,7 @@ const ICON = {
   telegram: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>',
   facebook: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
   x: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
-  more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>',
-  google: '<svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>'
+  more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>'
 };
 
 function safeDecode(s) {
@@ -83,6 +83,8 @@ let loaded = false;
 let failed = false;
 let viewers = 0;
 let presenceData = {};
+let presenceMe = null;
+let presenceStopped = false;
 let serverOffset = 0;
 let reloadN = 0;
 let lastSignature = "";
@@ -90,6 +92,14 @@ let lastPlayerKey = null;
 let toastTimer = null;
 let sheetTimer = null;
 let copyTimer = null;
+let countdownFor = null;
+let countdownTimer = null;
+let endedHandled = false;
+let deleting = false;
+
+function nowMs() {
+  return Date.now() + serverOffset;
+}
 
 function matchUrl() {
   return "/match/" + encodeURIComponent(matchId);
@@ -108,6 +118,26 @@ function esc(s) {
 function teamName(id) {
   const t = teamsData[id];
   return t && t.name ? t.name : "TBD";
+}
+
+function teamLetter(id) {
+  const t = teamsData[id];
+  return t && t.name ? t.name.charAt(0).toUpperCase() : "?";
+}
+
+function teamLogoHtml(id) {
+  const t = teamsData[id];
+  const letter = esc(teamLetter(id));
+  if (t && isHttpUrl(t.logourl)) {
+    return `<img src="${esc(t.logourl.trim())}" alt="" referrerpolicy="no-referrer" data-i="${letter}" onerror="this.replaceWith(document.createTextNode(this.dataset.i))">`;
+  }
+  return letter;
+}
+
+function teamSig(m) {
+  const a = teamsData[m.team1] || {};
+  const b = teamsData[m.team2] || {};
+  return [a.name, a.logourl, b.name, b.logourl].join("~");
 }
 
 function winnerOf(m) {
@@ -252,91 +282,6 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !shareSheet.hidden) closeShare();
 });
 
-let waPos = loadWaPos();
-let waDrag = null;
-let waMoved = false;
-
-function loadWaPos() {
-  try {
-    const p = JSON.parse(localStorage.getItem(WA_POS_KEY));
-    if (p && typeof p.fx === "number" && typeof p.fy === "number") {
-      return { fx: Math.min(1, Math.max(0, p.fx)), fy: Math.min(1, Math.max(0, p.fy)) };
-    }
-  } catch (err) {}
-  return { fx: 1, fy: 0.72 };
-}
-
-function saveWaPos() {
-  try {
-    localStorage.setItem(WA_POS_KEY, JSON.stringify(waPos));
-  } catch (err) {}
-}
-
-function waBounds() {
-  const s = waBubble.offsetWidth || 56;
-  return {
-    s,
-    maxX: Math.max(0, window.innerWidth - s - WA_PAD * 2),
-    maxY: Math.max(0, window.innerHeight - s - WA_PAD * 2)
-  };
-}
-
-function placeWa() {
-  const b = waBounds();
-  waBubble.style.left = WA_PAD + waPos.fx * b.maxX + "px";
-  waBubble.style.top = WA_PAD + waPos.fy * b.maxY + "px";
-}
-
-waBubble.addEventListener("pointerdown", (e) => {
-  if (e.pointerType === "mouse" && e.button !== 0) return;
-  const r = waBubble.getBoundingClientRect();
-  waDrag = { id: e.pointerId, sx: e.clientX, sy: e.clientY, ox: e.clientX - r.left, oy: e.clientY - r.top };
-  waMoved = false;
-  try {
-    waBubble.setPointerCapture(e.pointerId);
-  } catch (err) {}
-});
-
-waBubble.addEventListener("pointermove", (e) => {
-  if (!waDrag || e.pointerId !== waDrag.id) return;
-  if (!waMoved && Math.hypot(e.clientX - waDrag.sx, e.clientY - waDrag.sy) < 6) return;
-  waMoved = true;
-  waBubble.classList.add("dragging");
-  const b = waBounds();
-  const x = e.clientX - waDrag.ox - WA_PAD;
-  const y = e.clientY - waDrag.oy - WA_PAD;
-  waPos = {
-    fx: b.maxX ? Math.min(1, Math.max(0, x / b.maxX)) : 0,
-    fy: b.maxY ? Math.min(1, Math.max(0, y / b.maxY)) : 0
-  };
-  placeWa();
-});
-
-function endWaDrag(e) {
-  if (!waDrag || e.pointerId !== waDrag.id) return;
-  waBubble.classList.remove("dragging");
-  try {
-    waBubble.releasePointerCapture(e.pointerId);
-  } catch (err) {}
-  if (waMoved) saveWaPos();
-  waDrag = null;
-}
-
-waBubble.addEventListener("pointerup", endWaDrag);
-waBubble.addEventListener("pointercancel", endWaDrag);
-
-waBubble.addEventListener("click", (e) => {
-  if (waMoved) {
-    e.preventDefault();
-    waMoved = false;
-  }
-});
-
-waBubble.addEventListener("dragstart", (e) => e.preventDefault());
-window.addEventListener("resize", placeWa);
-window.addEventListener("orientationchange", placeWa);
-placeWa();
-
 if (matchId) backBtn.setAttribute("href", matchUrl());
 
 backBtn.addEventListener("click", (e) => {
@@ -362,17 +307,7 @@ root.addEventListener("click", (e) => {
     showToast("Stream reloaded");
   }
   if (a === "share") openShare();
-  if (a === "login") loginFromGate(act);
 });
-
-async function loginFromGate(btn) {
-  btn.disabled = true;
-  try {
-    await signInGoogle();
-  } finally {
-    btn.disabled = false;
-  }
-}
 
 function badgeHtml(state) {
   if (state === "live") return '<span class="badge live">LIVE NOW</span>';
@@ -384,11 +319,21 @@ function thumbBrand() {
   return '<div class="thumb-brand"><div class="thumb-logo">N</div><div class="thumb-word">NPL<span>code</span></div></div>';
 }
 
+function versusHtml(m, ended) {
+  const w = ended ? winnerOf(m) : null;
+  const side = (id) => {
+    const cls = w ? (w === id ? "win" : "lose") : "";
+    const tag = w === id ? `<span class="vs-win">${ICON.trophy}WINNER</span>` : "";
+    return `<div class="vs-team ${cls}"><div class="vs-logo">${teamLogoHtml(id)}</div><div class="vs-name">${esc(teamName(id))}</div>${tag}</div>`;
+  };
+  return `<div class="vs-row">${side(m.team1)}<div class="vs-mid"><span class="vs-line"></span><span class="vs-text">VS</span><span class="vs-line"></span></div>${side(m.team2)}</div>`;
+}
+
 function thumbNotStarted(m, now) {
   return `
-    <div class="thumb">
-      ${thumbBrand()}
+    <div class="thumb versus">
       <div class="thumb-title">Match not started yet</div>
+      ${versusHtml(m, false)}
       <div class="thumb-chip">${ICON.clock}Starts in ${esc(duration(m.startTime - now))}</div>
       <div class="thumb-sub">${esc(formatDateTime(m.startTime))}</div>
     </div>
@@ -401,31 +346,11 @@ function thumbEnded(m) {
     ? `<div class="thumb-chip">${ICON.trophy}Winner: ${esc(teamName(w))}</div>`
     : `<div class="thumb-chip">${ICON.flag}Full time</div>`;
   return `
-    <div class="thumb ended">
-      ${thumbBrand()}
+    <div class="thumb versus ended">
       <div class="thumb-title">Match Ended</div>
+      ${versusHtml(m, true)}
       ${chip}
       <div class="thumb-sub">Thanks for watching on NPLcode</div>
-    </div>
-  `;
-}
-
-function thumbChecking() {
-  return `
-    <div class="thumb">
-      ${thumbBrand()}
-      <div class="thumb-title">Checking sign-in...</div>
-    </div>
-  `;
-}
-
-function thumbLogin() {
-  return `
-    <div class="thumb gate">
-      ${thumbBrand()}
-      <div class="thumb-title">Sign in to watch live</div>
-      <div class="thumb-sub">Continue with Google to watch the stream and join the chat</div>
-      <button class="google-btn" type="button" data-act="login">${ICON.google}<span>Continue with Google</span></button>
     </div>
   `;
 }
@@ -456,7 +381,7 @@ function render() {
     return;
   }
 
-  const now = Date.now();
+  const now = nowMs();
   const state = getState(match, now);
   document.title = teamName(match.team1) + " vs " + teamName(match.team2) + " - NPLcode";
 
@@ -478,13 +403,9 @@ function render() {
 
   let playerHtml;
   let playerKey;
-  const signedIn = !!getCurrentUser();
-  const authReady = isAuthReady();
+  const sig = teamSig(match);
 
-  if (state === "live" && activeNo && !signedIn) {
-    playerKey = authReady ? "login" : "authwait";
-    playerHtml = authReady ? thumbLogin() : thumbChecking();
-  } else if (state === "live" && activeNo) {
+  if (state === "live" && activeNo) {
     const src = match.links["link" + activeNo].trim();
     playerKey = "p|" + activeNo + "|" + src + "|" + reloadN;
     playerHtml = `<div class="stage"><div class="player-wrap"><iframe src="${esc(src)}" width="100%" height="100%" style="aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
@@ -492,10 +413,10 @@ function render() {
     playerKey = "nolinks";
     playerHtml = thumbNoLinks();
   } else if (state === "ended") {
-    playerKey = "ended|" + (match.winner || "");
+    playerKey = "ended|" + (match.winner || "") + "|" + sig;
     playerHtml = thumbEnded(match);
   } else {
-    playerKey = "soon|" + duration(match.startTime - now);
+    playerKey = "soon|" + duration(match.startTime - now) + "|" + sig;
     playerHtml = thumbNotStarted(match, now);
   }
 
@@ -513,6 +434,7 @@ function render() {
       </div>
       <div class="actions">
         ${state === "live" ? `<button class="icon-btn" type="button" data-act="reload" aria-label="Reload stream" title="Reload stream">${ICON.refresh}</button>` : ""}
+        <a class="icon-btn wa" href="${WA_URL}" target="_blank" rel="noopener" aria-label="Join our WhatsApp channel" title="Join our WhatsApp channel">${ICON.whatsapp}</a>
         <button class="icon-btn" type="button" data-act="share" aria-label="Share" title="Share">${ICON.share}</button>
       </div>
     </div>
@@ -522,6 +444,47 @@ function render() {
 function onError() {
   failed = true;
   render();
+}
+
+function scheduleCountdown() {
+  if (!match || typeof match.startTime !== "number") return;
+  clearTimeout(countdownTimer);
+  const now = nowMs();
+  if (getState(match, now) !== "notstarted") return;
+  if (countdownFor === match.startTime) return;
+  const left = match.startTime - now;
+  if (left > COUNTDOWN_MS) {
+    countdownTimer = setTimeout(scheduleCountdown, left - COUNTDOWN_MS);
+    return;
+  }
+  countdownFor = match.startTime;
+  playCountdown({
+    endAt: match.startTime,
+    now: nowMs,
+    label: teamName(match.team1) + " vs " + teamName(match.team2),
+    onDone: () => {
+      lastSignature = "";
+      render();
+    }
+  });
+}
+
+async function deleteMatchData() {
+  if (deleting || !matchId) return;
+  deleting = true;
+  const paths = ["matches/", "comments/", "presence/"];
+  await Promise.all(paths.map((p) => remove(ref(db, p + matchId)).catch((err) => {
+    console.warn("[NPLcode] Could not delete " + p + matchId, err && err.message ? err.message : err);
+  })));
+}
+
+function checkEnded() {
+  if (endedHandled || !match || typeof match.startTime !== "number") return;
+  if (getState(match, nowMs()) !== "ended") return;
+  endedHandled = true;
+  stopPresence();
+  const wait = DELETE_MIN_MS + Math.random() * (DELETE_MAX_MS - DELETE_MIN_MS);
+  setTimeout(deleteMatchData, wait);
 }
 
 function makeSessionId() {
@@ -546,7 +509,7 @@ function entryTime(v) {
 }
 
 function recountViewers() {
-  const now = Date.now() + serverOffset;
+  const now = nowMs();
   let n = 0;
   for (const key of Object.keys(presenceData)) {
     const t = entryTime(presenceData[key]);
@@ -559,7 +522,8 @@ function recountViewers() {
 }
 
 function pruneStale(roomPath) {
-  const now = Date.now() + serverOffset;
+  if (presenceStopped) return;
+  const now = nowMs();
   for (const key of Object.keys(presenceData)) {
     const t = entryTime(presenceData[key]);
     if (t && now - t > PRUNE_MS) {
@@ -568,9 +532,15 @@ function pruneStale(roomPath) {
   }
 }
 
+function stopPresence() {
+  presenceStopped = true;
+  if (presenceMe) remove(presenceMe).catch(() => {});
+}
+
 function startPresence() {
   const roomPath = "presence/" + matchId;
   const me = ref(db, roomPath + "/" + makeSessionId());
+  presenceMe = me;
   let connected = false;
   let warned = false;
 
@@ -581,18 +551,19 @@ function startPresence() {
   }
 
   function beat() {
-    if (!connected) return;
+    if (!connected || presenceStopped) return;
     set(me, { t: serverTimestamp() }).catch(warn);
   }
 
   onValue(ref(db, ".info/serverTimeOffset"), (snap) => {
     serverOffset = typeof snap.val() === "number" ? snap.val() : 0;
     recountViewers();
+    scheduleCountdown();
   });
 
   onValue(ref(db, ".info/connected"), (snap) => {
     connected = snap.val() === true;
-    if (!connected) return;
+    if (!connected || presenceStopped) return;
     onDisconnect(me).remove().then(beat).catch((err) => {
       warn(err);
       beat();
@@ -630,10 +601,17 @@ if (!matchId) {
   }, onError);
 
   onValue(ref(db, "matches/" + matchId), (snap) => {
-    match = snap.val();
+    const v = snap.val();
+    if (v) {
+      match = v;
+    } else if (!(match && getState(match, nowMs()) === "ended")) {
+      match = null;
+    }
     loaded = true;
     failed = false;
     render();
+    checkEnded();
+    scheduleCountdown();
   }, onError);
 
   startPresence();
@@ -641,12 +619,14 @@ if (!matchId) {
 
   setInterval(() => {
     if (!match || typeof match.startTime !== "number") return;
-    const now = Date.now();
+    const now = nowMs();
     const st = getState(match, now);
     const sig = st + whenText(match, st, now);
     if (sig !== lastSignature) {
       lastSignature = sig;
       render();
     }
+    checkEnded();
+    scheduleCountdown();
   }, 1000);
 }

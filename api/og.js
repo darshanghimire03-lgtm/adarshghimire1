@@ -2,7 +2,7 @@ import { ImageResponse } from "@vercel/og";
 
 export const config = { runtime: "edge" };
 
-const DB = "https://ramus-7f7aa-default-rtdb.firebaseio.com";
+const DB = "https://darshang-8f99d-default-rtdb.firebaseio.com";
 const LIME = "#A3E635";
 const LOGO = 300;
 
