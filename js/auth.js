@@ -1,26 +1,8 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getDatabase, ref, get, set, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDejlLtvFPTFOJoXMFGjpuhImn6oYFCAxM",
-  authDomain: "darshang-8f99d.firebaseapp.com",
-  databaseURL: "https://darshang-8f99d-default-rtdb.firebaseio.com",
-  projectId: "darshang-8f99d",
-  storageBucket: "darshang-8f99d.firebasestorage.app",
-  messagingSenderId: "199221437404",
-  appId: "1:199221437404:web:e9c42331f2879378f6e519"
-};
+import { auth, authDb, googleProvider as provider, ref, get, set, update, serverTimestamp, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } from "/js/firebase-config.js";
 
 const PROMPT_DELAY_MS = 1200;
 const PROMPT_KEY = "npl_auth_prompted";
 const USER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>';
-
-const app = initializeApp(firebaseConfig, "auth");
-const auth = getAuth(app);
-const db = getDatabase(app);
-const provider = new GoogleAuthProvider();
-provider.setCustomParameters({ prompt: "select_account" });
 
 let user = null;
 let ready = false;
@@ -30,6 +12,10 @@ let els = null;
 
 export function getCurrentUser() {
   return user;
+}
+
+export function isAuthReady() {
+  return ready;
 }
 
 export function openAuthSheet() {
@@ -91,7 +77,7 @@ function paintUser() {
 }
 
 async function saveUser(u) {
-  const userRef = ref(db, "users/" + u.uid);
+  const userRef = ref(authDb, "users/" + u.uid);
   const snap = await get(userRef);
   const profile = {
     fullName: u.displayName || "",
@@ -107,6 +93,7 @@ async function saveUser(u) {
 
 function showError(err) {
   const code = err && err.code ? err.code : "";
+  if (els.sheet.hidden) openAuthSheet();
   if (code === "auth/unauthorized-domain") {
     els.msg.textContent = "Add " + location.hostname + " to Firebase Authentication > Settings > Authorized domains.";
   } else if (code === "auth/network-request-failed") {
@@ -122,8 +109,8 @@ function setBusy(on) {
   els.googleText.textContent = on ? "Signing in..." : "Continue with Google";
 }
 
-async function signInGoogle() {
-  if (busy) return;
+export async function signInGoogle() {
+  if (busy || !els) return;
   setBusy(true);
   els.msg.textContent = "";
   try {

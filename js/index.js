@@ -1,5 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { db, ref, onValue } from "/js/firebase-config.js";
 import { mountLayout, loadPartial, fillTemplate } from "/js/layout.js";
 import { initAuth } from "/js/auth.js";
 
@@ -7,17 +6,6 @@ const [, cardTpl] = await Promise.all([mountLayout(), loadPartial("battlecard")]
 initAuth();
 
 document.getElementById("headerExtra").innerHTML = '<div class="live-pill" id="livePill"><span class="dot"></span><span id="liveCount">LIVE</span></div>';
-
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "ramus-7f7aa.firebaseapp.com",
-  databaseURL: "https://ramus-7f7aa-default-rtdb.firebaseio.com",
-  projectId: "ramus-7f7aa",
-  appId: "YOUR_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 
 const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
 const homeMain = document.getElementById("homeMain");

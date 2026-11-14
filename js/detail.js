@@ -1,5 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { db, ref, onValue } from "/js/firebase-config.js";
 import { mountLayout } from "/js/layout.js";
 import { initAuth } from "/js/auth.js";
 
@@ -7,17 +6,6 @@ await mountLayout();
 initAuth();
 
 document.getElementById("headerExtra").innerHTML = '<button class="share-btn" id="shareBtn" type="button" hidden aria-label="Share match"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg><span>Share</span></button>';
-
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "ramus-7f7aa.firebaseapp.com",
-  databaseURL: "https://ramus-7f7aa-default-rtdb.firebaseio.com",
-  projectId: "ramus-7f7aa",
-  appId: "YOUR_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 
 const LINK_COUNT = 2;
 const LIVE_MS = (4 * 60 + 30) * 60 * 1000;

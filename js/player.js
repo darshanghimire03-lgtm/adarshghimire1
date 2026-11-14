@@ -1,35 +1,24 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getDatabase, ref, onValue, set, remove, push, query, limitToLast, onChildAdded, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { db, ref, onValue, set, remove, onDisconnect, serverTimestamp } from "/js/firebase-config.js";
 import { mountLayout } from "/js/layout.js";
-import { initAuth } from "/js/auth.js";
+import { initAuth, getCurrentUser, isAuthReady, signInGoogle } from "/js/auth.js";
+import { mountComments, refreshComments, startComments } from "/js/comments.js";
 
 await mountLayout();
+
+document.addEventListener("auth:change", () => {
+  render();
+  refreshComments();
+});
+
 initAuth();
-
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "ramus-7f7aa.firebaseapp.com",
-  databaseURL: "https://ramus-7f7aa-default-rtdb.firebaseio.com",
-  projectId: "ramus-7f7aa",
-  appId: "YOUR_APP_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 
 const LINK_COUNT = 2;
 const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
 const BEAT_MS = 20000;
 const ACTIVE_MS = 90000;
 const PRUNE_MS = 180000;
-const NAME_KEY = "npl_chat_name";
 const WA_POS_KEY = "npl_wa_pos";
 const WA_PAD = 8;
-const MAX_NAME = 20;
-const MAX_MSG = 200;
-const SEND_GAP_MS = 2000;
-const KEEP_MSGS = 80;
-const STICK_PX = 60;
 const SITE_URL = "https://" + location.host;
 const SHARE_TEXT = "Watch live matches on NPLcode";
 const root = document.getElementById("app");
@@ -50,13 +39,12 @@ const ICON = {
   flag: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/></svg>',
   trophy: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>',
   off: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>',
-  send: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>',
-  down: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>',
   whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>',
   telegram: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>',
   facebook: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
   x: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
-  more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>'
+  more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>',
+  google: '<svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>'
 };
 
 function safeDecode(s) {
@@ -102,14 +90,6 @@ let lastPlayerKey = null;
 let toastTimer = null;
 let sheetTimer = null;
 let copyTimer = null;
-
-let chatName = loadName();
-let editingName = false;
-let comments = [];
-let lastPost = 0;
-let stick = true;
-let unread = 0;
-const seenComments = new Set();
 
 function matchUrl() {
   return "/match/" + encodeURIComponent(matchId);
@@ -357,199 +337,6 @@ window.addEventListener("resize", placeWa);
 window.addEventListener("orientationchange", placeWa);
 placeWa();
 
-function cleanName(s) {
-  return String(s || "").replace(/\s+/g, " ").trim().slice(0, MAX_NAME);
-}
-
-function loadName() {
-  try {
-    return cleanName(localStorage.getItem(NAME_KEY));
-  } catch (err) {
-    return "";
-  }
-}
-
-function saveName(n) {
-  try {
-    localStorage.setItem(NAME_KEY, n);
-  } catch (err) {}
-}
-
-function nameHue(name) {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
-  return h;
-}
-
-function msgHtml(c, sid) {
-  const hue = nameHue(c.n);
-  const initial = esc(c.n.charAt(0).toUpperCase());
-  return `<div class="msg ${c.s && c.s === sid ? "mine" : ""}"><div class="msg-av" style="background:hsl(${hue},70%,68%)">${initial}</div><div class="msg-body"><span class="msg-name" style="color:hsl(${hue},70%,72%)">${esc(c.n)}</span><span class="msg-text">${esc(c.m)}</span></div></div>`;
-}
-
-function chatEls() {
-  return {
-    list: document.getElementById("chatList"),
-    jump: document.getElementById("chatJump"),
-    count: document.getElementById("chatCount")
-  };
-}
-
-function scrollChatToBottom() {
-  const { list, jump } = chatEls();
-  if (!list) return;
-  list.scrollTop = list.scrollHeight;
-  stick = true;
-  unread = 0;
-  if (jump) jump.hidden = true;
-}
-
-function updateJump() {
-  const { jump } = chatEls();
-  if (!jump) return;
-  if (stick || unread === 0) {
-    jump.hidden = true;
-    return;
-  }
-  jump.hidden = false;
-  jump.innerHTML = ICON.down + (unread > 1 ? unread + " new comments" : "New comment");
-}
-
-function appendComment(c) {
-  const { list, count } = chatEls();
-  if (!list) return;
-  const sid = makeSessionId();
-  const placeholder = list.querySelector(".chat-empty");
-  if (placeholder) placeholder.remove();
-  list.insertAdjacentHTML("beforeend", msgHtml(c, sid));
-  while (list.children.length > KEEP_MSGS) list.removeChild(list.firstChild);
-  if (count) count.textContent = list.children.length;
-  const mine = c.s && c.s === sid;
-  if (stick || mine) {
-    scrollChatToBottom();
-  } else {
-    unread++;
-    updateJump();
-  }
-}
-
-function renderChatFoot() {
-  const foot = document.getElementById("chatFoot");
-  if (!foot) return;
-  if (!chatName || editingName) {
-    foot.innerHTML = `
-      <div class="name-box">
-        <p>${editingName && chatName ? "Change your display name" : "Enter a name to join the live chat"}</p>
-        <form class="chat-form" id="nameForm" autocomplete="off">
-          <input class="chat-input" id="nameInput" type="text" maxlength="${MAX_NAME}" placeholder="Your name" value="${esc(chatName)}" aria-label="Your name">
-          <button class="chat-send" type="submit">Join</button>
-        </form>
-      </div>
-    `;
-    const input = document.getElementById("nameInput");
-    if (input && editingName) input.focus();
-    return;
-  }
-  foot.innerHTML = `
-    <div class="chat-as"><span>Chatting as <b>${esc(chatName)}</b></span><button class="chat-link" type="button" data-act="rename">Change name</button></div>
-    <form class="chat-form" id="msgForm" autocomplete="off">
-      <input class="chat-input" id="msgInput" type="text" maxlength="${MAX_MSG}" placeholder="Write a comment..." aria-label="Write a comment" enterkeyhint="send">
-      <button class="chat-send" type="submit" aria-label="Send">${ICON.send}Send</button>
-    </form>
-  `;
-}
-
-function initChat() {
-  const slot = document.getElementById("chatSlot");
-  if (!slot) return;
-  slot.innerHTML = `
-    <section class="chat">
-      <div class="chat-head">
-        <div class="chat-title"><span class="chat-dot"></span>Live chat</div>
-        <div class="chat-count" id="chatCount">0</div>
-      </div>
-      <div class="chat-body">
-        <div class="chat-list" id="chatList"></div>
-        <button class="chat-jump" id="chatJump" type="button" hidden></button>
-      </div>
-      <div class="chat-foot" id="chatFoot"></div>
-    </section>
-  `;
-  const list = document.getElementById("chatList");
-  const jump = document.getElementById("chatJump");
-  list.addEventListener("scroll", () => {
-    stick = list.scrollHeight - list.scrollTop - list.clientHeight < STICK_PX;
-    if (stick) unread = 0;
-    updateJump();
-  }, { passive: true });
-  jump.addEventListener("click", scrollChatToBottom);
-  renderChatFoot();
-  if (comments.length) {
-    const sid = makeSessionId();
-    list.innerHTML = comments.map((c) => msgHtml(c, sid)).join("");
-    document.getElementById("chatCount").textContent = comments.length;
-    scrollChatToBottom();
-  } else {
-    list.innerHTML = '<div class="chat-empty">No comments yet.<br>Be the first to say something!</div>';
-  }
-}
-
-function submitName(form) {
-  const input = form.querySelector("input");
-  const n = cleanName(input ? input.value : "");
-  if (!n) {
-    showToast("Please enter a name");
-    return;
-  }
-  chatName = n;
-  editingName = false;
-  saveName(n);
-  renderChatFoot();
-  const mi = document.getElementById("msgInput");
-  if (mi) mi.focus();
-}
-
-function submitMessage(form) {
-  const input = form.querySelector("input");
-  const text = String(input ? input.value : "").replace(/\s+/g, " ").trim().slice(0, MAX_MSG);
-  if (!text || !chatName || !matchId) return;
-  const now = Date.now();
-  if (now - lastPost < SEND_GAP_MS) {
-    showToast("Slow down a little");
-    return;
-  }
-  lastPost = now;
-  input.value = "";
-  input.focus();
-  stick = true;
-  push(ref(db, "comments/" + matchId), {
-    n: chatName,
-    m: text,
-    s: makeSessionId(),
-    t: serverTimestamp()
-  }).catch(() => {
-    showToast("Could not send comment");
-  });
-}
-
-function startChat() {
-  const q = query(ref(db, "comments/" + matchId), limitToLast(KEEP_MSGS));
-  onChildAdded(q, (snap) => {
-    const v = snap.val();
-    if (!v || typeof v.m !== "string" || typeof v.n !== "string") return;
-    if (seenComments.has(snap.key)) return;
-    seenComments.add(snap.key);
-    const c = {
-      n: cleanName(v.n) || "Guest",
-      m: v.m.slice(0, MAX_MSG),
-      s: typeof v.s === "string" ? v.s : ""
-    };
-    comments.push(c);
-    if (comments.length > KEEP_MSGS) comments.shift();
-    appendComment(c);
-  }, () => {});
-}
-
 if (matchId) backBtn.setAttribute("href", matchUrl());
 
 backBtn.addEventListener("click", (e) => {
@@ -575,24 +362,17 @@ root.addEventListener("click", (e) => {
     showToast("Stream reloaded");
   }
   if (a === "share") openShare();
-  if (a === "rename") {
-    editingName = true;
-    renderChatFoot();
-  }
+  if (a === "login") loginFromGate(act);
 });
 
-root.addEventListener("submit", (e) => {
-  const form = e.target;
-  if (!form || !form.id) return;
-  if (form.id === "nameForm") {
-    e.preventDefault();
-    submitName(form);
+async function loginFromGate(btn) {
+  btn.disabled = true;
+  try {
+    await signInGoogle();
+  } finally {
+    btn.disabled = false;
   }
-  if (form.id === "msgForm") {
-    e.preventDefault();
-    submitMessage(form);
-  }
-});
+}
 
 function badgeHtml(state) {
   if (state === "live") return '<span class="badge live">LIVE NOW</span>';
@@ -630,6 +410,26 @@ function thumbEnded(m) {
   `;
 }
 
+function thumbChecking() {
+  return `
+    <div class="thumb">
+      ${thumbBrand()}
+      <div class="thumb-title">Checking sign-in...</div>
+    </div>
+  `;
+}
+
+function thumbLogin() {
+  return `
+    <div class="thumb gate">
+      ${thumbBrand()}
+      <div class="thumb-title">Sign in to watch live</div>
+      <div class="thumb-sub">Continue with Google to watch the stream and join the chat</div>
+      <button class="google-btn" type="button" data-act="login">${ICON.google}<span>Continue with Google</span></button>
+    </div>
+  `;
+}
+
 function thumbNoLinks() {
   return `
     <div class="thumb">
@@ -663,7 +463,7 @@ function render() {
   if (!document.getElementById("playerSlot")) {
     root.innerHTML = '<div class="layout"><div class="col-main"><div id="playerSlot"></div><div id="barSlot"></div></div><div class="col-chat" id="chatSlot"></div></div>';
     lastPlayerKey = null;
-    initChat();
+    mountComments(document.getElementById("chatSlot"));
   }
 
   let activeNo = 0;
@@ -678,7 +478,13 @@ function render() {
 
   let playerHtml;
   let playerKey;
-  if (state === "live" && activeNo) {
+  const signedIn = !!getCurrentUser();
+  const authReady = isAuthReady();
+
+  if (state === "live" && activeNo && !signedIn) {
+    playerKey = authReady ? "login" : "authwait";
+    playerHtml = authReady ? thumbLogin() : thumbChecking();
+  } else if (state === "live" && activeNo) {
     const src = match.links["link" + activeNo].trim();
     playerKey = "p|" + activeNo + "|" + src + "|" + reloadN;
     playerHtml = `<div class="stage"><div class="player-wrap"><iframe src="${esc(src)}" width="100%" height="100%" style="aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
@@ -831,7 +637,7 @@ if (!matchId) {
   }, onError);
 
   startPresence();
-  startChat();
+  startComments(matchId);
 
   setInterval(() => {
     if (!match || typeof match.startTime !== "number") return;

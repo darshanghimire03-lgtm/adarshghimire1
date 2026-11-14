@@ -1,0 +1,33 @@
+<section class="chat">
+  <div class="chat-head">
+    <div class="chat-title"><span class="chat-dot"></span>Live chat</div>
+    <div class="chat-count" id="chatCount">0</div>
+  </div>
+  <div class="chat-body">
+    <div class="chat-list" id="chatList"></div>
+    <button class="chat-jump" id="chatJump" type="button" hidden></button>
+  </div>
+  <div class="chat-foot" id="chatFoot"></div>
+</section>
+
+<template id="chatEmpty">
+  <div class="chat-empty">No comments yet.<br>Be the first to say something!</div>
+</template>
+
+<template id="chatFootIn">
+  <div class="chat-as"><span class="chat-me"><span class="chat-me-av">{{avatar}}</span><span>Chatting as <b>{{name}}</b></span></span></div>
+  <form class="chat-form" id="msgForm" autocomplete="off">
+    <input class="chat-input" id="msgInput" type="text" maxlength="{{max}}" placeholder="Write a comment..." aria-label="Write a comment" enterkeyhint="send">
+    <button class="chat-send" type="submit" aria-label="Send">{{send}}Send</button>
+  </form>
+</template>
+
+<template id="chatFootOut">
+  <div class="chat-gate">
+    <p>Sign in to join the live chat</p>
+    <button class="google-btn" type="button" data-act="chat-login">
+      {{google}}
+      <span>Continue with Google</span>
+    </button>
+  </div>
+</template>
