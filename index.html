@@ -8,19 +8,10 @@
 <meta name="theme-color" content="#0C0F0D">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/hero.css">
 <style>
-:root {
-  --bg: #0C0F0D;
-  --surface: #151A17;
-  --surface-2: #1C231F;
-  --primary: #A3E635;
-  --primary-soft: rgba(163, 230, 53, 0.12);
-  --text: #F4F6F4;
-  --muted: #8C9790;
-  --line: rgba(255, 255, 255, 0.07);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -32,42 +23,7 @@ body {
     radial-gradient(500px 300px at 100% 40%, rgba(163, 230, 53, 0.05), transparent);
   background-repeat: no-repeat;
 }
-.ic { width: 16px; height: 16px; flex-shrink: 0; }
-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(12, 15, 13, 0.86);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
-  padding: calc(12px + env(safe-area-inset-top)) clamp(14px, 4vw, 28px) 12px;
-}
-.bar {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.logo {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  background: linear-gradient(145deg, #1F2A22, #131814);
-  border: 1px solid rgba(163, 230, 53, 0.45);
-  box-shadow: 0 0 24px -6px rgba(163, 230, 53, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  font-size: 1.2rem;
-  color: var(--primary);
-}
-.brand { flex: 1; }
-.brand h1 { font-size: 1.25rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.1; }
-.brand h1 span { color: var(--primary); }
-.brand p { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+.ic { width: 16px; height: 16px; }
 .live-pill {
   display: none;
   align-items: center;
@@ -82,56 +38,11 @@ header {
   border-radius: 999px;
 }
 .live-pill.on { display: inline-flex; }
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--primary);
-  animation: pulse 1.4s ease-in-out infinite;
-}
 main {
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 clamp(14px, 4vw, 28px) 40px;
-}
-.hero {
-  padding: clamp(26px, 6vw, 56px) 0 clamp(16px, 3vw, 26px);
-  text-align: center;
-}
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--primary-soft);
-  border: 1px solid rgba(163, 230, 53, 0.3);
-  color: var(--primary);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 7px 14px;
-  border-radius: 999px;
-}
-.hero h2 {
-  margin-top: 16px;
-  font-size: clamp(1.9rem, 7vw, 3.4rem);
-  font-weight: 900;
-  letter-spacing: -0.035em;
-  line-height: 1.05;
-}
-.hero h2 span {
-  background: linear-gradient(90deg, var(--primary), #D9F99D);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.hero p {
-  margin: 14px auto 0;
-  max-width: 520px;
-  color: var(--muted);
-  font-size: clamp(0.9rem, 2.6vw, 1.05rem);
-  line-height: 1.5;
 }
 .filters {
   display: flex;
@@ -385,64 +296,22 @@ main {
   background-size: 200% 100%;
   animation: shimmer 1.3s linear infinite;
 }
-footer {
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.78rem;
-  padding: 10px 16px 30px;
-}
-footer span { color: var(--primary); font-weight: 800; }
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: calc(28px + env(safe-area-inset-bottom));
-  transform: translate(-50%, 20px);
-  background: var(--primary);
-  color: #0C0F0D;
-  font-size: 0.85rem;
-  font-weight: 800;
-  padding: 11px 20px;
-  border-radius: 999px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 50;
-  max-width: 90vw;
-  text-align: center;
-}
-.toast.show { opacity: 1; transform: translate(-50%, 0); }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @media (max-width: 480px) {
   .filters { justify-content: flex-start; }
-  .brand p { display: none; }
   .team-logo { width: 60px; height: 60px; border-radius: 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .badge.live, .dot, .skeleton { animation: none; }
-  .match, .toast, .chip { transition: none; }
+  .badge.live, .skeleton { animation: none; }
+  .match, .chip { transition: none; }
   .match:hover { transform: none; }
 }
 </style>
 </head>
 <body>
-<header>
-  <div class="bar">
-    <div class="logo">N</div>
-    <div class="brand">
-      <h1>NPL<span>code</span></h1>
-      <p>Live matches &amp; watch links</p>
-    </div>
-    <div class="live-pill" id="livePill"><span class="dot"></span><span id="liveCount">LIVE</span></div>
-  </div>
-</header>
+<div data-include="header" data-max="1100px"></div>
 
 <main>
-  <section class="hero">
-    <span class="eyebrow"><span class="dot"></span>Live streaming hub</span>
-    <h2>Watch every match, <span>live in HD.</span></h2>
-    <p>Pick a match and jump straight into the stream. Two backup links, one tap away.</p>
-  </section>
+  <div data-include="hero"></div>
 
   <nav class="filters" id="filters" aria-label="Filter matches">
     <button class="chip active" type="button" data-filter="all">All <small id="c-all">0</small></button>
@@ -460,12 +329,20 @@ footer span { color: var(--primary); font-weight: 800; }
   </div>
 </main>
 
-<footer>&copy; <span id="year"></span> <span>NPLcode</span> &middot; Live matches &amp; watch links</footer>
+<div data-include="footer"></div>
 <div class="toast" id="toast"></div>
+<div data-include="auth-sheet"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { mountLayout, loadPartial, fillTemplate } from "/js/layout.js";
+import { initAuth } from "/js/auth.js";
+
+const [, cardTpl] = await Promise.all([mountLayout(), loadPartial("battlecard")]);
+initAuth();
+
+document.getElementById("headerExtra").innerHTML = '<div class="live-pill" id="livePill"><span class="dot"></span><span id="liveCount">LIVE</span></div>';
 
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
@@ -484,8 +361,6 @@ const livePill = document.getElementById("livePill");
 const liveCount = document.getElementById("liveCount");
 const toastEl = document.getElementById("toast");
 const filtersEl = document.getElementById("filters");
-
-document.getElementById("year").textContent = new Date().getFullYear();
 
 const ICON = {
   share: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>',
@@ -672,26 +547,19 @@ function cardHtml(id, m, info, now) {
   const goText = info.state === "live" ? ICON.play + "Watch now" : "Details" + ICON.arrow;
   const w = info.state === "ended" ? winnerOf(m) : null;
   const timeLabel = info.group === "upcoming" ? formatDate(m.startTime) + " · " + formatTime(m.startTime) : formatTime(m.startTime);
-  return `
-    <a class="${classes.join(" ")}" href="/match/${encodeURIComponent(id)}">
-      <div class="meta">
-        <span class="time-chip">${ICON.clock}${esc(timeLabel)}</span>
-        ${tagHtml(info)}
-      </div>
-      <div class="teams">
-        ${teamHtml(m.team1, w === m.team1)}
-        <div class="vs">VS</div>
-        ${teamHtml(m.team2, w === m.team2)}
-      </div>
-      <div class="foot">
-        <span class="foot-left">${esc(whenText(m, info, now))}</span>
-        <span class="foot-right">
-          <span class="share-mini" role="button" tabindex="0" data-share="${esc(id)}" aria-label="Share match">${ICON.share}</span>
-          <span class="go">${goText}</span>
-        </span>
-      </div>
-    </a>
-  `;
+  return fillTemplate(cardTpl, {
+    classes: classes.join(" "),
+    hrefId: encodeURIComponent(id),
+    idAttr: esc(id),
+    clock: ICON.clock,
+    time: esc(timeLabel),
+    tag: tagHtml(info),
+    team1: teamHtml(m.team1, w === m.team1),
+    team2: teamHtml(m.team2, w === m.team2),
+    when: esc(whenText(m, info, now)),
+    share: ICON.share,
+    go: goText
+  });
 }
 
 function todayOrder(info) {

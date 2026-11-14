@@ -7,19 +7,8 @@
 <meta name="theme-color" content="#0C0F0D">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
+<link rel="stylesheet" href="/css/base.css">
 <style>
-:root {
-  --bg: #0C0F0D;
-  --surface: #151A17;
-  --surface-2: #1C231F;
-  --primary: #A3E635;
-  --primary-soft: rgba(163, 230, 53, 0.12);
-  --text: #F4F6F4;
-  --muted: #8C9790;
-  --line: rgba(255, 255, 255, 0.07);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html { -webkit-text-size-adjust: 100%; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -29,41 +18,6 @@ body {
   background-image: radial-gradient(600px 300px at 50% -80px, rgba(163, 230, 53, 0.10), transparent);
   background-repeat: no-repeat;
 }
-.ic { width: 18px; height: 18px; flex-shrink: 0; }
-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(12, 15, 13, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
-  padding: calc(12px + env(safe-area-inset-top)) clamp(14px, 4vw, 24px) 12px;
-}
-.bar {
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.back {
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  transition: transform 0.15s ease;
-  flex-shrink: 0;
-}
-.back:active { transform: scale(0.92); }
-.title { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; flex: 1; }
-.title span { color: var(--primary); }
 .share-btn {
   display: inline-flex;
   align-items: center;
@@ -247,58 +201,38 @@ main {
   margin-bottom: 14px;
 }
 .skeleton.small { height: 64px; border-radius: 18px; }
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: calc(28px + env(safe-area-inset-bottom));
-  transform: translate(-50%, 20px);
-  background: var(--primary);
-  color: #0C0F0D;
-  font-size: 0.85rem;
-  font-weight: 800;
-  padding: 11px 20px;
-  border-radius: 999px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 50;
-  max-width: 90vw;
-  text-align: center;
-}
-.toast.show { opacity: 1; transform: translate(-50%, 0); }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @media (max-width: 360px) {
   .share-btn span { display: none; }
   .share-btn { padding: 0 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .badge.live, .skeleton { animation: none; }
-  .link-item, .back, .share-btn, .toast { transition: none; }
+  .link-item, .share-btn { transition: none; }
 }
 </style>
 </head>
 <body>
-<header>
-  <div class="bar">
-    <a class="back" id="backBtn" href="/" aria-label="Back"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
-    <div class="title">NPL<span>code</span></div>
-    <button class="share-btn" id="shareBtn" type="button" hidden aria-label="Share match">
-      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg>
-      <span>Share</span>
-    </button>
-  </div>
-</header>
+<div data-include="header" data-max="720px" data-compact data-back></div>
+
 <main id="detail">
   <div class="skeleton"></div>
   <div class="skeleton small"></div>
   <div class="skeleton small"></div>
 </main>
+
 <div class="toast" id="toast"></div>
+<div data-include="auth-sheet"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { mountLayout } from "/js/layout.js";
+import { initAuth } from "/js/auth.js";
+
+await mountLayout();
+initAuth();
+
+document.getElementById("headerExtra").innerHTML = '<button class="share-btn" id="shareBtn" type="button" hidden aria-label="Share match"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg><span>Share</span></button>';
 
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",

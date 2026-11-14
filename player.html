@@ -7,19 +7,9 @@
 <meta name="theme-color" content="#0C0F0D">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
+<link rel="stylesheet" href="/css/base.css">
 <style>
-:root {
-  --bg: #0C0F0D;
-  --surface: #151A17;
-  --surface-2: #1C231F;
-  --primary: #A3E635;
-  --primary-soft: rgba(163, 230, 53, 0.12);
-  --text: #F4F6F4;
-  --muted: #8C9790;
-  --line: rgba(255, 255, 255, 0.07);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html { height: 100%; -webkit-text-size-adjust: 100%; }
+html { height: 100%; }
 body {
   height: 100%;
   height: 100dvh;
@@ -32,23 +22,6 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
   background-image: radial-gradient(700px 320px at 50% -100px, rgba(163, 230, 53, 0.12), transparent);
   background-repeat: no-repeat;
-}
-.ic { width: 18px; height: 18px; flex-shrink: 0; }
-header {
-  flex: none;
-  z-index: 10;
-  background: rgba(12, 15, 13, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
-  padding: calc(10px + env(safe-area-inset-top)) clamp(12px, 3vw, 20px) 10px;
-}
-.bar {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }
 .icon-btn {
   background: var(--surface);
@@ -67,8 +40,6 @@ header {
 }
 .icon-btn:active { transform: scale(0.92); }
 .icon-btn:hover { border-color: rgba(163, 230, 53, 0.5); }
-.title { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; flex: 1; }
-.title span { color: var(--primary); }
 main {
   flex: 1;
   min-height: 0;
@@ -439,55 +410,6 @@ main {
 .wa-bubble svg { width: 30px; height: 30px; pointer-events: none; }
 .wa-bubble.dragging { cursor: grabbing; transform: scale(1.12); box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.2); }
 .wa-bubble.dragging::before { animation: none; opacity: 0; }
-.sheet {
-  position: fixed;
-  inset: 0;
-  z-index: 70;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-.sheet[hidden] { display: none; }
-.sheet-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-.sheet.open .sheet-backdrop { opacity: 1; }
-.sheet-card {
-  position: relative;
-  width: 100%;
-  max-width: 440px;
-  background: linear-gradient(180deg, var(--surface-2), var(--surface));
-  border: 1px solid var(--line);
-  border-bottom: 0;
-  border-radius: 26px 26px 0 0;
-  padding: 10px 18px calc(22px + env(safe-area-inset-bottom));
-  transform: translateY(100%);
-  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.3, 1);
-  box-shadow: 0 -20px 60px -20px rgba(0, 0, 0, 0.9);
-}
-.sheet.open .sheet-card { transform: none; }
-.sheet-grab { width: 42px; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.16); margin: 0 auto 14px; }
-.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.sheet-head h2 { font-size: 1.1rem; font-weight: 900; letter-spacing: -0.01em; }
-.sheet-x {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--bg);
-  color: var(--text);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.sheet-sub { margin: 6px 0 18px; font-size: 0.85rem; color: var(--muted); font-weight: 600; line-height: 1.4; }
 .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
 .share-item {
   display: flex;
@@ -552,34 +474,7 @@ main {
   cursor: pointer;
   flex-shrink: 0;
 }
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: calc(28px + env(safe-area-inset-bottom));
-  transform: translate(-50%, 20px);
-  background: var(--primary);
-  color: #0C0F0D;
-  font-size: 0.85rem;
-  font-weight: 800;
-  padding: 11px 20px;
-  border-radius: 999px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 80;
-  max-width: 90vw;
-  text-align: center;
-}
-.toast.show { opacity: 1; transform: translate(-50%, 0); }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @keyframes ring { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.7); opacity: 0; } }
-@media (min-width: 560px) {
-  .sheet { align-items: center; }
-  .sheet-card { border-bottom: 1px solid var(--line); border-radius: 26px; padding-bottom: 22px; transform: translateY(24px) scale(0.96); opacity: 0; transition: transform 0.22s ease, opacity 0.22s ease; }
-  .sheet.open .sheet-card { transform: none; opacity: 1; }
-  .sheet-grab { display: none; }
-}
 @media (min-width: 900px), (orientation: landscape) and (min-width: 600px) {
   .layout { flex-direction: row; align-items: stretch; gap: 16px; padding: 14px 0; }
   .col-main { flex: 1; overflow-y: auto; scrollbar-width: none; }
@@ -592,17 +487,12 @@ main {
 }
 @media (prefers-reduced-motion: reduce) {
   .badge.live::before, .skeleton, .chat-dot, .wa-bubble::before { animation: none; }
-  .icon-btn, .toast, .chat-send, .wa-bubble, .sheet-card, .sheet-backdrop, .share-ico { transition: none; }
+  .icon-btn, .chat-send, .wa-bubble, .share-ico { transition: none; }
 }
 </style>
 </head>
 <body>
-<header>
-  <div class="bar">
-    <a class="icon-btn" id="backBtn" href="/" aria-label="Back"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
-    <div class="title">NPL<span>code</span></div>
-  </div>
-</header>
+<div data-include="header" data-max="1400px" data-compact data-back></div>
 <main id="app">
   <div class="skeleton video"></div>
   <div class="skeleton"></div>
@@ -630,10 +520,16 @@ main {
 </div>
 
 <div class="toast" id="toast"></div>
+<div data-include="auth-sheet"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getDatabase, ref, onValue, set, remove, push, query, limitToLast, onChildAdded, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { mountLayout } from "/js/layout.js";
+import { initAuth } from "/js/auth.js";
+
+await mountLayout();
+initAuth();
 
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
