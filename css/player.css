@@ -72,6 +72,7 @@ main {
 .badge.ended { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
 .stage { position: relative; width: 100%; }
 .player-wrap {
+  position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
   background: #000;
@@ -81,6 +82,27 @@ main {
   box-shadow: 0 20px 60px -30px rgba(0, 0, 0, 0.9);
 }
 .player-wrap iframe { display: block; width: 100%; height: 100%; }
+.player-wrap video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  object-fit: contain;
+}
+.vid-msg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.vid-msg[hidden] { display: none; }
 .thumb {
   position: relative;
   width: 100%;
@@ -161,6 +183,31 @@ main {
 }
 .thumb-chip .ic { width: 16px; height: 16px; }
 .thumb.ended .thumb-chip { background: var(--surface); border-color: var(--line); color: var(--text); }
+.streams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.stream-btn {
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 9px 14px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.2s ease;
+}
+.stream-btn:hover { border-color: rgba(163, 230, 53, 0.5); }
+.stream-btn:active { transform: scale(0.95); }
+.stream-btn.on {
+  background: var(--primary);
+  color: #0C0F0D;
+  border-color: var(--primary);
+}
 .controls {
   margin-top: 10px;
   display: flex;
@@ -544,8 +591,9 @@ main {
 @media (max-width: 420px) {
   .pill { padding: 6px 11px; font-size: 0.76rem; }
   .badge { padding: 6px 11px; }
+  .stream-btn { padding: 8px 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .badge.live::before, .skeleton, .chat-dot, .vs-text { animation: none; }
-  .icon-btn, .chat-send, .share-ico { transition: none; }
+  .icon-btn, .chat-send, .share-ico, .stream-btn { transition: none; }
 }

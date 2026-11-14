@@ -7,7 +7,7 @@ initAuth();
 
 document.getElementById("headerExtra").innerHTML = '<button class="share-btn" id="shareBtn" type="button" hidden aria-label="Share match"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></svg><span>Share</span></button>';
 
-const LINK_COUNT = 2;
+const LINK_COUNT = 5;
 const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
 const detail = document.getElementById("detail");
 const shareBtn = document.getElementById("shareBtn");
@@ -43,6 +43,18 @@ function playerUrl(n) {
   return "/match/player/" + encodeURIComponent(matchId) + "?link=" + n;
 }
 
+function linkInfo(raw) {
+  const s = String(raw || "").trim();
+  const i = s.indexOf("|");
+  const url = (i === -1 ? s : s.slice(0, i)).trim();
+  const path = url.split(/[?#]/)[0].toLowerCase();
+  let kind = "Embed";
+  if (path.endsWith(".m3u8")) kind = "HLS";
+  else if (path.endsWith(".mpd")) kind = "DASH";
+  const drm = i !== -1 && kind !== "Embed" && s.slice(i + 1).trim() !== "";
+  return { kind, drm };
+}
+
 document.getElementById("backBtn").addEventListener("click", (e) => {
   let sameOrigin = false;
   try {
@@ -54,6 +66,12 @@ document.getElementById("backBtn").addEventListener("click", (e) => {
     e.preventDefault();
     history.back();
   }
+});
+
+detail.addEventListener("click", (e) => {
+  if (e.target.closest("a")) return;
+  const row = e.target.closest("tr[data-href]");
+  if (row) location.href = row.getAttribute("data-href");
 });
 
 function showToast(text) {
@@ -194,6 +212,36 @@ function notFound(text) {
   detail.innerHTML = `<div class="empty">${text}<br><a href="/">&#8592; Back to matches</a></div>`;
 }
 
+function linksTableHtml(info) {
+  const sub = info.state === "live" ? "Watch now" : "Open player";
+  const rows = [];
+  for (let i = 1; i <= LINK_COUNT; i++) {
+    const u = match.links && match.links["link" + i];
+    if (!u) continue;
+    const k = linkInfo(u);
+    const drmTag = k.drm ? '<span class="type drm">DRM</span>' : "";
+    rows.push(`
+      <tr class="link-row" data-href="${esc(playerUrl(i))}">
+        <td class="c-no">${i}</td>
+        <td class="c-name">Stream ${i}<small>${sub}</small></td>
+        <td class="c-type"><span class="type">${k.kind}</span>${drmTag}</td>
+        <td class="c-go"><a class="watch" href="${esc(playerUrl(i))}">${PLAY_ICON}<span>Watch</span></a></td>
+      </tr>
+    `);
+  }
+  if (!rows.length) return '<div class="empty">No links added yet</div>';
+  return `
+    <div class="table-wrap">
+      <table class="links-table">
+        <thead>
+          <tr><th>#</th><th>Stream</th><th>Type</th><th></th></tr>
+        </thead>
+        <tbody>${rows.join("")}</tbody>
+      </table>
+    </div>
+  `;
+}
+
 function render() {
   if (failed) {
     notFound("Could not load match. Please check your connection and try again.");
@@ -215,30 +263,9 @@ function render() {
   const t2 = teamsData[match.team2];
   document.title = (t1 && t1.name ? t1.name : "TBD") + " vs " + (t2 && t2.name ? t2.name : "TBD") + " - NPLcode";
 
-  let linksHtml;
-  if (info.state === "ended") {
-    linksHtml = '<div class="empty">This match has ended</div>';
-  } else {
-    const items = [];
-    const sub = info.state === "live" ? "Watch now" : "Open player";
-    for (let i = 1; i <= LINK_COUNT; i++) {
-      const u = match.links && match.links["link" + i];
-      if (u) {
-        items.push(`
-          <a class="link-item" href="${esc(playerUrl(i))}">
-            <span class="link-left">
-              <span class="play">${PLAY_ICON}</span>
-              <span class="link-text">Stream ${i}<small>${sub}</small></span>
-            </span>
-            <span class="hd">HD</span>
-          </a>
-        `);
-      }
-    }
-    linksHtml = items.length
-      ? `<div class="links">${items.join("")}</div>`
-      : '<div class="empty">No links added yet</div>';
-  }
+  const linksHtml = info.state === "ended"
+    ? '<div class="empty">This match has ended</div>'
+    : linksTableHtml(info);
 
   detail.innerHTML = `
     <div class="match-card ${info.state === "live" ? "live" : ""}">

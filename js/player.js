@@ -12,7 +12,7 @@ document.addEventListener("auth:change", () => {
 
 initAuth();
 
-const LINK_COUNT = 2;
+const LINK_COUNT = 5;
 const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
 const BEAT_MS = 20000;
 const ACTIVE_MS = 90000;
@@ -21,6 +21,8 @@ const COUNTDOWN_MS = 3000;
 const DELETE_MIN_MS = 5000;
 const DELETE_MAX_MS = 15000;
 const MATCH_FIELDS = ["startTime", "team1", "team2", "winner", "ended", "links"];
+const HLS_SRC = "https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js";
+const SHAKA_SRC = "https://cdn.jsdelivr.net/npm/shaka-player@4.7.11/dist/shaka-player.compiled.js";
 const WA_URL = "https://whatsapp.com/channel/0029Vb8vBWZ6WaKmmQZnWX3o";
 const SITE_URL = "https://" + location.host;
 const SHARE_TEXT = "Watch live matches on NPLcode";
@@ -76,7 +78,7 @@ function getLinkNo() {
 }
 
 const matchId = getMatchId();
-const linkNo = getLinkNo();
+let linkNo = getLinkNo();
 
 let teamsData = {};
 let match = null;
@@ -97,6 +99,9 @@ let countdownFor = null;
 let countdownTimer = null;
 let endedHandled = false;
 let deleting = false;
+let engine = null;
+let playToken = 0;
+const scriptCache = {};
 
 function nowMs() {
   return Date.now() + serverOffset;
@@ -114,6 +119,155 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   }[c]));
+}
+
+function parseLink(raw) {
+  const s = String(raw || "").trim();
+  const i = s.indexOf("|");
+  const url = (i === -1 ? s : s.slice(0, i)).trim();
+  const extra = i === -1 ? "" : s.slice(i + 1).trim();
+  const path = url.split(/[?#]/)[0].toLowerCase();
+  let type = "iframe";
+  if (path.endsWith(".m3u8")) type = "hls";
+  else if (path.endsWith(".mpd")) type = "dash";
+  let drm = null;
+  if (extra && type !== "iframe") {
+    const m = extra.match(/^(widevine|playready)\s*=\s*(.+)$/i);
+    if (m) {
+      drm = { kind: m[1].toLowerCase(), license: m[2].trim() };
+    } else {
+      const keys = {};
+      extra.split(",").forEach((pair) => {
+        const parts = pair.split(":");
+        const kid = (parts[0] || "").trim().toLowerCase().replace(/-/g, "");
+        const key = (parts[1] || "").trim().toLowerCase().replace(/-/g, "");
+        if (kid && key) keys[kid] = key;
+      });
+      if (Object.keys(keys).length) drm = { kind: "clearkey", keys };
+    }
+  }
+  return { raw: s, url, type, drm };
+}
+
+function loadScript(src) {
+  if (scriptCache[src]) return scriptCache[src];
+  scriptCache[src] = new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = () => {
+      delete scriptCache[src];
+      reject(new Error("Could not load player library"));
+    };
+    document.head.appendChild(s);
+  });
+  return scriptCache[src];
+}
+
+function destroyEngine() {
+  if (!engine) return;
+  const e = engine;
+  engine = null;
+  try {
+    Promise.resolve(e.destroy()).catch(() => {});
+  } catch (err) {}
+}
+
+async function startVideo(p, token) {
+  const video = document.getElementById("vid");
+  const msg = document.getElementById("vidMsg");
+  if (!video) return;
+
+  const fail = (text) => {
+    if (token !== playToken || !msg) return;
+    msg.textContent = text;
+    msg.hidden = false;
+  };
+
+  const play = () => {
+    video.play().catch(() => {
+      video.muted = true;
+      video.play().catch(() => {});
+    });
+  };
+
+  try {
+    if (p.type === "hls" && !p.drm) {
+      await loadScript(HLS_SRC);
+      if (token !== playToken) return;
+      const Hls = window.Hls;
+      if (Hls && Hls.isSupported()) {
+        const hls = new Hls({ lowLatencyMode: true });
+        engine = hls;
+        let retries = 0;
+        hls.on(Hls.Events.ERROR, (ev, data) => {
+          if (!data.fatal) return;
+          if (retries < 5 && data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+            retries++;
+            hls.startLoad();
+          } else if (retries < 5 && data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+            retries++;
+            hls.recoverMediaError();
+          } else {
+            fail("Stream failed to load. Try another stream.");
+          }
+        });
+        hls.loadSource(p.url);
+        hls.attachMedia(video);
+        play();
+        return;
+      }
+      if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = p.url;
+        play();
+        return;
+      }
+      fail("This browser cannot play HLS streams.");
+      return;
+    }
+
+    await loadScript(SHAKA_SRC);
+    if (token !== playToken) return;
+    const shaka = window.shaka;
+    shaka.polyfill.installAll();
+    if (!shaka.Player.isBrowserSupported()) {
+      fail("This browser cannot play this stream.");
+      return;
+    }
+    const player = new shaka.Player();
+    await player.attach(video);
+    if (token !== playToken) {
+      Promise.resolve(player.destroy()).catch(() => {});
+      return;
+    }
+    engine = player;
+
+    const cfg = {};
+    if (p.drm) {
+      if (p.drm.kind === "clearkey") {
+        cfg.drm = { clearKeys: p.drm.keys };
+      } else if (p.drm.kind === "widevine") {
+        cfg.drm = { servers: { "com.widevine.alpha": p.drm.license } };
+      } else if (p.drm.kind === "playready") {
+        cfg.drm = { servers: { "com.microsoft.playready": p.drm.license } };
+      }
+    }
+    player.configure(cfg);
+
+    player.addEventListener("error", (ev) => {
+      const code = ev && ev.detail ? ev.detail.code : 0;
+      if (code >= 6000 && code < 7000) fail("DRM license or key failed.");
+      else fail("Stream failed to load. Try another stream.");
+    });
+
+    await player.load(p.url);
+    if (token !== playToken) return;
+    play();
+  } catch (err) {
+    const code = err && typeof err.code === "number" ? err.code : 0;
+    if (code >= 6000 && code < 7000) fail("DRM license or key failed.");
+    else fail("Stream failed to load. Try another stream.");
+  }
 }
 
 function teamName(id) {
@@ -299,6 +453,20 @@ backBtn.addEventListener("click", (e) => {
 });
 
 root.addEventListener("click", (e) => {
+  const sw = e.target.closest("[data-link]");
+  if (sw) {
+    const n = parseInt(sw.getAttribute("data-link"), 10);
+    if (n >= 1 && n <= LINK_COUNT && n !== linkNo) {
+      linkNo = n;
+      try {
+        const u = new URL(location.href);
+        u.searchParams.set("link", String(n));
+        history.replaceState(null, "", u);
+      } catch (err) {}
+      render();
+    }
+    return;
+  }
   const act = e.target.closest("[data-act]");
   if (!act) return;
   const a = act.getAttribute("data-act");
@@ -367,6 +535,8 @@ function thumbNoLinks() {
 }
 
 function notFound(text) {
+  playToken++;
+  destroyEngine();
   lastPlayerKey = null;
   root.innerHTML = `<div class="empty">${text}<br><a href="${matchId ? esc(matchUrl()) : "/"}">&#8592; Back</a></div>`;
 }
@@ -392,24 +562,29 @@ function render() {
     mountComments(document.getElementById("chatSlot"));
   }
 
+  const available = [];
   let activeNo = 0;
   if (state === "live") {
-    const available = [];
     for (let i = 1; i <= LINK_COUNT; i++) {
       const u = match.links && match.links["link" + i];
-      if (isHttpUrl(u)) available.push(i);
+      if (typeof u === "string" && isHttpUrl(parseLink(u).url)) available.push(i);
     }
     if (available.length) activeNo = available.indexOf(linkNo) !== -1 ? linkNo : available[0];
   }
 
   let playerHtml;
   let playerKey;
+  let livePlayer = null;
   const sig = teamSig(match);
 
   if (state === "live" && activeNo) {
-    const src = match.links["link" + activeNo].trim();
-    playerKey = "p|" + activeNo + "|" + src + "|" + reloadN;
-    playerHtml = `<div class="stage"><div class="player-wrap"><iframe src="${esc(src)}" width="100%" height="100%" style="aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
+    livePlayer = parseLink(match.links["link" + activeNo]);
+    playerKey = "p|" + activeNo + "|" + livePlayer.raw + "|" + reloadN;
+    if (livePlayer.type === "iframe") {
+      playerHtml = `<div class="stage"><div class="player-wrap"><iframe src="${esc(livePlayer.url)}" width="100%" height="100%" style="aspect-ratio:16/9;border:0;" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>`;
+    } else {
+      playerHtml = `<div class="stage"><div class="player-wrap"><video id="vid" controls autoplay playsinline></video><div class="vid-msg" id="vidMsg" hidden></div></div></div>`;
+    }
   } else if (state === "live") {
     playerKey = "nolinks";
     playerHtml = thumbNoLinks();
@@ -422,12 +597,20 @@ function render() {
   }
 
   if (playerKey !== lastPlayerKey) {
+    playToken++;
+    destroyEngine();
     document.getElementById("playerSlot").innerHTML = playerHtml;
     lastPlayerKey = playerKey;
+    if (livePlayer && livePlayer.type !== "iframe") startVideo(livePlayer, playToken);
   }
+
+  const switcher = state === "live" && available.length > 1
+    ? `<div class="streams">${available.map((n) => `<button class="stream-btn ${n === activeNo ? "on" : ""}" type="button" data-link="${n}">Stream ${n}</button>`).join("")}</div>`
+    : "";
 
   const count = Math.max(1, viewers);
   document.getElementById("barSlot").innerHTML = `
+    ${switcher}
     <div class="controls">
       <div class="pills">
         ${badgeHtml(state)}
