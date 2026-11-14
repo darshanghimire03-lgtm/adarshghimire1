@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ramuscode Admin</title>
+<meta name="theme-color" content="#101211">
+<style>
+:root {
+  --bg: #101211;
+  --surface: #1B211E;
+  --primary: #A3E635;
+  --text: #F5F5F5;
+  --muted: #9AA39E;
+  --danger: #F87171;
+  --line: rgba(255, 255, 255, 0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  padding-bottom: 90px;
+}
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(16, 18, 17, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.header-top {
+  padding: 16px 20px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+header h1 { font-size: 1.2rem; font-weight: 800; }
+header h1 span { color: var(--primary); }
+#status { font-size: 0.85rem; color: var(--muted); }
+#status.ok { color: var(--primary); }
+#status.err { color: var(--danger); }
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 12px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.tab {
+  flex: 1;
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 700;
+}
+.tab.active {
+  background: var(--primary);
+  color: #101211;
+  border-color: var(--primary);
+}
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.panel { display: none; }
+.panel.active { display: block; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.slot {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.logo-box {
+  width: 84px;
+  height: 84px;
+  border-radius: 20px;
+  background: var(--bg);
+  border: 1px dashed rgba(163, 230, 53, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+.logo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+}
+input, select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+  font-family: inherit;
+}
+input:focus, select:focus { border-color: var(--primary); }
+.row { display: flex; gap: 8px; }
+button {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+button:active { transform: scale(0.97); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--primary); color: #101211; flex: 1; }
+.btn-clear {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--line);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(16, 18, 17, 0.95);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: center;
+}
+.bar.hidden { display: none; }
+.bar button { width: 100%; max-width: 420px; }
+.form-card { max-width: 560px; margin: 0 auto 24px; }
+.vs-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: end;
+}
+.vs-label {
+  padding-bottom: 12px;
+  font-weight: 800;
+  color: var(--primary);
+}
+.links-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.links-box { display: flex; flex-direction: column; gap: 10px; }
+.list-title {
+  max-width: 560px;
+  margin: 0 auto 12px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.match-list {
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.match {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.match.live { border-color: var(--primary); }
+.match.ended { opacity: 0.6; }
+.match-teams {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+.mt { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.mt .logo-box { width: 56px; height: 56px; border-radius: 14px; }
+.mt-name { font-size: 0.9rem; font-weight: 700; word-break: break-word; }
+.match-vs { font-weight: 800; color: var(--muted); }
+.match-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.time { font-size: 0.85rem; color: var(--muted); }
+.badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+}
+.badge.live {
+  background: var(--primary);
+  color: #101211;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.badge.soon {
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+.badge.ended {
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--bg);
+  border: 1px solid rgba(163, 230, 53, 0.35);
+  border-radius: 999px;
+  padding: 6px 12px;
+  text-decoration: none;
+}
+.match-actions { display: flex; gap: 8px; }
+.match-actions button { flex: 1; padding: 10px; }
+.btn-end {
+  background: var(--danger);
+  color: #101211;
+}
+.winner-line { font-size: 0.85rem; color: var(--muted); }
+.winner-line span { color: var(--primary); font-weight: 800; }
+.pick-box { display: flex; flex-direction: column; gap: 10px; }
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 24px;
+  font-size: 0.9rem;
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <h1>Ramus<span>code</span> Admin</h1>
+    <div id="status">Connecting...</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-tab="teams">Teams</button>
+    <button class="tab" data-tab="matches">Matches</button>
+  </div>
+</header>
+
+<main>
+  <section class="panel active" id="panel-teams">
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="panel" id="panel-matches">
+    <div class="card form-card">
+      <div class="card-top">
+        <span class="slot" id="formTitle">New match</span>
+      </div>
+      <div class="vs-row">
+        <div>
+          <label for="teamA">Team 1</label>
+          <select id="teamA"></select>
+        </div>
+        <div class="vs-label">VS</div>
+        <div>
+          <label for="teamB">Team 2</label>
+          <select id="teamB"></select>
+        </div>
+      </div>
+      <div>
+        <label for="startTime">Start time</label>
+        <input id="startTime" type="datetime-local">
+      </div>
+      <div class="links-title">Match links</div>
+      <div class="links-box" id="linksBox"></div>
+      <div class="row">
+        <button class="btn-primary" id="saveMatch">Add match</button>
+        <button class="btn-ghost" id="cancelEdit" style="display:none">Cancel</button>
+      </div>
+    </div>
+
+    <div class="list-title">All matches</div>
+    <div class="match-list" id="matchList"></div>
+  </section>
+</main>
+
+<div class="bar" id="teamsBar">
+  <button class="btn-primary" id="saveAll">Save all teams</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getDatabase, ref, onValue, set, push, update, remove } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDejlLtvFPTFOJoXMFGjpuhImn6oYFCAxM",
+  authDomain: "darshang-8f99d.firebaseapp.com",
+  databaseURL: "https://darshang-8f99d-default-rtdb.firebaseio.com",
+  projectId: "darshang-8f99d",
+  storageBucket: "darshang-8f99d.firebasestorage.app",
+  messagingSenderId: "199221437404",
+  appId: "1:199221437404:web:e9c42331f2879378f6e519"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const TOTAL = 8;
+const LINK_COUNT = 5;
+const LIVE_MS = (4 * 60 + 30) * 60 * 1000;
+const grid = document.getElementById("grid");
+const statusEl = document.getElementById("status");
+const saveAllBtn = document.getElementById("saveAll");
+const teamsBar = document.getElementById("teamsBar");
+const teamA = document.getElementById("teamA");
+const teamB = document.getElementById("teamB");
+const startTime = document.getElementById("startTime");
+const linksBox = document.getElementById("linksBox");
+const saveMatchBtn = document.getElementById("saveMatch");
+const cancelEditBtn = document.getElementById("cancelEdit");
+const formTitle = document.getElementById("formTitle");
+const matchList = document.getElementById("matchList");
+
+let teamsData = {};
+let matchesData = {};
+let editingId = null;
+let endingId = null;
+
+function setStatus(text, type) {
+  statusEl.textContent = text;
+  statusEl.className = type || "";
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+document.querySelectorAll(".tab").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("panel-" + btn.dataset.tab).classList.add("active");
+    teamsBar.classList.toggle("hidden", btn.dataset.tab !== "teams");
+  });
+});
+
+function buildLinkInputs() {
+  let html = "";
+  for (let i = 1; i <= LINK_COUNT; i++) {
+    html += `
+      <div>
+        <label for="link-${i}">Link ${i}</label>
+        <input id="link-${i}" type="url" placeholder="https://..." autocomplete="off">
+      </div>
+    `;
+  }
+  linksBox.innerHTML = html;
+}
+
+function readLinks() {
+  const links = {};
+  for (let i = 1; i <= LINK_COUNT; i++) {
+    const v = document.getElementById("link-" + i).value.trim();
+    if (v) links["link" + i] = v;
+  }
+  return links;
+}
+
+function fillLinks(links) {
+  for (let i = 1; i <= LINK_COUNT; i++) {
+    document.getElementById("link-" + i).value = links && links["link" + i] ? links["link" + i] : "";
+  }
+}
+
+function isValidUrl(v) {
+  try {
+    const u = new URL(v);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch (e) {
+    return false;
+  }
+}
+
+function buildCards() {
+  for (let i = 1; i <= TOTAL; i++) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.dataset.slot = "team" + i;
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="slot">Team ${i}</span>
+      </div>
+      <div class="logo-box" id="logo-${i}"><span>No logo</span></div>
+      <div>
+        <label for="name-${i}">Name</label>
+        <input id="name-${i}" type="text" placeholder="Team name" autocomplete="off">
+      </div>
+      <div>
+        <label for="url-${i}">Logo URL</label>
+        <input id="url-${i}" type="url" placeholder="https://..." autocomplete="off">
+      </div>
+      <div class="row">
+        <button class="btn-primary" data-save="${i}">Save</button>
+        <button class="btn-clear" data-clear="${i}">Clear</button>
+      </div>
+    `;
+    grid.appendChild(card);
+    const urlInput = card.querySelector("#url-" + i);
+    urlInput.addEventListener("input", () => renderLogo(i, urlInput.value.trim()));
+  }
+}
+
+function renderLogo(i, url) {
+  const box = document.getElementById("logo-" + i);
+  box.innerHTML = "";
+  if (!url) {
+    box.innerHTML = "<span>No logo</span>";
+    return;
+  }
+  const img = document.createElement("img");
+  img.alt = "Logo";
+  img.onerror = () => {
+    box.innerHTML = "<span>Invalid URL</span>";
+  };
+  img.src = url;
+  box.appendChild(img);
+}
+
+function readSlot(i) {
+  return {
+    name: document.getElementById("name-" + i).value.trim(),
+    logourl: document.getElementById("url-" + i).value.trim()
+  };
+}
+
+async function saveSlot(i) {
+  const data = readSlot(i);
+  if (!data.name) {
+    setStatus("Team " + i + " needs a name", "err");
+    return false;
+  }
+  try {
+    await set(ref(db, "teams/team" + i), data);
+    setStatus("Team " + i + " saved", "ok");
+    return true;
+  } catch (e) {
+    setStatus("Save failed: " + e.message, "err");
+    return false;
+  }
+}
+
+async function clearSlot(i) {
+  try {
+    await remove(ref(db, "teams/team" + i));
+    document.getElementById("name-" + i).value = "";
+    document.getElementById("url-" + i).value = "";
+    renderLogo(i, "");
+    setStatus("Team " + i + " cleared", "ok");
+  } catch (e) {
+    setStatus("Clear failed: " + e.message, "err");
+  }
+}
+
+async function saveAll() {
+  const payload = {};
+  for (let i = 1; i <= TOTAL; i++) {
+    const data = readSlot(i);
+    if (data.name) payload["team" + i] = data;
+  }
+  if (!Object.keys(payload).length) {
+    setStatus("Nothing to save", "err");
+    return;
+  }
+  saveAllBtn.disabled = true;
+  try {
+    await update(ref(db, "teams"), payload);
+    setStatus("All teams saved", "ok");
+  } catch (e) {
+    setStatus("Save failed: " + e.message, "err");
+  }
+  saveAllBtn.disabled = false;
+}
+
+grid.addEventListener("click", (e) => {
+  const saveBtn = e.target.closest("[data-save]");
+  const clearBtn = e.target.closest("[data-clear]");
+  if (saveBtn) saveSlot(Number(saveBtn.dataset.save));
+  if (clearBtn) clearSlot(Number(clearBtn.dataset.clear));
+});
+
+saveAllBtn.addEventListener("click", saveAll);
+
+function fillTeamSelects() {
+  const prevA = teamA.value;
+  const prevB = teamB.value;
+  const options = ['<option value="">Select team</option>'];
+  for (let i = 1; i <= TOTAL; i++) {
+    const t = teamsData["team" + i];
+    if (t && t.name) {
+      options.push(`<option value="team${i}">${escapeHtml(t.name)}</option>`);
+    }
+  }
+  teamA.innerHTML = options.join("");
+  teamB.innerHTML = options.join("");
+  teamA.value = prevA;
+  teamB.value = prevB;
+}
+
+function toLocalInput(ms) {
+  const d = new Date(ms);
+  const pad = (n) => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
+    "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+
+function formatTime(ms) {
+  return new Date(ms).toLocaleString([], {
+    weekday: "short", day: "numeric", month: "short",
+    hour: "2-digit", minute: "2-digit"
+  });
+}
+
+function countdown(ms) {
+  let s = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(s / 86400); s -= d * 86400;
+  const h = Math.floor(s / 3600); s -= h * 3600;
+  const m = Math.floor(s / 60); s -= m * 60;
+  if (d > 0) return d + "d " + h + "h " + m + "m";
+  if (h > 0) return h + "h " + m + "m " + s + "s";
+  return m + "m " + s + "s";
+}
+
+function teamBlock(id) {
+  const t = teamsData[id];
+  const name = t && t.name ? escapeHtml(t.name) : "Unknown";
+  const logo = t && t.logourl
+    ? `<div class="logo-box"><img src="${escapeHtml(t.logourl)}" alt=""></div>`
+    : `<div class="logo-box"><span>No logo</span></div>`;
+  return `<div class="mt">${logo}<div class="mt-name">${name}</div></div>`;
+}
+
+function playerUrl(matchId, n) {
+  return "/match/player/" + encodeURIComponent(matchId) + "?link=" + n;
+}
+
+function linkChips(matchId, links) {
+  if (!links) return "";
+  const chips = [];
+  for (let i = 1; i <= LINK_COUNT; i++) {
+    const u = links["link" + i];
+    if (u) {
+      chips.push(`<a class="chip" href="${escapeHtml(playerUrl(matchId, i))}" target="_blank" rel="noopener">Link ${i}</a>`);
+    }
+  }
+  return chips.length ? `<div class="chips">${chips.join("")}</div>` : "";
+}
+
+function teamLabel(id) {
+  const t = teamsData[id];
+  return t && t.name ? t.name : "Unknown";
+}
+
+function winnerOf(m) {
+  return m.winner && (m.winner === m.team1 || m.winner === m.team2) ? m.winner : null;
+}
+
+function matchState(m, now) {
+  if (now < m.startTime) return "upcoming";
+  if (m.ended === true || now >= m.startTime + LIVE_MS) return "ended";
+  return "live";
+}
+
+function renderMatches() {
+  const entries = Object.entries(matchesData)
+    .filter(([, m]) => m && typeof m.startTime === "number")
+    .sort((a, b) => a[1].startTime - b[1].startTime);
+  if (!entries.length) {
+    matchList.innerHTML = '<div class="empty">No matches yet</div>';
+    return;
+  }
+  const now = Date.now();
+  matchList.innerHTML = entries.map(([id, m]) => {
+    const state = matchState(m, now);
+    let badge;
+    if (state === "live") {
+      badge = `<span class="badge live" data-endat="${m.startTime + LIVE_MS}">LIVE NOW</span>`;
+    } else if (state === "ended") {
+      badge = '<span class="badge ended">MATCH ENDED</span>';
+    } else {
+      badge = `<span class="badge soon" data-countdown="${m.startTime}">Starts in ${countdown(m.startTime - now)}</span>`;
+    }
+    const winnerId = state === "ended" ? winnerOf(m) : null;
+    const winnerLine = winnerId
+      ? `<div class="winner-line">Winner: <span>${escapeHtml(teamLabel(winnerId))}</span></div>`
+      : "";
+    let endBtn = "";
+    if (state === "live") {
+      endBtn = `<button class="btn-end" data-end="${id}">End match</button>`;
+    } else if (state === "ended") {
+      endBtn = `<button class="btn-ghost" data-end="${id}">${winnerId ? "Change winner" : "Set winner"}</button>`;
+    }
+    const actions = endingId === id
+      ? `
+        <div class="pick-box">
+          <div class="links-title">Who won?</div>
+          <div class="match-actions">
+            <button class="btn-primary" data-pick="team1" data-match="${id}">${escapeHtml(teamLabel(m.team1))}</button>
+            <button class="btn-primary" data-pick="team2" data-match="${id}">${escapeHtml(teamLabel(m.team2))}</button>
+          </div>
+          <div class="match-actions">
+            <button class="btn-ghost" data-pick="none" data-match="${id}">No result</button>
+            <button class="btn-clear" data-cancel-end="1">Cancel</button>
+          </div>
+        </div>
+      `
+      : `
+        <div class="match-actions">
+          ${endBtn}
+          <button class="btn-ghost" data-edit="${id}">Edit</button>
+          <button class="btn-clear" data-delete="${id}">Delete</button>
+        </div>
+      `;
+    return `
+      <div class="match ${state === "live" ? "live" : ""} ${state === "ended" ? "ended" : ""}" data-id="${id}">
+        <div class="match-teams">
+          ${teamBlock(m.team1)}
+          <div class="match-vs">VS</div>
+          ${teamBlock(m.team2)}
+        </div>
+        <div class="match-meta">
+          <span class="time">${formatTime(m.startTime)}</span>
+          ${badge}
+        </div>
+        ${winnerLine}
+        ${linkChips(id, m.links)}
+        ${actions}
+      </div>
+    `;
+  }).join("");
+}
+
+function resetForm() {
+  editingId = null;
+  teamA.value = "";
+  teamB.value = "";
+  startTime.value = "";
+  fillLinks(null);
+  saveMatchBtn.textContent = "Add match";
+  formTitle.textContent = "New match";
+  cancelEditBtn.style.display = "none";
+}
+
+async function saveMatch() {
+  const t1 = teamA.value;
+  const t2 = teamB.value;
+  if (!t1 || !t2) {
+    setStatus("Select both teams", "err");
+    return;
+  }
+  if (t1 === t2) {
+    setStatus("Pick two different teams", "err");
+    return;
+  }
+  if (!startTime.value) {
+    setStatus("Set a start time", "err");
+    return;
+  }
+  const ms = new Date(startTime.value).getTime();
+  if (Number.isNaN(ms)) {
+    setStatus("Invalid start time", "err");
+    return;
+  }
+  const links = readLinks();
+  for (const key of Object.keys(links)) {
+    if (!isValidUrl(links[key])) {
+      setStatus("Invalid URL in " + key.replace("link", "Link "), "err");
+      return;
+    }
+  }
+  const data = { team1: t1, team2: t2, startTime: ms, links: links, ended: null, winner: null };
+  if (editingId && matchesData[editingId] && matchesData[editingId].ended === true && ms <= Date.now()) {
+    data.ended = true;
+    const prev = matchesData[editingId].winner;
+    if (prev && (prev === t1 || prev === t2)) data.winner = prev;
+  }
+  saveMatchBtn.disabled = true;
+  try {
+    if (editingId) {
+      await update(ref(db, "matches/" + editingId), data);
+      setStatus("Match updated", "ok");
+    } else {
+      await set(push(ref(db, "matches")), data);
+      setStatus("Match added", "ok");
+    }
+    resetForm();
+  } catch (e) {
+    setStatus("Save failed: " + e.message, "err");
+  }
+  saveMatchBtn.disabled = false;
+}
+
+saveMatchBtn.addEventListener("click", saveMatch);
+cancelEditBtn.addEventListener("click", resetForm);
+
+matchList.addEventListener("click", async (e) => {
+  const editBtn = e.target.closest("[data-edit]");
+  const delBtn = e.target.closest("[data-delete]");
+  const endBtn = e.target.closest("[data-end]");
+  const pickBtn = e.target.closest("[data-pick]");
+  const cancelEndBtn = e.target.closest("[data-cancel-end]");
+  if (endBtn) {
+    endingId = endBtn.dataset.end;
+    renderMatches();
+  }
+  if (cancelEndBtn) {
+    endingId = null;
+    renderMatches();
+  }
+  if (pickBtn) {
+    const id = pickBtn.dataset.match;
+    const choice = pickBtn.dataset.pick;
+    const m = matchesData[id];
+    if (!m) return;
+    const winner = choice === "none" ? null : m[choice];
+    try {
+      await update(ref(db, "matches/" + id), { ended: true, winner: winner });
+      setStatus(winner ? "Winner saved" : "Match ended", "ok");
+    } catch (err) {
+      setStatus("Save failed: " + err.message, "err");
+    }
+    endingId = null;
+    renderMatches();
+  }
+  if (editBtn) {
+    const id = editBtn.dataset.edit;
+    const m = matchesData[id];
+    if (!m) return;
+    editingId = id;
+    teamA.value = m.team1;
+    teamB.value = m.team2;
+    startTime.value = toLocalInput(m.startTime);
+    fillLinks(m.links);
+    saveMatchBtn.textContent = "Update match";
+    formTitle.textContent = "Edit match";
+    cancelEditBtn.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  if (delBtn) {
+    const id = delBtn.dataset.delete;
+    if (!confirm("Delete this match?")) return;
+    try {
+      await remove(ref(db, "matches/" + id));
+      if (editingId === id) resetForm();
+      setStatus("Match deleted", "ok");
+    } catch (err) {
+      setStatus("Delete failed: " + err.message, "err");
+    }
+  }
+});
+
+buildCards();
+buildLinkInputs();
+renderMatches();
+
+onValue(
+  ref(db, "teams"),
+  (snap) => {
+    teamsData = snap.val() || {};
+    for (let i = 1; i <= TOTAL; i++) {
+      const t = teamsData["team" + i];
+      const nameEl = document.getElementById("name-" + i);
+      const urlEl = document.getElementById("url-" + i);
+      if (document.activeElement !== nameEl) nameEl.value = t && t.name ? t.name : "";
+      if (document.activeElement !== urlEl) {
+        urlEl.value = t && t.logourl ? t.logourl : "";
+        renderLogo(i, urlEl.value);
+      }
+    }
+    fillTeamSelects();
+    renderMatches();
+    setStatus("Connected", "ok");
+  },
+  (err) => setStatus("Read failed: " + err.message, "err")
+);
+
+onValue(
+  ref(db, "matches"),
+  (snap) => {
+    matchesData = snap.val() || {};
+    renderMatches();
+  },
+  (err) => setStatus("Read failed: " + err.message, "err")
+);
+
+setInterval(() => {
+  const now = Date.now();
+  let needsRender = false;
+  document.querySelectorAll("[data-countdown]").forEach((el) => {
+    const t = Number(el.dataset.countdown);
+    if (now >= t) {
+      needsRender = true;
+    } else {
+      el.textContent = "Starts in " + countdown(t - now);
+    }
+  });
+  document.querySelectorAll("[data-endat]").forEach((el) => {
+    if (now >= Number(el.dataset.endat)) needsRender = true;
+  });
+  if (needsRender) renderMatches();
+}, 1000);
+</script>
+</body>
+</html>
